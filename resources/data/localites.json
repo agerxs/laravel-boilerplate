@@ -1,0 +1,4826 @@
+[
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ABOBO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ABIDJAN",
+        "parent_loc_code": "ABID",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ADJAMÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ABIDJAN",
+        "parent_loc_code": "ABID",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ATTECOUBÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ABIDJAN",
+        "parent_loc_code": "ABID",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "COCODY",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ABIDJAN",
+        "parent_loc_code": "ABID",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KOUMASSI",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ABIDJAN",
+        "parent_loc_code": "ABID",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MARCORY",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ABIDJAN",
+        "parent_loc_code": "ABID",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "PLATEAU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ABIDJAN",
+        "parent_loc_code": "ABID",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "PORT-BOUËT",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ABIDJAN",
+        "parent_loc_code": "ABID",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TREICHVILLE",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ABIDJAN",
+        "parent_loc_code": "ABID",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "YOPOUGON",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ABIDJAN",
+        "parent_loc_code": "ABID",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ANYAMA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ANYAMA",
+        "parent_loc_code": "ANYA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BINGERVILLE",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BINGERVILLE",
+        "parent_loc_code": "BING",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SONGON",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "SONGON",
+        "parent_loc_code": "SONG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ALÉPÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ALEPE",
+        "parent_loc_code": "ALEP",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DABOU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "DABOU",
+        "parent_loc_code": "DABO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SIKENSI",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "SIKENSI",
+        "parent_loc_code": "SIKE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GRAND-LAHOU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "GRAND-LAHOU",
+        "parent_loc_code": "GRAL",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "JACQUEVILLE",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "JACQUEVILLE",
+        "parent_loc_code": "JACQ",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TIASSALÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "TIASSALE",
+        "parent_loc_code": "TIAS",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TAABO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "TAABO",
+        "parent_loc_code": "TAAB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DIKODOUGOU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "DIKODOUGOU",
+        "parent_loc_code": "DIKO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GUIEMBÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "GUIEMBE",
+        "parent_loc_code": "GUIE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KARAKORO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "KARAKORO",
+        "parent_loc_code": "KARA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KORHOGO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "KORHOGO",
+        "parent_loc_code": "KORH",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KOMBORODOUGOU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "KOMBORODOUGOU",
+        "parent_loc_code": "KOMB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "M'BENGUÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "M'BENGUE",
+        "parent_loc_code": "MBE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "NAPIÉLÉDOUGOU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "NAPIELEDOUGOU",
+        "parent_loc_code": "NAPI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "NIOFOIN",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "NIOFOIN",
+        "parent_loc_code": "NIOF",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TIORONIARADOUGOU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "TIORONIARADOUGOU",
+        "parent_loc_code": "TIOR",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SINEMATIALI",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "SINEMATIALI",
+        "parent_loc_code": "SINE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SIRASSO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "SIRASSO",
+        "parent_loc_code": "SIRA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GBON",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "GBON",
+        "parent_loc_code": "GBON",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BOUNDIALI",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BOUNDIALI",
+        "parent_loc_code": "BOUN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KASSÉRÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "KASSERE",
+        "parent_loc_code": "KASS",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KOLIA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "KOLIA",
+        "parent_loc_code": "KOLI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KOUTO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "KOUTO",
+        "parent_loc_code": "KOUT",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DIAWALA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "DIAWALA",
+        "parent_loc_code": "DIAW",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "FERKESSEDOUGOU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "FERKESSEDOUGOU",
+        "parent_loc_code": "FERK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KONG",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "KONG",
+        "parent_loc_code": "KONG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KOUMBALA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "KOUMBALA",
+        "parent_loc_code": "KOUM",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "NIELLÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "NIELLE",
+        "parent_loc_code": "NIEL",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "OUANGOLODOUGOU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "OUANGOLODOUGOU",
+        "parent_loc_code": "OUAG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KANAKONO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "KANAKONO",
+        "parent_loc_code": "KANA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TENGRÉLA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "TENGRELA",
+        "parent_loc_code": "TENG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ABOISSO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ABOISSO",
+        "parent_loc_code": "ABOI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "AYAMÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "AYAME",
+        "parent_loc_code": "AYAM",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MAFÉRÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "MAFERE",
+        "parent_loc_code": "MAFE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TIAPOUM",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "TIAPOUM",
+        "parent_loc_code": "TIAP",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ADIAKÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ADIAKE",
+        "parent_loc_code": "ADIA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ETUÉBOUÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ETUEBOUE",
+        "parent_loc_code": "ETUE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GRAND-BASSAM",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "GRAND-BASSAM",
+        "parent_loc_code": "GRBA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BONOUA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BONOUA",
+        "parent_loc_code": "BONA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BEDIALA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BEDIALA",
+        "parent_loc_code": "BEDI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DALOA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "DALOA",
+        "parent_loc_code": "DALO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GBOGUHÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "GBOGUHE",
+        "parent_loc_code": "GBOG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ZOUKOUGBEU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ZOUKOUGBEU",
+        "parent_loc_code": "ZOUK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ISSIA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ISSIA",
+        "parent_loc_code": "ISSI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SAÏOUA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "SAÏOUA",
+        "parent_loc_code": "SAÏO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "VAVOUA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "VAVOUA",
+        "parent_loc_code": "VAVO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "AGBOVILLE",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "AGBOVILLE",
+        "parent_loc_code": "AGBO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "AZAGUIÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "AZAGUIE",
+        "parent_loc_code": "AZAG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "RUBINO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "RUBINO",
+        "parent_loc_code": "RUBI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ADZOPÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ADZOPE",
+        "parent_loc_code": "ADZO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "AGOU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "AGOU",
+        "parent_loc_code": "AGOU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "AFFÉRY",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "AFFERY",
+        "parent_loc_code": "AFFE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "AKOUPÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "AKOUPE",
+        "parent_loc_code": "AKOU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "YAKASSÉ-ATTOBROU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "YAKASSE-ATTOBROU",
+        "parent_loc_code": "YAKA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ABENGOUROU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ABENGOUROU",
+        "parent_loc_code": "ABEN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BETTIÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BETTIE",
+        "parent_loc_code": "BETT",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "NIABLÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "NIABLE",
+        "parent_loc_code": "NIAB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "AGNIBILÉKROU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "AGNIBILEKROU",
+        "parent_loc_code": "AGNI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DIABO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "DIABO",
+        "parent_loc_code": "DIAB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DJEBONOUA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "DJEBONOUA",
+        "parent_loc_code": "DJEB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BROBO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BROBO",
+        "parent_loc_code": "BROB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BOTRO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BOTRO",
+        "parent_loc_code": "BOTR",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BOUAKÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BOUAKE",
+        "parent_loc_code": "BOUK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BEOUMI",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BEOUMI",
+        "parent_loc_code": "BEOU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BODOKRO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BODOKRO",
+        "parent_loc_code": "BODO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BASSAWA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BASSAWA",
+        "parent_loc_code": "BASS",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BONIEREDOUGOU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BONIEREDOUGOU",
+        "parent_loc_code": "BONI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DABAKALA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "DABAKALA",
+        "parent_loc_code": "DABA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "FOUMBOLO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "FOUMBOLO",
+        "parent_loc_code": "FOUM",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SATAMA-SOKORO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "SATAMA-SOKORO",
+        "parent_loc_code": "SASO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SATAMA-SOKOURO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "SATAMA-SOKOURO",
+        "parent_loc_code": "SURO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "FRONAN",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "FRONAN",
+        "parent_loc_code": "FRON",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KATIOLA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "KATIOLA",
+        "parent_loc_code": "KATI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "NIAKARAMANDOUGOU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "NIAKARAMANDOUGOU",
+        "parent_loc_code": "NIAK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TAFIRÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "TAFIRE",
+        "parent_loc_code": "TAFI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TORTIYA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "TORTIYA",
+        "parent_loc_code": "TORT",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SAKASSOU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "SAKASSOU",
+        "parent_loc_code": "SAKA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MAN",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "MAN",
+        "parent_loc_code": "MAN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "FACOBLY",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "FACOBLY",
+        "parent_loc_code": "FACO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KOUIBLY",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "KOUIBLY",
+        "parent_loc_code": "KOUI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "LOGOUALÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "LOGOUALE",
+        "parent_loc_code": "LOGO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SANGOUINÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "SANGOUINE",
+        "parent_loc_code": "SANG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BANGOLO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BANGOLO",
+        "parent_loc_code": "BANG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BIANKOUMA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BIANKOUMA",
+        "parent_loc_code": "BIAK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GBONNÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "GBONNE",
+        "parent_loc_code": "GBNE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SIPILOU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "SIPILOU",
+        "parent_loc_code": "SIPI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DANANÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "DANANE",
+        "parent_loc_code": "DANA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BIN-HOUYÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BIN-HOUYE",
+        "parent_loc_code": "BINH",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ZOUAN-HOUNIEN",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ZOUAN-HOUNIEN",
+        "parent_loc_code": "ZOUA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DIVO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "DIVO",
+        "parent_loc_code": "DIVO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "FRESCO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "FRESCO",
+        "parent_loc_code": "FRES",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GUITRY",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "GUITRY",
+        "parent_loc_code": "GUIT",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "HIRÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "HIRE",
+        "parent_loc_code": "HIRE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "LAKOTA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "LAKOTA",
+        "parent_loc_code": "LAKO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ZIKISSO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ZIKISSO",
+        "parent_loc_code": "ZIKI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GAGNOA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "GAGNOA",
+        "parent_loc_code": "GAGN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GUIBÉROUA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "GUIBEROUA",
+        "parent_loc_code": "GUIB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "OURAGAHIO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "OURAGAHIO",
+        "parent_loc_code": "OURA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DIÉGONÉFLA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "DIEGONEFLA",
+        "parent_loc_code": "DIEG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "OUMÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "OUME",
+        "parent_loc_code": "OUME",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "YAMOUSSOUKRO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "YAMOUSSOUKRO",
+        "parent_loc_code": "YAMO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DIDIÉVI",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "DIDIEVI",
+        "parent_loc_code": "DIDI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TIÉBISSOU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "TIEBISSOU",
+        "parent_loc_code": "TIEB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TIÉ-N’DIEKRO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "TIE-N’DIEKRO",
+        "parent_loc_code": "TIEO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TOUMODI",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "TOUMODI",
+        "parent_loc_code": "TOUM",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DJÉKANOU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "DJEKANOU",
+        "parent_loc_code": "DJEK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KOKOUMBO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "KOKOUMBO",
+        "parent_loc_code": "KOKO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DUÉKOUÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "DUEKOUE",
+        "parent_loc_code": "DUEK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BLOLÉQUIN",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BLOLEQUIN",
+        "parent_loc_code": "BLOL",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GUIGLO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "GUIGLO",
+        "parent_loc_code": "GUIG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TAÏ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "TAÏ",
+        "parent_loc_code": "TAÏ",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TOULEPLEU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "TOULEPLEU",
+        "parent_loc_code": "TOUL",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BONDOUKOU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BONDOUKOU",
+        "parent_loc_code": "BOND",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SANDÉGUÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "SANDEGUE",
+        "parent_loc_code": "SAND",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BOUNA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BOUNA",
+        "parent_loc_code": "BOUA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DOROPO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "DOROPO",
+        "parent_loc_code": "DORO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "NASSIAN",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "NASSIAN",
+        "parent_loc_code": "NASS",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TEHINI",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "TEHINI",
+        "parent_loc_code": "TEHI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TANDA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "TANDA",
+        "parent_loc_code": "TAND",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ASSUEFRY",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ASSUEFRY",
+        "parent_loc_code": "ASSU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KOUASSI-DATEKRO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "KOUASSI-DATEKRO",
+        "parent_loc_code": "KOUD",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TRANSUA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "TRANSUA",
+        "parent_loc_code": "TRAN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BOOKO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BOOKO",
+        "parent_loc_code": "BOOK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BOROTOU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BOROTOU",
+        "parent_loc_code": "BORO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GUINTÉGUÉLA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "GUINTEGUELA",
+        "parent_loc_code": "GUIN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KOONAN",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "KOONAN",
+        "parent_loc_code": "KOON",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KORO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "KORO",
+        "parent_loc_code": "KORO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "OUANINOU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "OUANINOU",
+        "parent_loc_code": "OUAN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TOUBA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "TOUBA",
+        "parent_loc_code": "TOUB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GRAND-BÉRÉBY",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "GRAND-BEREBY",
+        "parent_loc_code": "GRBE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SAN-PÉDRO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "SAN-PEDRO",
+        "parent_loc_code": "SANP",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SASSANDRA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "SASSANDRA",
+        "parent_loc_code": "SASS",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BUYO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BUYO",
+        "parent_loc_code": "BUYO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GRAND-ZATTRY",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "GRAND-ZATTRY",
+        "parent_loc_code": "GRAZ",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MÉAGUI",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "MEAGUI",
+        "parent_loc_code": "MEAG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SOUBRÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "SOUBRE",
+        "parent_loc_code": "SOUB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GRABO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "GRABO",
+        "parent_loc_code": "GRAB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TABOU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "TABOU",
+        "parent_loc_code": "TABO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DIMBOKRO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "DIMBOKRO",
+        "parent_loc_code": "DIMB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ANOUMABA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ANOUMABA",
+        "parent_loc_code": "ANOU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ARRAH",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ARRAH",
+        "parent_loc_code": "ARRA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BONGOUANOU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BONGOUANOU",
+        "parent_loc_code": "BONG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "M'BATTO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "M'BATTO",
+        "parent_loc_code": "MBA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TIEMELÉKRO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "TIEMELEKRO",
+        "parent_loc_code": "TKRO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BOCANDA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BOCANDA",
+        "parent_loc_code": "BOCA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DAOUKRO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "DAOUKRO",
+        "parent_loc_code": "DAOU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ETTROKRO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ETTROKRO",
+        "parent_loc_code": "ETTR",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KOUASSI-KOUASSIKRO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "KOUASSI-KOUASSIKRO",
+        "parent_loc_code": "KOUK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "OUELLÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "OUELLE",
+        "parent_loc_code": "OUEL",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "M'BAHIAKRO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "M'BAHIAKRO",
+        "parent_loc_code": "MBO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BANGUERA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BANGUERA",
+        "parent_loc_code": "BANR",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KOFFI-AMONKRO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "KOFFI-AMONKRO",
+        "parent_loc_code": "KOFF",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "PRIKRO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "PRIKRO",
+        "parent_loc_code": "PRIK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BONON",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BONON",
+        "parent_loc_code": "BONO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BOUAFLÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BOUAFLE",
+        "parent_loc_code": "BOUF",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SINFRA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "SINFRA",
+        "parent_loc_code": "SINF",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GOHITAFLA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "GOHITAFLA",
+        "parent_loc_code": "GOHI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ZUÉNOULA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ZUENOULA",
+        "parent_loc_code": "ZUEN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DIANRA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "DIANRA",
+        "parent_loc_code": "DIAN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KONGASSO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "KONGASSO",
+        "parent_loc_code": "KOGS",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KOUNAHIRI",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "KOUNAHIRI",
+        "parent_loc_code": "KOUN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MANKONO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "MANKONO",
+        "parent_loc_code": "MANK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MARANDALLAH",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "MARANDALLAH",
+        "parent_loc_code": "MARA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SARHALA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "SARHALA",
+        "parent_loc_code": "SARH",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TIENINGBOUE",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "TIENINGBOUE",
+        "parent_loc_code": "TIEN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DJIBROSSO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "DJIBROSSO",
+        "parent_loc_code": "DJIB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DUALLA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "DUALLA",
+        "parent_loc_code": "DUAL",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KANI",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "KANI",
+        "parent_loc_code": "KANI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MASSALA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "MASSALA",
+        "parent_loc_code": "MASS",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MORONDO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "MORONDO",
+        "parent_loc_code": "MORO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SEGUELA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "SEGUELA",
+        "parent_loc_code": "SEGU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SIFIÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "SIFIE",
+        "parent_loc_code": "SIFI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "WOROFLA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "WOROFLA",
+        "parent_loc_code": "WORO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BAKO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "BAKO",
+        "parent_loc_code": "BAKO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DIOULATIÉDOUGOU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "DIOULATIEDOUGOU",
+        "parent_loc_code": "DIOU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GOULIA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "GOULIA",
+        "parent_loc_code": "GOUL",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KANIASSO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "KANIASSO",
+        "parent_loc_code": "KANO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MADINANI",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "MADINANI",
+        "parent_loc_code": "MADI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MINIGNAN",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "MINIGNAN",
+        "parent_loc_code": "MINI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ODIENNÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "ODIENNE",
+        "parent_loc_code": "ODIE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SAMATIGUILA",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "SAMATIGUILA",
+        "parent_loc_code": "SAMA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SÉGUÉLON",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "SEGUELON",
+        "parent_loc_code": "SEGN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SEYDOUGOU",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "SEYDOUGOU",
+        "parent_loc_code": "SEYD",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TIÉMÉ",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "TIEME",
+        "parent_loc_code": "TIEM",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TIENKO",
+        "hierarchy_level": "4",
+        "hierarchy_level_name": "TIENKO",
+        "parent_loc_code": "TNKO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ABIDJAN",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ABIDJAN",
+        "parent_loc_code": "ABID",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ANYAMA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ABIDJAN",
+        "parent_loc_code": "ABID",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BINGERVILE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ABIDJAN",
+        "parent_loc_code": "ABID",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SONGON",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ABIDJAN",
+        "parent_loc_code": "ABID",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ALEPE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ALEPE",
+        "parent_loc_code": "ALEP",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "OGHWYAPO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ALEPE",
+        "parent_loc_code": "ALEP",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DABOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DABOU",
+        "parent_loc_code": "DABO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SIKENSI",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DABOU",
+        "parent_loc_code": "DABO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GRAND-LAHOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "GRAND-LAHOU",
+        "parent_loc_code": "GRAL",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "JACQUEVILLE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "JACQUEVILLE",
+        "parent_loc_code": "JACQ",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TIASSALE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TIASSALE",
+        "parent_loc_code": "TIAS",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TAABO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TIASSALE",
+        "parent_loc_code": "TIAS",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DIKODOUGOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUNDIALI",
+        "parent_loc_code": "BOUN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GUIEMBE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUNDIALI",
+        "parent_loc_code": "BOUN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KARAKORO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUNDIALI",
+        "parent_loc_code": "BOUN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KORHOGO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUNDIALI",
+        "parent_loc_code": "BOUN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KOMBORODOUGOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUNDIALI",
+        "parent_loc_code": "BOUN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "M'BENGUE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUNDIALI",
+        "parent_loc_code": "BOUN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "NAPIELEDOUGOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUNDIALI",
+        "parent_loc_code": "BOUN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "NIOFOIN",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUNDIALI",
+        "parent_loc_code": "BOUN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TIORONIARADOUGOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUNDIALI",
+        "parent_loc_code": "BOUN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SINEMATIALI",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUNDIALI",
+        "parent_loc_code": "BOUN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SIRASSO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUNDIALI",
+        "parent_loc_code": "BOUN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GBON",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUNDIALI",
+        "parent_loc_code": "BOUN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BOUNDIALI",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUNDIALI",
+        "parent_loc_code": "BOUN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KASSERE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUNDIALI",
+        "parent_loc_code": "BOUN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KOLIA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUNDIALI",
+        "parent_loc_code": "BOUN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KOUTO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUNDIALI",
+        "parent_loc_code": "BOUN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DIAWALA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "FERKESSEDOUGOU",
+        "parent_loc_code": "FERK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "FERKESSEDOUGOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "FERKESSEDOUGOU",
+        "parent_loc_code": "FERK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KONG",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "FERKESSEDOUGOU",
+        "parent_loc_code": "FERK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KOUMBALA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "FERKESSEDOUGOU",
+        "parent_loc_code": "FERK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "NIELLE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "FERKESSEDOUGOU",
+        "parent_loc_code": "FERK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "OUANGOLODOUGOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "FERKESSEDOUGOU",
+        "parent_loc_code": "FERK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KANAKONO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TENGRELA",
+        "parent_loc_code": "TENG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TENGRELA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TENGRELA",
+        "parent_loc_code": "TENG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ABOISSO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ABOISSO",
+        "parent_loc_code": "ABOI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "AYAME",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ABOISSO",
+        "parent_loc_code": "ABOI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BIANOUAN",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ABOISSO",
+        "parent_loc_code": "ABOI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MAFERE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ABOISSO",
+        "parent_loc_code": "ABOI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TIAPOUM",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ABOISSO",
+        "parent_loc_code": "ABOI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ADIAKE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ADIAKE",
+        "parent_loc_code": "ADIA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ASSINIE-MAFIA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ADIAKE",
+        "parent_loc_code": "ADIA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ETUEBOUE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ADIAKE",
+        "parent_loc_code": "ADIA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GRAND-BASSAM",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "GRAND-BASSAM",
+        "parent_loc_code": "GRBA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BONOUA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "GRAND-BASSAM",
+        "parent_loc_code": "GRBA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BEDIALA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DALOA",
+        "parent_loc_code": "DALO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DALOA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DALOA",
+        "parent_loc_code": "DALO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GADOUAN",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DALOA",
+        "parent_loc_code": "DALO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GBOGUHE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DALOA",
+        "parent_loc_code": "DALO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ZAÏBO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DALOA",
+        "parent_loc_code": "DALO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ZOUKOUGBEU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DALOA",
+        "parent_loc_code": "DALO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BOGUEDIA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ISSIA",
+        "parent_loc_code": "ISSI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "IBOGUHE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ISSIA",
+        "parent_loc_code": "ISSI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ISSIA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ISSIA",
+        "parent_loc_code": "ISSI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SAÏOUA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ISSIA",
+        "parent_loc_code": "ISSI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DANIA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "VAVOUA",
+        "parent_loc_code": "VAVO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SEITIFLA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "VAVOUA",
+        "parent_loc_code": "VAVO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "VAVOUA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "VAVOUA",
+        "parent_loc_code": "VAVO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "AGBOVILLE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "AGBOVILLE",
+        "parent_loc_code": "AGBO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "AZAGUIE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "AGBOVILLE",
+        "parent_loc_code": "AGBO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "CECHI",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "AGBOVILLE",
+        "parent_loc_code": "AGBO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GRANDMORIE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "AGBOVILLE",
+        "parent_loc_code": "AGBO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ORESS-KROBOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "AGBOVILLE",
+        "parent_loc_code": "AGBO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "RUBINO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "AGBOVILLE",
+        "parent_loc_code": "AGBO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ADZOPE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ADZOPE",
+        "parent_loc_code": "ADZO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "AGOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ADZOPE",
+        "parent_loc_code": "ADZO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "AFFERY",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ADZOPE",
+        "parent_loc_code": "ADZO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BECEDI-BRIGNAN",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ADZOPE",
+        "parent_loc_code": "ADZO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "AKOUPE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ADZOPE",
+        "parent_loc_code": "ADZO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ASSIKOI",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ADZOPE",
+        "parent_loc_code": "ADZO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "YAKASSE-ATTOBROU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ADZOPE",
+        "parent_loc_code": "ADZO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ABENGOUROU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ABENGOUROU",
+        "parent_loc_code": "ABEN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BETTIE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ABENGOUROU",
+        "parent_loc_code": "ABEN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "NIABLE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ABENGOUROU",
+        "parent_loc_code": "ABEN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "AGNIBILEKROU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "AGNIBILEKROU",
+        "parent_loc_code": "AGNI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DIABO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUAKE",
+        "parent_loc_code": "BOUK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DJEBONOUA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUAKE",
+        "parent_loc_code": "BOUK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BROBO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUAKE",
+        "parent_loc_code": "BOUK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BOTRO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUAKE",
+        "parent_loc_code": "BOUK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BOUAKE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUAKE",
+        "parent_loc_code": "BOUK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "LANGUIBONOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUAKE",
+        "parent_loc_code": "BOUK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BEOUMI",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BEOUMI",
+        "parent_loc_code": "BEOU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BODOKRO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BEOUMI",
+        "parent_loc_code": "BEOU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ANDO-KEKRENOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BEOUMI",
+        "parent_loc_code": "BEOU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KONDROBO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BEOUMI",
+        "parent_loc_code": "BEOU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BASSAWA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DABAKALA",
+        "parent_loc_code": "DABA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BONIEREDOUGOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DABAKALA",
+        "parent_loc_code": "DABA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DABAKALA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DABAKALA",
+        "parent_loc_code": "DABA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "FOUMBOLO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DABAKALA",
+        "parent_loc_code": "DABA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SATAMA-SOKORO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DABAKALA",
+        "parent_loc_code": "DABA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SATAMA-SOKOURO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DABAKALA",
+        "parent_loc_code": "DABA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "FRONAN",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "KATIOLA",
+        "parent_loc_code": "KATI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KATIOLA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "KATIOLA",
+        "parent_loc_code": "KATI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "NIAKARAMANDOUGOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "KATIOLA",
+        "parent_loc_code": "KATI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TAFIRE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "KATIOLA",
+        "parent_loc_code": "KATI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TORTIYA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "KATIOLA",
+        "parent_loc_code": "KATI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TIMBE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "KATIOLA",
+        "parent_loc_code": "KATI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SAKASSOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "SAKASSOU",
+        "parent_loc_code": "SAKA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TOMOUDI-SAKASSOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "SAKASSOU",
+        "parent_loc_code": "SAKA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MAN",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "MAN",
+        "parent_loc_code": "MAN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "FACOBLY",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "MAN",
+        "parent_loc_code": "MAN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KOUIBLY",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "MAN",
+        "parent_loc_code": "MAN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "LOGOUALE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "MAN",
+        "parent_loc_code": "MAN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SANGOUINE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "MAN",
+        "parent_loc_code": "MAN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SEMIEN",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "MAN",
+        "parent_loc_code": "MAN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "NIADROU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "MAN",
+        "parent_loc_code": "MAN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TOTRODROU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "MAN",
+        "parent_loc_code": "MAN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BANGOLO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BANGOLO",
+        "parent_loc_code": "BANG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DIEOUZON",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BANGOLO",
+        "parent_loc_code": "BANG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ZEO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BANGOLO",
+        "parent_loc_code": "BANG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ZOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BANGOLO",
+        "parent_loc_code": "BANG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BIANKOUMA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BIANKOUMA",
+        "parent_loc_code": "BIAK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GBONNE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BIANKOUMA",
+        "parent_loc_code": "BIAK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SIPILOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BIANKOUMA",
+        "parent_loc_code": "BIAK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DANANE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DANANE",
+        "parent_loc_code": "DANA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BIN-HOUYE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DANANE",
+        "parent_loc_code": "DANA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ZOUAN-HOUNIEN",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DANANE",
+        "parent_loc_code": "DANA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MAHAPLEU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DANANE",
+        "parent_loc_code": "DANA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DIVO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DIVO",
+        "parent_loc_code": "DIVO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "FRESCO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DIVO",
+        "parent_loc_code": "DIVO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GUITRY",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DIVO",
+        "parent_loc_code": "DIVO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "HIRE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DIVO",
+        "parent_loc_code": "DIVO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "YOCOBOUE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DIVO",
+        "parent_loc_code": "DIVO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "LAKOTA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "LAKOTA",
+        "parent_loc_code": "LAKO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "NIAMBEZARIA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "LAKOTA",
+        "parent_loc_code": "LAKO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ZIKISSO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "LAKOTA",
+        "parent_loc_code": "LAKO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BAYOTA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "GAGNOA",
+        "parent_loc_code": "GAGN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GAGNOA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "GAGNOA",
+        "parent_loc_code": "GAGN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GNAGBODOUGNOA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "GAGNOA",
+        "parent_loc_code": "GAGN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GUIBEROUA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "GAGNOA",
+        "parent_loc_code": "GAGN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "OURAGAHIO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "GAGNOA",
+        "parent_loc_code": "GAGN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DIEGONEFLA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "OUME",
+        "parent_loc_code": "OUME",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "OUME",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "OUME",
+        "parent_loc_code": "OUME",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "YAMOUSSOUKRO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "YAMOUSSOUKRO",
+        "parent_loc_code": "YAMO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DIDIEVI",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "YAMOUSSOUKRO",
+        "parent_loc_code": "YAMO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ATTIEGOUAKRO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "YAMOUSSOUKRO",
+        "parent_loc_code": "YAMO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TIEBISSOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TIEBISSOU",
+        "parent_loc_code": "TIEB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TIE-N’DIEKRO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TIEBISSOU",
+        "parent_loc_code": "TIEB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TOUMODI",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TOUMODI",
+        "parent_loc_code": "TOUM",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DJEKANOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TOUMODI",
+        "parent_loc_code": "TOUM",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ANGODA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TOUMODI",
+        "parent_loc_code": "TOUM",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KPOUEBO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TOUMODI",
+        "parent_loc_code": "TOUM",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KOKOUMBO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TOUMODI",
+        "parent_loc_code": "TOUM",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DUEKOUE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DUEKOUE",
+        "parent_loc_code": "DUEK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BAGOHOUO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DUEKOUE",
+        "parent_loc_code": "DUEK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GBAPLEU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DUEKOUE",
+        "parent_loc_code": "DUEK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GUEHIEBLY",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DUEKOUE",
+        "parent_loc_code": "DUEK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GUEZON",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DUEKOUE",
+        "parent_loc_code": "DUEK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BLOLEQUIN",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "GUIGLO",
+        "parent_loc_code": "GUIG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GUIGLO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "GUIGLO",
+        "parent_loc_code": "GUIG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TAÏ",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "GUIGLO",
+        "parent_loc_code": "GUIG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TOULEPLEU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TOULEPLEU",
+        "parent_loc_code": "TOUL",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BAKOUBLY",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TOULEPLEU",
+        "parent_loc_code": "TOUL",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "PEHE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TOULEPLEU",
+        "parent_loc_code": "TOUL",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TIOBLY",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TOULEPLEU",
+        "parent_loc_code": "TOUL",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BONDOUKOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BONDOUKOU",
+        "parent_loc_code": "BOND",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GOUMERE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BONDOUKOU",
+        "parent_loc_code": "BOND",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TABAGNE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BONDOUKOU",
+        "parent_loc_code": "BOND",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TAOUDI",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BONDOUKOU",
+        "parent_loc_code": "BOND",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SOROBANGO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BONDOUKOU",
+        "parent_loc_code": "BOND",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SAPLI",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BONDOUKOU",
+        "parent_loc_code": "BOND",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SANDEGUE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BONDOUKOU",
+        "parent_loc_code": "BOND",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BOUNA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUNA",
+        "parent_loc_code": "BOUA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DOROPO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUNA",
+        "parent_loc_code": "BOUA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "NASSIAN",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUNA",
+        "parent_loc_code": "BOUA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TEHINI",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUNA",
+        "parent_loc_code": "BOUA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TANDA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TANDA",
+        "parent_loc_code": "TAND",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ASSUEFRY",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TANDA",
+        "parent_loc_code": "TAND",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KOUASSI-DATEKRO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TANDA",
+        "parent_loc_code": "TAND",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TRANSUA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TANDA",
+        "parent_loc_code": "TAND",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TANKESSE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TANDA",
+        "parent_loc_code": "TAND",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BOOKO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TOUBA",
+        "parent_loc_code": "TOUB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BOROTOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TOUBA",
+        "parent_loc_code": "TOUB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GUINTEGUELA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TOUBA",
+        "parent_loc_code": "TOUB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KOONAN",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TOUBA",
+        "parent_loc_code": "TOUB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KORO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TOUBA",
+        "parent_loc_code": "TOUB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "OUANINOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TOUBA",
+        "parent_loc_code": "TOUB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TOUBA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TOUBA",
+        "parent_loc_code": "TOUB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "FOUNGBESSO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TOUBA",
+        "parent_loc_code": "TOUB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GRAND-BEREBY",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "SAN-PEDRO",
+        "parent_loc_code": "SANP",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SAN-PEDRO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "SAN-PEDRO",
+        "parent_loc_code": "SANP",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GUEYO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "SASSANDRA",
+        "parent_loc_code": "SASS",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SASSANDRA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "SASSANDRA",
+        "parent_loc_code": "SASS",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SAGO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "SASSANDRA",
+        "parent_loc_code": "SASS",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BUYO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "SOUBRE",
+        "parent_loc_code": "SOUB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GRAND-ZATTRY",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "SOUBRE",
+        "parent_loc_code": "SOUB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MEAGUI",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "SOUBRE",
+        "parent_loc_code": "SOUB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "OKROUYO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "SOUBRE",
+        "parent_loc_code": "SOUB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SOUBRE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "SOUBRE",
+        "parent_loc_code": "SOUB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GRABO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TABOU",
+        "parent_loc_code": "TABO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TABOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "TABOU",
+        "parent_loc_code": "TABO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DIMBOKRO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DIMBOKRO",
+        "parent_loc_code": "DIMB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ANOUMABA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BONGOUANOU",
+        "parent_loc_code": "BONG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ARRAH",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BONGOUANOU",
+        "parent_loc_code": "BONG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BONGOUANOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BONGOUANOU",
+        "parent_loc_code": "BONG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "M'BATTO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BONGOUANOU",
+        "parent_loc_code": "BONG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TIEMELEKRO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BONGOUANOU",
+        "parent_loc_code": "BONG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BOCANDA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOCANDA",
+        "parent_loc_code": "BOCA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DAOUKRO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DAOUKRO",
+        "parent_loc_code": "DAOU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ETTROKRO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DAOUKRO",
+        "parent_loc_code": "DAOU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KOUASSI-KOUASSIKRO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DAOUKRO",
+        "parent_loc_code": "DAOU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "OUELLE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "DAOUKRO",
+        "parent_loc_code": "DAOU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "M'BAHIAKRO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "M'BAHIAKRO",
+        "parent_loc_code": "MBO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BANGUERA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "M'BAHIAKRO",
+        "parent_loc_code": "MBO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KOFFI-AMONKRO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "M'BAHIAKRO",
+        "parent_loc_code": "MBO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "PRIKRO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "M'BAHIAKRO",
+        "parent_loc_code": "MBO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BONON",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUAFLE",
+        "parent_loc_code": "BOUF",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BOUAFLE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "BOUAFLE",
+        "parent_loc_code": "BOUF",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SINFRA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "SINFRA",
+        "parent_loc_code": "SINF",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KOUETINFLA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "SINFRA",
+        "parent_loc_code": "SINF",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BAZRE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "SINFRA",
+        "parent_loc_code": "SINF",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KONEFLA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "SINFRA",
+        "parent_loc_code": "SINF",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GOHITAFLA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ZUENOULA",
+        "parent_loc_code": "ZUEN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ZUENOULA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ZUENOULA",
+        "parent_loc_code": "ZUEN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DIANRA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "MANKONO",
+        "parent_loc_code": "MANK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KONGASSO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "MANKONO",
+        "parent_loc_code": "MANK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KOUNAHIRI",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "MANKONO",
+        "parent_loc_code": "MANK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MANKONO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "MANKONO",
+        "parent_loc_code": "MANK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MARANDALLAH",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "MANKONO",
+        "parent_loc_code": "MANK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SARHALA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "MANKONO",
+        "parent_loc_code": "MANK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TIENINGBOUE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "MANKONO",
+        "parent_loc_code": "MANK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DJIBROSSO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "SEGUELA",
+        "parent_loc_code": "SEGU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DUALLA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "SEGUELA",
+        "parent_loc_code": "SEGU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KANI",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "SEGUELA",
+        "parent_loc_code": "SEGU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MASSALA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "SEGUELA",
+        "parent_loc_code": "SEGU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MORONDO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "SEGUELA",
+        "parent_loc_code": "SEGU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SEGUELA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "SEGUELA",
+        "parent_loc_code": "SEGU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SIFIE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "SEGUELA",
+        "parent_loc_code": "SEGU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "WOROFLA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "SEGUELA",
+        "parent_loc_code": "SEGU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BAKO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ODIENNE",
+        "parent_loc_code": "ODIE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DIOULATIEDOUGOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ODIENNE",
+        "parent_loc_code": "ODIE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GBELEBAN",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ODIENNE",
+        "parent_loc_code": "ODIE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GOULIA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ODIENNE",
+        "parent_loc_code": "ODIE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KANIASSO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ODIENNE",
+        "parent_loc_code": "ODIE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MADINANI",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ODIENNE",
+        "parent_loc_code": "ODIE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MINIGNAN",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ODIENNE",
+        "parent_loc_code": "ODIE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ODIENNE",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ODIENNE",
+        "parent_loc_code": "ODIE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SAMATIGUILA",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ODIENNE",
+        "parent_loc_code": "ODIE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SEGUELON",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ODIENNE",
+        "parent_loc_code": "ODIE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SEYDOUGOU",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ODIENNE",
+        "parent_loc_code": "ODIE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TIEME",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ODIENNE",
+        "parent_loc_code": "ODIE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TIENKO",
+        "hierarchy_level": "3",
+        "hierarchy_level_name": "ODIENNE",
+        "parent_loc_code": "ODIE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ABIDJAN",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "ABIDJAN",
+        "parent_loc_code": "ABID",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ALEPE",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "ABIDJAN",
+        "parent_loc_code": "ABID",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DABOU",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "ABIDJAN",
+        "parent_loc_code": "ABID",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GRAND-LAHOU",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "ABIDJAN",
+        "parent_loc_code": "ABID",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "JACQUEVILLE",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "ABIDJAN",
+        "parent_loc_code": "ABID",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TIASSALE",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "ABIDJAN",
+        "parent_loc_code": "ABID",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BOUNDIALI",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "KORHOGO",
+        "parent_loc_code": "KORH",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "FERKESSEDOUGOU",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "KORHOGO",
+        "parent_loc_code": "KORH",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TENGRELA",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "KORHOGO",
+        "parent_loc_code": "KORH",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ABOISSO",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "ABOISSO",
+        "parent_loc_code": "ABOI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ADIAKE",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "ABOISSO",
+        "parent_loc_code": "ABOI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GRAND-BASSAM",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "ABOISSO",
+        "parent_loc_code": "ABOI",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DALOA",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "DALOA",
+        "parent_loc_code": "DALO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ISSIA",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "DALOA",
+        "parent_loc_code": "DALO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "VAVOUA",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "DALOA",
+        "parent_loc_code": "DALO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "AGBOVILLE",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "AGBOVILLE",
+        "parent_loc_code": "AGBO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ADZOPE",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "AGBOVILLE",
+        "parent_loc_code": "AGBO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ABENGOUROU",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "ABENGOUROU",
+        "parent_loc_code": "ABEN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "AGNIBILEKROU",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "ABENGOUROU",
+        "parent_loc_code": "ABEN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BOUAKE",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "BOUAKE",
+        "parent_loc_code": "BOUK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BEOUMI",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "BOUAKE",
+        "parent_loc_code": "BOUK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DABAKALA",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "BOUAKE",
+        "parent_loc_code": "BOUK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KATIOLA",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "BOUAKE",
+        "parent_loc_code": "BOUK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SAKASSOU",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "BOUAKE",
+        "parent_loc_code": "BOUK",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MAN",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "MAN",
+        "parent_loc_code": "MAN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BANGOLO",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "MAN",
+        "parent_loc_code": "MAN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BIANKOUMA",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "MAN",
+        "parent_loc_code": "MAN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DANANE",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "MAN",
+        "parent_loc_code": "MAN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DIVO",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "DIVO",
+        "parent_loc_code": "DIVO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "LAKOTA",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "DIVO",
+        "parent_loc_code": "DIVO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GAGNOA",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "GAGNOA",
+        "parent_loc_code": "GAGN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "OUME",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "GAGNOA",
+        "parent_loc_code": "GAGN",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "YAMOUSSOUKRO",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "YAMOUSSOUKRO",
+        "parent_loc_code": "YAMO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TIEBISSOU",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "YAMOUSSOUKRO",
+        "parent_loc_code": "YAMO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TOUMODI",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "YAMOUSSOUKRO",
+        "parent_loc_code": "YAMO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DUEKOUE",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "GUIGLO",
+        "parent_loc_code": "GUIG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GUIGLO",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "GUIGLO",
+        "parent_loc_code": "GUIG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TOULEPLEU",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "GUIGLO",
+        "parent_loc_code": "GUIG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BONDOUKOU",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "BONDOUKOU",
+        "parent_loc_code": "BOND",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BOUNA",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "BONDOUKOU",
+        "parent_loc_code": "BOND",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TANDA",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "BONDOUKOU",
+        "parent_loc_code": "BOND",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TOUBA",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "TOUBA",
+        "parent_loc_code": "TOUB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SAN-PEDRO",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "SAN-PEDRO",
+        "parent_loc_code": "SANP",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SASSANDRA",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "SAN-PEDRO",
+        "parent_loc_code": "SANP",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SOUBRE",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "SAN-PEDRO",
+        "parent_loc_code": "SANP",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TABOU",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "SAN-PEDRO",
+        "parent_loc_code": "SANP",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DIMBOKRO",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "DIMBOKRO",
+        "parent_loc_code": "DIMB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BONGOUANOU",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "DIMBOKRO",
+        "parent_loc_code": "DIMB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BOCANDA",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "DIMBOKRO",
+        "parent_loc_code": "DIMB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DAOUKRO",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "DIMBOKRO",
+        "parent_loc_code": "DIMB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "M'BAHIAKRO",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "DIMBOKRO",
+        "parent_loc_code": "DIMB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BOUAFLE",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "BOUAFLE",
+        "parent_loc_code": "BOUF",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SINFRA",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "BOUAFLE",
+        "parent_loc_code": "BOUF",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ZUENOULA",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "BOUAFLE",
+        "parent_loc_code": "BOUF",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MANKONO",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "SEGUELA",
+        "parent_loc_code": "SEGU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SEGUELA",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "SEGUELA",
+        "parent_loc_code": "SEGU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ODIENNE",
+        "hierarchy_level": "2",
+        "hierarchy_level_name": "ODIENNE",
+        "parent_loc_code": "ODIE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ABIDJAN",
+        "hierarchy_level": "1",
+        "hierarchy_level_name": "LAGUNES",
+        "parent_loc_code": "LAGU",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "KORHOGO",
+        "hierarchy_level": "1",
+        "hierarchy_level_name": "SAVANES",
+        "parent_loc_code": "SAVA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ABOISSO",
+        "hierarchy_level": "1",
+        "hierarchy_level_name": "SUD-COMOE",
+        "parent_loc_code": "SUDC",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DALOA",
+        "hierarchy_level": "1",
+        "hierarchy_level_name": "HAUT-SASSANDRA",
+        "parent_loc_code": "HAUT",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "AGBOVILLE",
+        "hierarchy_level": "1",
+        "hierarchy_level_name": "AGNEBY",
+        "parent_loc_code": "AGNE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ABENGOUROU",
+        "hierarchy_level": "1",
+        "hierarchy_level_name": "MOYENCOMOE",
+        "parent_loc_code": "MOYE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BOUAKE",
+        "hierarchy_level": "1",
+        "hierarchy_level_name": "VALLEEDUBANDAMA",
+        "parent_loc_code": "VALL",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MAN",
+        "hierarchy_level": "1",
+        "hierarchy_level_name": "MONTAGNES",
+        "parent_loc_code": "MONT",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DIVO",
+        "hierarchy_level": "1",
+        "hierarchy_level_name": "SUD-BANDAMA",
+        "parent_loc_code": "SUDB",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GAGNOA",
+        "hierarchy_level": "1",
+        "hierarchy_level_name": "FROMAGER",
+        "parent_loc_code": "FROM",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "YAMOUSSOUKRO",
+        "hierarchy_level": "1",
+        "hierarchy_level_name": "LACS",
+        "parent_loc_code": "LACS",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "GUIGLO",
+        "hierarchy_level": "1",
+        "hierarchy_level_name": "MOYENCAVALLY",
+        "parent_loc_code": "MOYE",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BONDOUKOU",
+        "hierarchy_level": "1",
+        "hierarchy_level_name": "ZANZAN",
+        "parent_loc_code": "ZANZ",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "TOUBA",
+        "hierarchy_level": "1",
+        "hierarchy_level_name": "BAFFING",
+        "parent_loc_code": "BAFF",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SAN-PEDRO",
+        "hierarchy_level": "1",
+        "hierarchy_level_name": "BAS-SASSANDRA",
+        "parent_loc_code": "BASS",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DIMBOKRO",
+        "hierarchy_level": "1",
+        "hierarchy_level_name": "N'ZICOMOE",
+        "parent_loc_code": "NZIC",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BOUAFLE",
+        "hierarchy_level": "1",
+        "hierarchy_level_name": "MARAHOUE",
+        "parent_loc_code": "MARA",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SEGUELA",
+        "hierarchy_level": "1",
+        "hierarchy_level_name": "WORODOUGOU",
+        "parent_loc_code": "WORO",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ODIENNE",
+        "hierarchy_level": "1",
+        "hierarchy_level_name": "DENGUELE",
+        "parent_loc_code": "DENG",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "LAGUNES",
+        "hierarchy_level": "0",
+        "hierarchy_level_name": "COTE D'IVOIRE",
+        "parent_loc_code": "CIV",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SAVANES",
+        "hierarchy_level": "0",
+        "hierarchy_level_name": "COTE D'IVOIRE",
+        "parent_loc_code": "CIV",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SUD-COMOE",
+        "hierarchy_level": "0",
+        "hierarchy_level_name": "COTE D'IVOIRE",
+        "parent_loc_code": "CIV",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "HAUT-SASSANDRA",
+        "hierarchy_level": "0",
+        "hierarchy_level_name": "COTE D'IVOIRE",
+        "parent_loc_code": "CIV",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "AGNEBY",
+        "hierarchy_level": "0",
+        "hierarchy_level_name": "COTE D'IVOIRE",
+        "parent_loc_code": "CIV",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MOYEN COMOE",
+        "hierarchy_level": "0",
+        "hierarchy_level_name": "COTE D'IVOIRE",
+        "parent_loc_code": "CIV",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "VALLEE DU BANDAMA",
+        "hierarchy_level": "0",
+        "hierarchy_level_name": "COTE D'IVOIRE",
+        "parent_loc_code": "CIV",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MONTAGNES",
+        "hierarchy_level": "0",
+        "hierarchy_level_name": "COTE D'IVOIRE",
+        "parent_loc_code": "CIV",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "SUD-BANDAMA",
+        "hierarchy_level": "0",
+        "hierarchy_level_name": "COTE D'IVOIRE",
+        "parent_loc_code": "CIV",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "FROMAGER",
+        "hierarchy_level": "0",
+        "hierarchy_level_name": "COTE D'IVOIRE",
+        "parent_loc_code": "CIV",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "LACS",
+        "hierarchy_level": "0",
+        "hierarchy_level_name": "COTE D'IVOIRE",
+        "parent_loc_code": "CIV",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MOYEN CAVALLY",
+        "hierarchy_level": "0",
+        "hierarchy_level_name": "COTE D'IVOIRE",
+        "parent_loc_code": "CIV",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "ZANZAN",
+        "hierarchy_level": "0",
+        "hierarchy_level_name": "COTE D'IVOIRE",
+        "parent_loc_code": "CIV",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BAFFING",
+        "hierarchy_level": "0",
+        "hierarchy_level_name": "COTE D'IVOIRE",
+        "parent_loc_code": "CIV",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "BAS-SASSANDRA",
+        "hierarchy_level": "0",
+        "hierarchy_level_name": "COTE D'IVOIRE",
+        "parent_loc_code": "CIV",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "N'ZI COMOE",
+        "hierarchy_level": "0",
+        "hierarchy_level_name": "COTE D'IVOIRE",
+        "parent_loc_code": "CIV",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "MARAHOUE",
+        "hierarchy_level": "0",
+        "hierarchy_level_name": "COTE D'IVOIRE",
+        "parent_loc_code": "CIV",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "WORODOUGOU",
+        "hierarchy_level": "0",
+        "hierarchy_level_name": "COTE D'IVOIRE",
+        "parent_loc_code": "CIV",
+        "is_active": "TRUE"
+    },
+    {
+        "lang_code": "fra",
+        "code": "",
+        "name": "DENGUELE",
+        "hierarchy_level": "0",
+        "hierarchy_level_name": "COTE D'IVOIRE",
+        "parent_loc_code": "CIV",
+        "is_active": "TRUE"
+    }
+]
