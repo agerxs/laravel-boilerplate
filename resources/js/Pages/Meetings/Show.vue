@@ -10,13 +10,19 @@
             :class="{
               'bg-yellow-100 text-yellow-800': meeting.status === 'planned',
               'bg-green-100 text-green-800': meeting.status === 'completed',
-              'bg-blue-100 text-blue-800': meeting.status === 'ongoing',
               'bg-red-100 text-red-800': meeting.status === 'cancelled'
             }"
             class="px-3 py-1 rounded-full text-sm font-medium"
           >
-            {{ meeting.status }}
+            {{ formatStatus(meeting.status) }}
           </span>
+          <button
+            v-if="meeting.status === 'planned'"
+            @click="cancelMeeting(meeting.id)"
+            class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium hover:bg-red-200"
+          >
+            Annuler la réunion
+          </button>
         </div>
       </div>
     </template>
@@ -105,43 +111,94 @@
           </div>
         </div>
 
+        <div class="bg-white shadow sm:rounded-lg">
+          <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-lg font-medium text-gray-900">Comité Local</h3>
+            <div v-if="meeting.local_committees?.[0]" class="mt-4">
+              <div class="flex justify-between items-start">
+                <div>
+                  <h4 class="text-base font-medium text-gray-900">
+                    {{ meeting.local_committees[0].name }}
+                  </h4>
+                  <p class="text-sm text-gray-500 mt-1">
+                    {{ meeting.local_committees[0].city }}
+                  </p>
+                  <p class="text-sm text-gray-500">
+                    {{ meeting.local_committees[0].address }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="mt-6">
+                <h5 class="text-sm font-medium text-gray-900 mb-3">Membres du comité</h5>
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div
+                    v-for="member in meeting.local_committees[0].members"
+                    :key="member.id"
+                    class="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg"
+                  >
+                    <div class="flex-shrink-0">
+                      <img
+                        :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(member.user.name)}`"
+                        :alt="member.user.name"
+                        class="h-8 w-8 rounded-full"
+                      >
+                    </div>
+                    <div class="flex-grow">
+                      <p class="text-sm font-medium text-gray-900">
+                        {{ member.user.name }}
+                      </p>
+                      <p class="text-xs text-gray-500">{{ formatRole(member.role) }}</p>
+                    </div>
+                    <div class="flex-shrink-0">
+                      <a
+                        :href="`mailto:${member.user.email}`"
+                        class="text-indigo-600 hover:text-indigo-900"
+                      >
+                        <EnvelopeIcon class="h-5 w-5" />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div v-else class="mt-4 text-sm text-gray-500">
+              Aucun comité local associé
+            </div>
+          </div>
+        </div>
         <!-- Participants -->
         <div class="bg-white shadow sm:rounded-lg">
           <div class="px-4 py-5 sm:p-6">
             <h3 class="text-lg font-medium text-gray-900">Participants</h3>
-            <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div
-                v-for="participant in meeting.participants"
-                :key="participant.id"
-                class="flex items-center space-x-3"
-              >
-                <div class="flex-shrink-0">
-                  <img
-                    :src="participant.profile_photo_url"
-                    :alt="participant.name"
-                    class="h-8 w-8 rounded-full"
-                  >
-                </div>
-                <div class="flex-grow">
-                  <p class="text-sm font-medium text-gray-900">{{ participant.name }}</p>
-                  <p class="text-sm text-gray-500">{{ participant.email }}</p>
-                </div>
-                <div>
-                  <span
-                    :class="{
-                      'bg-yellow-100 text-yellow-800': participant.pivot.status === 'pending',
-                      'bg-green-100 text-green-800': participant.pivot.status === 'accepted',
-                      'bg-red-100 text-red-800': participant.pivot.status === 'declined'
-                    }"
-                    class="px-2 py-1 text-xs rounded-full"
-                  >
-                    {{ participant.pivot.status }}
-                  </span>
-                </div>
+            <div class="mt-4">
+              <!-- Membres du comité -->
+              
+
+              <!-- Invités externes -->
+              <div v-if="meeting.participants?.length" class="mt-6">
+                <ul class="divide-y divide-gray-200">
+                  <li v-for="participant in meeting.participants" :key="participant.id" class="py-4">
+                    <div class="flex items-center space-x-4">
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900">
+                          {{ participant.guest_name || participant.user?.name }}
+                        </p>
+                        <p class="text-sm text-gray-500">
+                          {{ participant.guest_email || participant.user?.email }}
+                        </p>
+                      </div>
+                      
+                    </div>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- Comité Local -->
+        
 
         <!-- Pièces jointes -->
         <div class="bg-white shadow sm:rounded-lg">
@@ -149,49 +206,92 @@
             <div class="flex justify-between items-center">
               <h3 class="text-lg font-medium text-gray-900">Pièces jointes</h3>
               <div class="flex items-center space-x-2">
-                <label
-                  class="px-4 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700 cursor-pointer"
-                >
-                  Ajouter un fichier
+                <!-- Supprimer cette partie
+                <label class="px-4 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700 cursor-pointer">
+                    Ajouter un fichier
+                    <input
+                        type="file"
+                        class="hidden"
+                        @change="handleFileChange"
+                        ref="fileInput"
+                    >
+                </label>
+                -->
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <form @submit.prevent="uploadFile" class="flex items-end space-x-4" enctype="multipart/form-data">
+                <div class="flex-1">
+                  <InputLabel for="title" value="Titre du document" />
+                  <TextInput
+                    id="title"
+                    v-model="attachmentForm.title"
+                    type="text"
+                    class="mt-1 block w-full"
+                    required
+                  />
+                </div>
+
+                <div class="flex-1">
+                  <InputLabel for="nature" value="Nature du document" />
+                  <select
+                    id="nature"
+                    v-model="attachmentForm.nature"
+                    class="mt-1 block w-full rounded-md border-gray-300"
+                    required
+                  >
+                    <option value="">Sélectionner la nature</option>
+                    <option value="photo">Photo</option>
+                    <option value="document_justificatif">Document justificatif</option>
+                    <option value="compte_rendu">Compte rendu</option>
+                  </select>
+                </div>
+
+                <div class="flex-1">
+                  <InputLabel for="file" value="Fichier" />
                   <input
                     type="file"
-                    class="hidden"
-                    @change="uploadFile"
-                    ref="fileInput"
-                  >
-                </label>
-              </div>
+                    id="file"
+                    @change="handleFileChange"
+                    class="mt-1 block w-full"
+                    required
+                  />
+                </div>
+
+                <div class="flex-none">
+                  <PrimaryButton type="submit" :disabled="uploading">
+                    <span v-if="uploading">Envoi en cours...</span>
+                    <span v-else>Ajouter</span>
+                  </PrimaryButton>
+                </div>
+              </form>
             </div>
 
             <div class="mt-4 space-y-3">
               <div
-                v-for="attachment in attachments"
+                v-for="attachment in meeting.attachments"
                 :key="attachment.id"
-                class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                class="flex items-center justify-between py-2"
               >
-                <div class="flex items-center space-x-3">
-                  <PaperClipIcon class="h-5 w-5 text-gray-400" />
-                  <div>
-                    <p class="text-sm font-medium text-gray-900">
-                      {{ attachment.name }}
-                    </p>
-                    <p class="text-xs text-gray-500">
-                      {{ formatFileSize(attachment.size) }} - Ajouté par {{ attachment.uploader?.name || 'Utilisateur inconnu' }}
-                    </p>
+                <div>
+                  <div class="font-medium">{{ attachment.title }}</div>
+                  <div class="text-sm text-gray-500">
+                    {{ attachment.nature_label }} - {{ formatFileSize(attachment.size) }}
                   </div>
                 </div>
-                <div class="flex items-center space-x-2">
-                  <a
-                    :href="route('attachments.download', attachment.id)"
-                    class="text-indigo-600 hover:text-indigo-800"
-                  >
-                    <DocumentIcon class="h-5 w-5" />
-                  </a>
+                <div class="flex space-x-2">
                   <button
-                    @click="deleteAttachment(attachment)"
-                    class="text-red-600 hover:text-red-800"
+                    @click="downloadFile(attachment)"
+                    class="text-indigo-600 hover:text-indigo-900"
                   >
-                    <TrashIcon class="h-5 w-5" />
+                    Télécharger
+                  </button>
+                  <button
+                    @click="deleteFile(attachment)"
+                    class="text-red-600 hover:text-red-900"
+                  >
+                    Supprimer
                   </button>
                 </div>
               </div>
@@ -214,17 +314,6 @@
                   Historique
                 </button> -->
 
-                <!-- Import Word -->
-                <label class="cursor-pointer inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50">
-                  <DocumentArrowUpIcon class="w-5 h-5 mr-2" />
-                  Importer un fichier Word
-                  <input
-                    type="file"
-                    class="hidden"
-                    accept=".doc,.docx"
-                    @change="handleFileImport"
-                  >
-                </label>
 
                 <!-- Bouton d'édition -->
                 <button
@@ -269,7 +358,77 @@
               </div>
             </div>
             <div v-else class="prose max-w-none" v-html="form.minutes.content || 'Aucun compte rendu'" />
+
+            <div class="flex justify-end mt-4">
+              <button
+                v-if="meeting.minutes && meeting.status === 'completed'"
+                @click="sendMinutes"
+                class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+              >
+                <EnvelopeIcon class="h-5 w-5 mr-2" />
+                Envoyer le compte rendu
+              </button>
+            </div>
           </div>
+        </div>
+
+        <!-- Personnes à enrôler -->
+        <div class="bg-white shadow sm:rounded-lg mt-6">
+            <div class="px-4 py-5 sm:p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-medium text-gray-900">Personnes à enrôler</h3>
+                    <button
+                        @click="showNewEnrollmentModal = true"
+                        class="px-4 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700"
+                    >
+                        Ajouter une personne
+                    </button>
+                </div>
+
+                <!-- Liste des personnes à enrôler -->
+                <div class="mt-4">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contact</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Adresse</th>
+                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr v-for="request in enrollmentRequests" :key="request.id">
+                                <td class="px-6 py-4">
+                                    {{ request.first_name }} {{ request.last_name }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div>{{ request.phone }}</div>
+                                    <div class="text-sm text-gray-500">{{ request.email }}</div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div>{{ request.address }}</div>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="flex justify-end space-x-3">
+                                        <button 
+                                            @click="editEnrollment(request)" 
+                                            class="text-indigo-600 hover:text-indigo-900"
+                                        >
+                                            Modifier
+                                        </button>
+                                        <button 
+                                            @click="deleteEnrollment(request)" 
+                                            class="text-red-600 hover:text-red-900"
+                                        >
+                                            Supprimer
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
       </div>
     </div>
@@ -344,17 +503,97 @@
       </div>
     </Modal>
 
+    <!-- Modal d'ajout/modification -->
+    <Modal :show="showNewEnrollmentModal" @close="closeEnrollmentModal">
+        <div class="p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">
+                {{ editingEnrollment ? 'Modifier' : 'Ajouter' }} une personne à enrôler
+            </h3>
+            
+            <form @submit.prevent="submitEnrollment" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <InputLabel for="first_name" value="Prénom" />
+                        <TextInput
+                            id="first_name"
+                            v-model="enrollmentForm.first_name"
+                            type="text"
+                            class="mt-1 block w-full"
+                            required
+                        />
+                    </div>
+                    
+                    <div>
+                        <InputLabel for="last_name" value="Nom" />
+                        <TextInput
+                            id="last_name"
+                            v-model="enrollmentForm.last_name"
+                            type="text"
+                            class="mt-1 block w-full"
+                            required
+                        />
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <InputLabel for="phone" value="Téléphone" />
+                        <TextInput
+                            id="phone"
+                            v-model="enrollmentForm.phone"
+                            type="tel"
+                            class="mt-1 block w-full"
+                            required
+                        />
+                    </div>
+                    
+                    <div>
+                        <InputLabel for="email" value="Email" />
+                        <TextInput
+                            id="email"
+                            v-model="enrollmentForm.email"
+                            type="email"
+                            class="mt-1 block w-full"
+                        />
+                    </div>
+                </div>
+
+                <div>
+                    <InputLabel for="address" value="Adresse" />
+                    <TextInput
+                        id="address"
+                        v-model="enrollmentForm.address"
+                        type="text"
+                        class="mt-1 block w-full"
+                        required
+                    />
+                </div>
+
+                <div>
+                    <InputLabel for="notes" value="Notes" />
+                    <TextArea
+                        id="notes"
+                        v-model="enrollmentForm.notes"
+                        class="mt-1 block w-full"
+                        rows="3"
+                    />
+                </div>
+
+                <div class="flex justify-end mt-6">
+                    <SecondaryButton @click="closeEnrollmentModal" class="mr-3">
+                        Annuler
+                    </SecondaryButton>
+                    <PrimaryButton type="submit">
+                        {{ editingEnrollment ? 'Mettre à jour' : 'Ajouter' }}
+                    </PrimaryButton>
+                </div>
+            </form>
+        </div>
+    </Modal>
+
     <!-- Boutons d'action globaux -->
     <div class="fixed bottom-4 right-4 flex space-x-3">
-      <!-- Bouton d'export -->
-      <a
-        :href="route('meetings.export', meeting.id)"
-        class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700 transition-colors"
-        target="_blank"
-      >
-        <DocumentArrowDownIcon class="h-5 w-5 mr-2" />
-        Exporter en PDF
-      </a>
+     
 
       <!-- Bouton de sauvegarde -->
       <button
@@ -374,7 +613,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useForm, usePage } from '@inertiajs/vue3'
+import { useForm, usePage, router } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import Modal from '@/Components/Modal.vue'
 import InputLabel from '@/Components/InputLabel.vue'
@@ -394,7 +633,8 @@ import {
     ChevronDownIcon,
     DocumentArrowUpIcon,
     ClockIcon,
-    DocumentArrowDownIcon
+    DocumentArrowDownIcon,
+    EnvelopeIcon
 } from '@heroicons/vue/24/outline'
 import RichTextEditor from '@/Components/RichTextEditor.vue'
 import { useToast } from '@/Composables/useToast'
@@ -431,23 +671,38 @@ interface MinutesVersion {
     };
 }
 
-const props = defineProps<{
-    meeting: {
-        id: number;
-        title: string;
-        description: string;
-        start_datetime: string;
-        end_datetime: string;
-        location: string;
-        status: string;
-        organizer: {
-            name: string;
-        };
-        participants: any[];
-        agenda: AgendaItem[];
-        attachments: any[];
-    };
-}>();
+interface User {
+  id: number
+  name: string
+  email: string
+}
+
+interface Participant {
+  id: number
+  user_id: number | null
+  guest_name: string | null
+  guest_email: string | null
+  status: string
+  user?: User
+}
+
+interface Meeting {
+  id: number
+  title: string
+  description: string
+  start_datetime: string
+  end_datetime: string
+  location: string
+  participants: Participant[]
+  // ... autres propriétés ...
+}
+
+interface Props {
+  meeting: Meeting
+  user: User
+}
+
+const props = defineProps<Props>()
 
 const showNewAgendaItemModal = ref(false)
 const editingAgendaItem = ref(null)
@@ -531,50 +786,59 @@ const updateAgendaOrder = () => {
 };
 
 // Pour les pièces jointes
-const fileInput = ref(null)
-
 const attachments = ref(props.meeting.attachments || [])
 
-const uploadFile = async () => {
-  const file = fileInput.value.files[0]
-  if (!file) return
+const attachmentForm = useForm({
+    title: '',
+    nature: '',
+    file: null
+});
 
-  const formData = new FormData()
-  formData.append('file', file)
+const uploading = ref(false);
 
-  try {
-    const response = await axios.post(
-      route('attachments.store', props.meeting.id),
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      }
-    )
-    
-    attachments.value.push(response.data.attachment)
-    
-    form.attachments = attachments.value
+const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+        attachmentForm.file = file;
+    }
+};
 
-    toast.success('Fichier ajouté avec succès')
-  } catch (error) {
-    console.error('Erreur lors de l\'upload:', error)
-    toast.error(error.response?.data?.message || 'Erreur lors de l\'upload du fichier')
-  }
+const uploadFile = () => {
+    if (!attachmentForm.file) {
+        toast.error('Veuillez sélectionner un fichier');
+        return;
+    }
 
-  fileInput.value.value = ''
-}
+    const formData = new FormData();
+    formData.append('file', attachmentForm.file);
+    formData.append('title', attachmentForm.title);
+    formData.append('nature', attachmentForm.nature);
+
+    uploading.value = true;
+
+    router.post(route('attachments.store', props.meeting.id), formData, {
+        onSuccess: () => {
+            attachmentForm.reset();
+            uploading.value = false;
+            toast.success('Fichier ajouté avec succès');
+        },
+        onError: (error) => {
+            uploading.value = false;
+            toast.error(error.message || 'Erreur lors de l\'upload du fichier');
+        },
+        preserveScroll: true
+    });
+};
 
 const formatFileSize = (bytes) => {
-  if (bytes === 0) return '0 Bytes'
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-}
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+};
 
-const deleteAttachment = async (attachment) => {
+const deleteFile = async (attachment) => {
   if (!confirm('Voulez-vous vraiment supprimer ce fichier ?')) return
 
   try {
@@ -599,25 +863,49 @@ const updateMinutes = (content) => {
   form.minutes.content = content;
 };
 
-const saveMinutes = () => {
-  if (props.meeting.minutes) {
-    form.put(route('minutes.update', props.meeting.minutes.id), {
-      onSuccess: () => {
-        editingMinutes.value = false
-      }
-    })
-  } else {
-    form.post(route('minutes.store', props.meeting.id), {
-      onSuccess: () => {
-        editingMinutes.value = false
-      }
-    })
+const saveMinutes = async () => {
+  try {
+    if (!props.meeting.minutes) {
+      // Création d'un nouveau compte rendu
+      await axios.post(route('minutes.store', props.meeting.id), {
+        content: form.minutes.content
+      })
+    } else {
+      // Mise à jour d'un compte rendu existant
+      await axios.put(route('minutes.update', props.meeting.minutes.id), {
+        content: form.minutes.content,
+        status: form.minutes.status
+      })
+    }
+    
+    editingMinutes.value = false
+    toast.success('Compte rendu enregistré avec succès')
+    
+    // Mettre à jour le statut de la réunion côté client
+    props.meeting.status = 'completed'
+  } catch (error) {
+    console.error('Erreur:', error)
+    toast.error('Erreur lors de l\'enregistrement du compte rendu')
   }
 }
 
-const publishMinutes = () => {
-  form.minutes.status = 'published'
-  saveMinutes()
+const publishMinutes = async () => {
+  try {
+    form.minutes.status = 'published'
+    await axios.put(route('minutes.update', props.meeting.minutes.id), {
+      content: form.minutes.content,
+      status: 'published'
+    })
+    
+    editingMinutes.value = false
+    toast.success('Compte rendu publié avec succès')
+    
+    // Mettre à jour le statut de la réunion côté client
+    props.meeting.status = 'completed'
+  } catch (error) {
+    console.error('Erreur:', error)
+    toast.error('Erreur lors de la publication du compte rendu')
+  }
 }
 
 const cancelEditMinutes = () => {
@@ -712,6 +1000,108 @@ onMounted(() => {
 
 // Récupérer l'utilisateur depuis Inertia
 const user = computed(() => usePage().props.auth.user)
+
+function formatStatus(status: string): string {
+  const statusMap = {
+    'planned': 'Planifiée',
+    'completed': 'Terminée',
+    'cancelled': 'Annulée'
+  }
+  return statusMap[status] || status
+}
+
+function formatRole(role: string): string {
+  const roles = {
+    'president': 'Président',
+    'secretary': 'Secrétaire',
+    'member': 'Membre'
+  }
+  return roles[role] || role
+}
+
+const cancelMeeting = async (id: number) => {
+  if (!confirm('Êtes-vous sûr de vouloir annuler cette réunion ?')) return
+
+  try {
+    await axios.post(route('meetings.cancel', id))
+    props.meeting.status = 'cancelled'
+    toast.success('La réunion a été annulée')
+  } catch (error) {
+    toast.error('Erreur lors de l\'annulation de la réunion')
+  }
+}
+
+const sendMinutes = async () => {
+  try {
+    await axios.post(route('minutes.send', props.meeting.id))
+    toast.success('Compte rendu envoyé avec succès')
+  } catch (error) {
+    toast.error('Erreur lors de l\'envoi du compte rendu')
+  }
+}
+
+const showNewEnrollmentModal = ref(false)
+const editingEnrollment = ref(null)
+const enrollmentForm = useForm({
+  first_name: '',
+  last_name: '',
+  phone: '',
+  email: '',
+  address: '',
+  notes: ''
+})
+
+const closeEnrollmentModal = () => {
+  showNewEnrollmentModal.value = false
+  editingEnrollment.value = null
+  enrollmentForm.reset()
+}
+
+const submitEnrollment = () => {
+  if (editingEnrollment.value) {
+    enrollmentForm.put(route('enrollment-requests.update', editingEnrollment.value.id), {
+      onSuccess: () => {
+        closeEnrollmentModal();
+      }
+    });
+  } else {
+    enrollmentForm.post(route('enrollment-requests.store', props.meeting.id), {
+      onSuccess: () => {
+        closeEnrollmentModal();
+      }
+    });
+  }
+}
+
+const enrollmentRequests = computed(() => props.meeting.enrollment_requests || []);
+
+const editEnrollment = (request) => {
+  editingEnrollment.value = request
+  enrollmentForm.first_name = request.first_name
+  enrollmentForm.last_name = request.last_name
+  enrollmentForm.phone = request.phone
+  enrollmentForm.email = request.email
+  enrollmentForm.address = request.address
+  enrollmentForm.notes = request.notes
+  showNewEnrollmentModal.value = true
+}
+
+const deleteEnrollment = (request) => {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette personne ?')) {
+        router.delete(route('enrollment-requests.destroy', request.id), {
+            onSuccess: () => {
+                toast.success('Personne supprimée avec succès');
+            },
+            onError: () => {
+                toast.error('Erreur lors de la suppression');
+            }
+        });
+    }
+};
+
+const downloadFile = (attachment) => {
+    window.location.href = route('attachments.download', attachment.id);
+};
 </script>
 
 <style scoped>

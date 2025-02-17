@@ -10,6 +10,7 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 defineProps<{
     canResetPassword?: boolean;
     status?: string;
+    actionUrl?: string;
 }>();
 
 const form = useForm({
@@ -29,7 +30,7 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Log in" />
+        <Head title="Connexion" />
 
         <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
             {{ status }}
@@ -53,7 +54,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+                <InputLabel for="password" value="Mot de passe" />
 
                 <TextInput
                     id="password"
@@ -70,9 +71,9 @@ const submit = () => {
             <div class="mt-4 block">
                 <label class="flex items-center">
                     <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ms-2 text-sm text-gray-600 dark:text-gray-400"
-                        >Remember me</span
-                    >
+                    <span class="ms-2 text-sm text-gray-600">
+                        Se souvenir de moi
+                    </span>
                 </label>
             </div>
 
@@ -80,9 +81,9 @@ const submit = () => {
                 <Link
                     v-if="canResetPassword"
                     :href="route('password.request')"
-                    class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:text-gray-100 dark:focus:ring-offset-gray-800"
+                    class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
-                    Forgot your password?
+                    Mot de passe oublié ?
                 </Link>
 
                 <PrimaryButton
@@ -90,9 +91,47 @@ const submit = () => {
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    Log in
+                    Se connecter
                 </PrimaryButton>
             </div>
         </form>
+
+        <div>
+            <div class="relative mt-10">
+                <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                    <div class="w-full border-t border-gray-200"></div>
+                </div>
+                <div class="relative flex justify-center text-sm font-medium leading-6">
+                    <span class="bg-white px-6 text-gray-900">Ou</span>
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <form method="get" id="myForm" :action="actionUrl" class="w-full">
+                    <button
+                        type="submit"
+                        class="w-full flex items-center justify-center gap-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:outline-offset-0"
+                    >
+                        <img 
+                            src="../../../esignet_logo.png" 
+                            alt="e-Signet logo" 
+                            class="h-5 w-5"
+                        />
+                        <span>Se connecter avec e-Signet</span>
+                    </button>
+                </form>
+            </div>
+        </div>
     </GuestLayout>
 </template>
+
+<style scoped>
+/* Supprimer les anciennes classes si elles existent */
+.eSignetA,
+.eSignetB,
+.eSignetC,
+.eSignetD,
+.eSignetE {
+    all: unset;
+}
+</style>

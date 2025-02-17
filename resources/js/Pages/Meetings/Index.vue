@@ -109,11 +109,36 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <Link
-                    :href="route('meetings.show', meeting.id)"
-                    class="text-primary-600 hover:text-primary-900 mr-4"
+                    :href="route('meetings.show', { meeting: meeting.id })"
+                    class="text-primary-600 hover:text-primary-900 mr-4 inline-flex items-center"
+                    title="Voir la réunion"
                   >
-                    Voir
+                    <EyeIcon class="h-5 w-5" />
                   </Link>
+                  <button
+                    v-if="meeting.status === 'planned'"
+                    @click="notifyParticipants(meeting)"
+                    class="text-indigo-600 hover:text-indigo-900 mr-4 inline-flex items-center"
+                    title="Notifier les participants"
+                  >
+                    <BellIcon class="h-5 w-5" />
+                  </button>
+                  <button
+                    v-if="meeting.status === 'completed' && meeting.minutes"
+                    @click="sendMinutes(meeting)"
+                    class="text-indigo-600 hover:text-indigo-900 mr-4 inline-flex items-center"
+                    title="Envoyer le compte rendu"
+                  >
+                    <EnvelopeIcon class="h-5 w-5" />
+                  </button>
+                  <button
+                    v-if="meeting.status === 'planned'"
+                    @click="cancelMeeting(meeting)"
+                    class="text-red-600 hover:text-red-900 inline-flex items-center"
+                    title="Annuler la réunion"
+                  >
+                    <XCircleIcon class="h-5 w-5" />
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -130,11 +155,19 @@
 </template>
 
 <script setup lang="ts">
-import { Link } from '@inertiajs/vue3'
+import { Link, router } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import Pagination from '@/Components/Pagination.vue'
 import { ref } from 'vue'
-import { PlusIcon } from '@heroicons/vue/24/outline'
+import {
+  PlusIcon,
+  BellIcon,
+  EyeIcon,
+  XCircleIcon,
+  EnvelopeIcon
+} from '@heroicons/vue/24/outline'
+import { useToast } from '@/Composables/useToast'
+import axios from 'axios'
 
 interface Meeting {
     id: number;
@@ -143,6 +176,10 @@ interface Meeting {
     end_datetime: string;
     location: string;
     status: string;
+    minutes?: {
+        id: number;
+        content: string;
+    } | null;
 }
 
 interface Props {
@@ -155,12 +192,12 @@ interface Props {
 const props = defineProps<Props>()
 const searchQuery = ref('')
 const perPage = ref(10)
+const toast = useToast()
 
 const statusColors = {
     'planned': { bg: 'bg-yellow-50', text: 'text-yellow-800', dot: 'bg-yellow-400' },
-    'ongoing': { bg: 'bg-blue-50', text: 'text-blue-800', dot: 'bg-blue-400' },
     'completed': { bg: 'bg-green-50', text: 'text-green-800', dot: 'bg-green-400' },
-    'cancelled': { bg: 'bg-red-50', text: 'text-red-800', dot: 'bg-red-400' },
+    'cancelled': { bg: 'bg-red-50', text: 'text-red-800', dot: 'bg-red-400' }
 }
 
 const formatDateTime = (datetime: string) => {
@@ -173,11 +210,41 @@ const formatDateTime = (datetime: string) => {
 const getStatusLabel = (status: string) => {
     const labels = {
         'planned': 'Planifiée',
-        'ongoing': 'En cours',
         'completed': 'Terminée',
         'cancelled': 'Annulée'
     }
     return labels[status] || status
+}
+
+const cancelMeeting = async (meeting) => {
+    if (!confirm('Êtes-vous sûr de vouloir annuler cette réunion ?')) return
+
+    try {
+        await axios.post(route('meetings.cancel', meeting.id))
+        meeting.status = 'cancelled'
+        toast.success('La réunion a été annulée')
+    } catch (error) {
+        console.error('Erreur:', error)
+        toast.error('Erreur lors de l\'annulation de la réunion')
+    }
+}
+
+const notifyParticipants = async (meeting) => {
+    try {
+        await axios.post(route('meetings.notify', meeting.id))
+        toast.success('Notifications envoyées avec succès')
+    } catch (error) {
+        toast.error('Erreur lors de l\'envoi des notifications')
+    }
+}
+
+const sendMinutes = async (meeting) => {
+    try {
+        await axios.post(route('minutes.send', meeting.id))
+        toast.success('Compte rendu envoyé avec succès')
+    } catch (error) {
+        toast.error('Erreur lors de l\'envoi du compte rendu')
+    }
 }
 </script>
 

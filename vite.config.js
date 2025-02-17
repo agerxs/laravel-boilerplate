@@ -11,15 +11,16 @@ export default defineConfig({
     },
     plugins: [
         laravel({
-            input: ['resources/js/app.ts'],
+            input: 'resources/js/app.ts',
             refresh: true,
         }),
         vue({
             template: {
-                transformAssetUrls: {
-                    base: null,
-                    includeAbsolute: false,
-                },
+                compilerOptions: {
+                    isCustomElement: (tag) => {
+                        return tag.startsWith('vc-'); // Pour les composants v-calendar
+                    }
+                }
             },
         }),
     ],

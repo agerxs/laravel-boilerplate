@@ -70,20 +70,105 @@
               <InputError :message="form.errors.location" class="mt-2" />
             </div>
 
-            <div>
-              <InputLabel for="participants" value="Participants" />
-              <MultiSelect
-                v-model="form.participants"
-                :options="users"
-                class="mt-1"
-                :close-on-select="false"
-                :clear-on-select="false"
-                placeholder="Sélectionnez les participants"
-                label="name"
-                track-by="id"
-                :multiple="true"
-              />
-              <InputError :message="form.errors.participants" class="mt-2" />
+            <div class="mt-6">
+              <h3 class="text-lg font-medium text-gray-900">Participants</h3>
+              
+              <div class="mt-4">
+                <h4 class="font-medium text-gray-700">Comité local</h4>
+                <div class="mt-2">
+                  <select
+                    v-model="form.local_committee_id"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    required
+                  >
+                    <option value="">Sélectionner un comité</option>
+                    <option
+                      v-for="committee in committees"
+                      :key="committee.id"
+                      :value="committee.id"
+                    >
+                      {{ committee.name }} ({{ committee.city }})
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="mt-6">
+                <h4 class="font-medium text-gray-700">Invités externes</h4>
+                <div class="mt-2 space-y-4">
+                  <div v-for="(guest, index) in form.guests" :key="index" class="flex items-start space-x-4">
+                    <div class="flex-1">
+                      <label class="block text-sm font-medium text-gray-700">Nom</label>
+                      <TextInput
+                        v-model="guest.name"
+                        type="text"
+                        class="mt-1 block w-full"
+                        placeholder="Nom de l'invité"
+                        required
+                      />
+                    </div>
+
+                    <div class="flex-1">
+                      <label class="block text-sm font-medium text-gray-700">Email</label>
+                      <TextInput
+                        v-model="guest.email"
+                        type="email"
+                        class="mt-1 block w-full"
+                        placeholder="email@example.com"
+                        required
+                      />
+                    </div>
+
+                    <button
+                      type="button"
+                      @click="removeGuest(index)"
+                      class="mt-6 p-2 text-red-600 hover:text-red-800"
+                    >
+                      <TrashIcon class="h-5 w-5" />
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    @click="addGuest"
+                    class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                  >
+                    <PlusIcon class="h-5 w-5 mr-2" />
+                    Ajouter un invité
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-6">
+              <h3 class="text-lg font-medium text-gray-900">Ordre du jour</h3>
+              <div class="mt-4 space-y-4">
+                <div v-for="(item, index) in form.agenda" :key="index" class="flex items-start space-x-4 p-4 border rounded-lg">
+                  <div class="flex-1">
+                    <h4 class="font-medium">{{ item.title }}</h4>
+                    <p class="text-sm text-gray-600">{{ item.description }}</p>
+                    <div class="mt-1 text-sm text-gray-500">
+                      Durée : {{ item.duration_minutes }} minutes
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    @click="removeAgendaItem(index)"
+                    class="text-red-600 hover:text-red-800"
+                  >
+                    <TrashIcon class="h-5 w-5" />
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  @click="showNewAgendaItemModal = true"
+                  class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  <PlusIcon class="h-5 w-5 mr-2" />
+                  Ajouter un point
+                </button>
+              </div>
             </div>
 
             <div class="flex items-center justify-end mt-4">
@@ -95,6 +180,58 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal pour ajouter un point à l'ordre du jour -->
+    <Modal :show="showNewAgendaItemModal" @close="showNewAgendaItemModal = false">
+      <div class="p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">
+          Nouveau point à l'ordre du jour
+        </h3>
+        <form @submit.prevent="addAgendaItem" class="space-y-4">
+          <div>
+            <InputLabel for="agenda-title" value="Titre" />
+            <TextInput
+              id="agenda-title"
+              v-model="agendaForm.title"
+              type="text"
+              class="mt-1 block w-full"
+              required
+            />
+          </div>
+
+          <div>
+            <InputLabel for="agenda-description" value="Description" />
+            <TextArea
+              id="agenda-description"
+              v-model="agendaForm.description"
+              class="mt-1 block w-full"
+              rows="3"
+            />
+          </div>
+
+          <div>
+            <InputLabel for="agenda-duration" value="Durée (minutes)" />
+            <TextInput
+              id="agenda-duration"
+              v-model="agendaForm.duration_minutes"
+              type="number"
+              class="mt-1 block w-full"
+              min="1"
+              required
+            />
+          </div>
+
+          <div class="flex justify-end space-x-3">
+            <SecondaryButton @click="showNewAgendaItemModal = false">
+              Annuler
+            </SecondaryButton>
+            <PrimaryButton type="submit">
+              Ajouter
+            </PrimaryButton>
+          </div>
+        </form>
+      </div>
+    </Modal>
   </AppLayout>
 </template>
 
@@ -107,7 +244,9 @@ import TextInput from '@/Components/TextInput.vue'
 import TextArea from '@/Components/TextArea.vue'
 import InputError from '@/Components/InputError.vue'
 import PrimaryButton from '@/Components/PrimaryButton.vue'
-import MultiSelect from '@/Components/MultiSelect.vue'
+import SecondaryButton from '@/Components/SecondaryButton.vue'
+import Modal from '@/Components/Modal.vue'
+import { PlusIcon, TrashIcon } from '@heroicons/vue/24/outline'
 
 interface User {
   id: number
@@ -115,8 +254,21 @@ interface User {
   email: string
 }
 
+interface Member {
+  id: number
+  user_id: number
+  role: string
+  user: User
+}
+
+interface Committee {
+  id: number
+  name: string
+  city: string
+}
+
 interface Props {
-  users: User[]
+  committees: Committee[]
 }
 
 const props = defineProps<Props>()
@@ -127,11 +279,53 @@ const form = useForm({
   start_datetime: '',
   end_datetime: '',
   location: '',
-  participants: [] as number[]
+  local_committee_id: '',
+  guests: [{
+    name: '',
+    email: ''
+  }],
+  agenda: []
 })
 
-const submit = () => {
+const showNewAgendaItemModal = ref(false)
+const editingAgendaItem = ref(null)
+
+const agendaForm = useForm({
+  title: '',
+  description: '',
+  duration_minutes: '',
+  presenter_id: null
+})
+
+function addGuest() {
+  form.guests.push({
+    name: '',
+    email: ''
+  })
+}
+
+function removeGuest(index: number) {
+  form.guests.splice(index, 1)
+}
+
+function addAgendaItem() {
+  form.agenda.push({
+    title: agendaForm.title,
+    description: agendaForm.description,
+    duration_minutes: agendaForm.duration_minutes,
+    presenter_id: agendaForm.presenter_id
+  })
+  agendaForm.reset()
+  showNewAgendaItemModal.value = false
+}
+
+function removeAgendaItem(index: number) {
+  form.agenda.splice(index, 1)
+}
+
+function submit() {
   form.post(route('meetings.store'), {
+    preserveScroll: true,
     onSuccess: () => {
       form.reset()
     }
@@ -148,5 +342,31 @@ const submit = () => {
 }
 .focus\:ring-primary-500:focus {
   --tw-ring-color: rgb(99, 102, 241)
+}
+
+select[multiple] {
+  min-height: 200px;
+}
+
+select[multiple] option {
+  padding: 0.5rem;
+  margin: 0.25rem 0;
+}
+
+select[multiple] optgroup {
+  font-weight: 600;
+  color: #4B5563;
+  padding: 0.5rem 0;
+}
+
+/* Style pour les options sélectionnées */
+select[multiple] option:checked {
+  background: linear-gradient(0deg, #4F46E5 0%, #4F46E5 100%);
+  color: white;
+}
+
+/* Style pour le hover des options */
+select[multiple] option:hover {
+  background-color: #F3F4F6;
 }
 </style> 

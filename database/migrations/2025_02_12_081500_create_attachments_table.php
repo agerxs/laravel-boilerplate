@@ -13,9 +13,11 @@ return new class extends Migration
             $table->foreignId('meeting_id')
                 ->constrained()
                 ->onDelete('cascade');
-            $table->string('name');
+            $table->string('title');
+            $table->string('original_name');
             $table->string('file_path');
             $table->string('file_type');
+            $table->string('nature');
             $table->unsignedBigInteger('size');
             $table->foreignId('uploaded_by')
                 ->constrained('users')

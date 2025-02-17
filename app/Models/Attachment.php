@@ -9,12 +9,26 @@ class Attachment extends Model
 {
     protected $fillable = [
         'meeting_id',
-        'name',
+        'title',
+        'original_name',
         'file_path',
         'file_type',
+        'nature',
         'size',
         'uploaded_by'
     ];
+
+    protected $appends = ['nature_label'];
+
+    public function getNatureLabelAttribute()
+    {
+        return match($this->nature) {
+            'photo' => 'Photo',
+            'document_justificatif' => 'Document justificatif',
+            'compte_rendu' => 'Compte rendu',
+            default => $this->nature
+        };
+    }
 
     public function meeting(): BelongsTo
     {
