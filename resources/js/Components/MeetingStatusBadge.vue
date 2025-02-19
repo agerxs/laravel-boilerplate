@@ -24,7 +24,8 @@ const statusClasses = {
 
 const statusLabels = {
   scheduled: 'Planifiée',
+  planned: 'Planifiée',
   completed: 'Terminée',
   cancelled: 'Annulée'
 };
-</script> 
+</script>

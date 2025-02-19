@@ -79,11 +79,11 @@
                       <div class="text-sm font-medium text-gray-900">{{ meeting.title }}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="text-sm text-gray-500">{{ formatDateTime(meeting.start_datetime) }}</div>
+                      <div class="text-sm text-gray-500">{{ formatDateTime(meeting.scheduled_date) }}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div class="text-sm text-gray-500">
-                        {{ meeting.local_committees.map(c => c.name).join(', ') }}
+                        {{ (meeting.local_committees || []).map((c: { name: string }) => c.name).join(', ') }}
                       </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -115,6 +115,14 @@ import {
 import LineChart from '@/Components/Charts/LineChart.vue'
 import DoughnutChart from '@/Components/Charts/DoughnutChart.vue'
 
+interface LocalCommittee {
+  name: string;
+}
+
+interface Meeting {
+  local_committees: LocalCommittee[];
+}
+
 const props = defineProps<{
   stats: {
     total_meetings: number
@@ -122,7 +130,7 @@ const props = defineProps<{
     total_users: number
     total_committees: number
   }
-  upcomingMeetings: any[]
+  upcomingMeetings: Meeting[]
   meetingsByMonth: Record<string, number>
   meetingsByStatus: Record<string, number>
 }>()
