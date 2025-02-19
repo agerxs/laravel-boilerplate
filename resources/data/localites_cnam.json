@@ -1,0 +1,2552 @@
+[
+    {
+        "REGIONS": "AGNEBY-TIASSA",
+        "DEPARTEMENTS": "AGBOVILLE",
+        "SOUS-PREFECTURES": "ABOUDE"
+    },
+    {
+        "REGIONS": "AGNEBY-TIASSA",
+        "DEPARTEMENTS": "AGBOVILLE",
+        "SOUS-PREFECTURES": "AGBOVILLE"
+    },
+    {
+        "REGIONS": "AGNEBY-TIASSA",
+        "DEPARTEMENTS": "AGBOVILLE",
+        "SOUS-PREFECTURES": "ANANGUIE"
+    },
+    {
+        "REGIONS": "AGNEBY-TIASSA",
+        "DEPARTEMENTS": "AGBOVILLE",
+        "SOUS-PREFECTURES": "ATTOBROU"
+    },
+    {
+        "REGIONS": "AGNEBY-TIASSA",
+        "DEPARTEMENTS": "AGBOVILLE",
+        "SOUS-PREFECTURES": "AZAGUIE"
+    },
+    {
+        "REGIONS": "AGNEBY-TIASSA",
+        "DEPARTEMENTS": "AGBOVILLE",
+        "SOUS-PREFECTURES": "CECHI "
+    },
+    {
+        "REGIONS": "AGNEBY-TIASSA",
+        "DEPARTEMENTS": "AGBOVILLE",
+        "SOUS-PREFECTURES": "GRAND-MORIE"
+    },
+    {
+        "REGIONS": "AGNEBY-TIASSA",
+        "DEPARTEMENTS": "AGBOVILLE",
+        "SOUS-PREFECTURES": "GUESSIGUIE"
+    },
+    {
+        "REGIONS": "AGNEBY-TIASSA",
+        "DEPARTEMENTS": "AGBOVILLE",
+        "SOUS-PREFECTURES": "LOVIGUIE"
+    },
+    {
+        "REGIONS": "AGNEBY-TIASSA",
+        "DEPARTEMENTS": "AGBOVILLE",
+        "SOUS-PREFECTURES": "ORESS-KROBOU"
+    },
+    {
+        "REGIONS": "AGNEBY-TIASSA",
+        "DEPARTEMENTS": "AGBOVILLE",
+        "SOUS-PREFECTURES": "RUBINO"
+    },
+    {
+        "REGIONS": "AGNEBY-TIASSA",
+        "DEPARTEMENTS": "SIKENSI",
+        "SOUS-PREFECTURES": "GOMON"
+    },
+    {
+        "REGIONS": "AGNEBY-TIASSA",
+        "DEPARTEMENTS": "SIKENSI",
+        "SOUS-PREFECTURES": "SIKENSI"
+    },
+    {
+        "REGIONS": "AGNEBY-TIASSA",
+        "DEPARTEMENTS": "TAABO",
+        "SOUS-PREFECTURES": "PACOBO"
+    },
+    {
+        "REGIONS": "AGNEBY-TIASSA",
+        "DEPARTEMENTS": "TAABO",
+        "SOUS-PREFECTURES": "TAABO"
+    },
+    {
+        "REGIONS": "AGNEBY-TIASSA",
+        "DEPARTEMENTS": "TIASSALE",
+        "SOUS-PREFECTURES": "GBOLOUVILLE"
+    },
+    {
+        "REGIONS": "AGNEBY-TIASSA",
+        "DEPARTEMENTS": "TIASSALE",
+        "SOUS-PREFECTURES": "MOROKRO"
+    },
+    {
+        "REGIONS": "AGNEBY-TIASSA",
+        "DEPARTEMENTS": "TIASSALE",
+        "SOUS-PREFECTURES": "N'DOUCI"
+    },
+    {
+        "REGIONS": "AGNEBY-TIASSA",
+        "DEPARTEMENTS": "TIASSALE",
+        "SOUS-PREFECTURES": "TIASSALE"
+    },
+    {
+        "REGIONS": "BAFING",
+        "DEPARTEMENTS": "KORO",
+        "SOUS-PREFECTURES": "BOOKO"
+    },
+    {
+        "REGIONS": "BAFING",
+        "DEPARTEMENTS": "KORO",
+        "SOUS-PREFECTURES": "BOROTOU"
+    },
+    {
+        "REGIONS": "BAFING",
+        "DEPARTEMENTS": "KORO",
+        "SOUS-PREFECTURES": "KORO"
+    },
+    {
+        "REGIONS": "BAFING",
+        "DEPARTEMENTS": "KORO",
+        "SOUS-PREFECTURES": "MAHANDOUGOU"
+    },
+    {
+        "REGIONS": "BAFING",
+        "DEPARTEMENTS": "KORO",
+        "SOUS-PREFECTURES": "NIOKOSSO"
+    },
+    {
+        "REGIONS": "BAFING",
+        "DEPARTEMENTS": "OUANINOU",
+        "SOUS-PREFECTURES": "GBELO"
+    },
+    {
+        "REGIONS": "BAFING",
+        "DEPARTEMENTS": "OUANINOU",
+        "SOUS-PREFECTURES": "GOUEKAN"
+    },
+    {
+        "REGIONS": "BAFING",
+        "DEPARTEMENTS": "OUANINOU",
+        "SOUS-PREFECTURES": "KOONAN"
+    },
+    {
+        "REGIONS": "BAFING",
+        "DEPARTEMENTS": "OUANINOU",
+        "SOUS-PREFECTURES": "OUANINOU"
+    },
+    {
+        "REGIONS": "BAFING",
+        "DEPARTEMENTS": "OUANINOU",
+        "SOUS-PREFECTURES": "SABOUDOUGOU"
+    },
+    {
+        "REGIONS": "BAFING",
+        "DEPARTEMENTS": "OUANINOU",
+        "SOUS-PREFECTURES": "SANTA (DE OUANINOU)"
+    },
+    {
+        "REGIONS": "BAFING",
+        "DEPARTEMENTS": "TOUBA",
+        "SOUS-PREFECTURES": "DIOMAN"
+    },
+    {
+        "REGIONS": "BAFING",
+        "DEPARTEMENTS": "TOUBA",
+        "SOUS-PREFECTURES": "FOUNGBESSO"
+    },
+    {
+        "REGIONS": "BAFING",
+        "DEPARTEMENTS": "TOUBA",
+        "SOUS-PREFECTURES": "GUINTEGUELA"
+    },
+    {
+        "REGIONS": "BAFING",
+        "DEPARTEMENTS": "TOUBA",
+        "SOUS-PREFECTURES": "TOUBA "
+    },
+    {
+        "REGIONS": "BAGOUE",
+        "DEPARTEMENTS": "BOUNDIALI",
+        "SOUS-PREFECTURES": "BAYA"
+    },
+    {
+        "REGIONS": "BAGOUE",
+        "DEPARTEMENTS": "BOUNDIALI",
+        "SOUS-PREFECTURES": "BOUNDIALI"
+    },
+    {
+        "REGIONS": "BAGOUE",
+        "DEPARTEMENTS": "BOUNDIALI",
+        "SOUS-PREFECTURES": "GANAONI"
+    },
+    {
+        "REGIONS": "BAGOUE",
+        "DEPARTEMENTS": "BOUNDIALI",
+        "SOUS-PREFECTURES": "KASSERE"
+    },
+    {
+        "REGIONS": "BAGOUE",
+        "DEPARTEMENTS": "BOUNDIALI",
+        "SOUS-PREFECTURES": "SIEMPURGO"
+    },
+    {
+        "REGIONS": "BAGOUE",
+        "DEPARTEMENTS": "KOUTO",
+        "SOUS-PREFECTURES": "BLESSEGUE"
+    },
+    {
+        "REGIONS": "BAGOUE",
+        "DEPARTEMENTS": "KOUTO",
+        "SOUS-PREFECTURES": "GBON"
+    },
+    {
+        "REGIONS": "BAGOUE",
+        "DEPARTEMENTS": "KOUTO",
+        "SOUS-PREFECTURES": "KOLIA"
+    },
+    {
+        "REGIONS": "BAGOUE",
+        "DEPARTEMENTS": "KOUTO",
+        "SOUS-PREFECTURES": "KOUTO"
+    },
+    {
+        "REGIONS": "BAGOUE",
+        "DEPARTEMENTS": "KOUTO",
+        "SOUS-PREFECTURES": "SIANHALA"
+    },
+    {
+        "REGIONS": "BAGOUE",
+        "DEPARTEMENTS": "TENGRELA",
+        "SOUS-PREFECTURES": "DEBETE"
+    },
+    {
+        "REGIONS": "BAGOUE",
+        "DEPARTEMENTS": "TENGRELA",
+        "SOUS-PREFECTURES": "KANAKONO"
+    },
+    {
+        "REGIONS": "BAGOUE",
+        "DEPARTEMENTS": "TENGRELA",
+        "SOUS-PREFECTURES": "PAPARA"
+    },
+    {
+        "REGIONS": "BAGOUE",
+        "DEPARTEMENTS": "TENGRELA",
+        "SOUS-PREFECTURES": "TENGRELA"
+    },
+    {
+        "REGIONS": "BELIER",
+        "DEPARTEMENTS": "DIDIEVI",
+        "SOUS-PREFECTURES": "BOLI"
+    },
+    {
+        "REGIONS": "BELIER",
+        "DEPARTEMENTS": "DIDIEVI",
+        "SOUS-PREFECTURES": "DIDIEVI"
+    },
+    {
+        "REGIONS": "BELIER",
+        "DEPARTEMENTS": "DIDIEVI",
+        "SOUS-PREFECTURES": "MOLONOU-BLE"
+    },
+    {
+        "REGIONS": "BELIER",
+        "DEPARTEMENTS": "DIDIEVI",
+        "SOUS-PREFECTURES": "RAVIART"
+    },
+    {
+        "REGIONS": "BELIER",
+        "DEPARTEMENTS": "DIDIEVI",
+        "SOUS-PREFECTURES": "TIE-N’DIEKRO"
+    },
+    {
+        "REGIONS": "BELIER",
+        "DEPARTEMENTS": "DJEKANOU",
+        "SOUS-PREFECTURES": "BONIKRO"
+    },
+    {
+        "REGIONS": "BELIER",
+        "DEPARTEMENTS": "DJEKANOU",
+        "SOUS-PREFECTURES": "DJEKANOU"
+    },
+    {
+        "REGIONS": "BELIER",
+        "DEPARTEMENTS": "TIEBISSOU",
+        "SOUS-PREFECTURES": "LOMOKANKRO"
+    },
+    {
+        "REGIONS": "BELIER",
+        "DEPARTEMENTS": "TIEBISSOU",
+        "SOUS-PREFECTURES": "MOLONOU"
+    },
+    {
+        "REGIONS": "BELIER",
+        "DEPARTEMENTS": "TIEBISSOU",
+        "SOUS-PREFECTURES": "TIEBISSOU"
+    },
+    {
+        "REGIONS": "BELIER",
+        "DEPARTEMENTS": "TIEBISSOU",
+        "SOUS-PREFECTURES": "YAKPABO-SAKASSOU"
+    },
+    {
+        "REGIONS": "BELIER",
+        "DEPARTEMENTS": "TOUMODI",
+        "SOUS-PREFECTURES": "ANGODA"
+    },
+    {
+        "REGIONS": "BELIER",
+        "DEPARTEMENTS": "TOUMODI",
+        "SOUS-PREFECTURES": "KOKOUMBO"
+    },
+    {
+        "REGIONS": "BELIER",
+        "DEPARTEMENTS": "TOUMODI",
+        "SOUS-PREFECTURES": "KPOUEBO"
+    },
+    {
+        "REGIONS": "BELIER",
+        "DEPARTEMENTS": "TOUMODI",
+        "SOUS-PREFECTURES": "TOUMODI"
+    },
+    {
+        "REGIONS": "BERE",
+        "DEPARTEMENTS": "DIANRA",
+        "SOUS-PREFECTURES": "DIANRA"
+    },
+    {
+        "REGIONS": "BERE",
+        "DEPARTEMENTS": "DIANRA",
+        "SOUS-PREFECTURES": "DIANRA-VILLAGE"
+    },
+    {
+        "REGIONS": "BERE",
+        "DEPARTEMENTS": "KOUNAHIRI",
+        "SOUS-PREFECTURES": "KONGASSO"
+    },
+    {
+        "REGIONS": "BERE",
+        "DEPARTEMENTS": "KOUNAHIRI",
+        "SOUS-PREFECTURES": "KOUNAHIRI"
+    },
+    {
+        "REGIONS": "BERE",
+        "DEPARTEMENTS": "MANKONO",
+        "SOUS-PREFECTURES": "BOUANDOUGOU"
+    },
+    {
+        "REGIONS": "BERE",
+        "DEPARTEMENTS": "MANKONO",
+        "SOUS-PREFECTURES": "MANKONO"
+    },
+    {
+        "REGIONS": "BERE",
+        "DEPARTEMENTS": "MANKONO",
+        "SOUS-PREFECTURES": "MARANDALAH"
+    },
+    {
+        "REGIONS": "BERE",
+        "DEPARTEMENTS": "MANKONO",
+        "SOUS-PREFECTURES": "SARHALA"
+    },
+    {
+        "REGIONS": "BERE",
+        "DEPARTEMENTS": "MANKONO",
+        "SOUS-PREFECTURES": "TIENINGBOUE"
+    },
+    {
+        "REGIONS": "BOUNKANI",
+        "DEPARTEMENTS": "BOUNA",
+        "SOUS-PREFECTURES": "BOUKO"
+    },
+    {
+        "REGIONS": "BOUNKANI",
+        "DEPARTEMENTS": "BOUNA",
+        "SOUS-PREFECTURES": "BOUNA"
+    },
+    {
+        "REGIONS": "BOUNKANI",
+        "DEPARTEMENTS": "BOUNA",
+        "SOUS-PREFECTURES": "ONDEFIDOUO"
+    },
+    {
+        "REGIONS": "BOUNKANI",
+        "DEPARTEMENTS": "BOUNA",
+        "SOUS-PREFECTURES": "YOUNDOUO"
+    },
+    {
+        "REGIONS": "BOUNKANI",
+        "DEPARTEMENTS": "DOROPO",
+        "SOUS-PREFECTURES": "DANOA"
+    },
+    {
+        "REGIONS": "BOUNKANI",
+        "DEPARTEMENTS": "DOROPO",
+        "SOUS-PREFECTURES": "DOROPO"
+    },
+    {
+        "REGIONS": "BOUNKANI",
+        "DEPARTEMENTS": "DOROPO",
+        "SOUS-PREFECTURES": "KALAMON"
+    },
+    {
+        "REGIONS": "BOUNKANI",
+        "DEPARTEMENTS": "DOROPO",
+        "SOUS-PREFECTURES": "NIAMOUE"
+    },
+    {
+        "REGIONS": "BOUNKANI",
+        "DEPARTEMENTS": "NASSIAN",
+        "SOUS-PREFECTURES": "BOGOFA"
+    },
+    {
+        "REGIONS": "BOUNKANI",
+        "DEPARTEMENTS": "NASSIAN",
+        "SOUS-PREFECTURES": "KAKPIN"
+    },
+    {
+        "REGIONS": "BOUNKANI",
+        "DEPARTEMENTS": "NASSIAN",
+        "SOUS-PREFECTURES": "KOTOUBA"
+    },
+    {
+        "REGIONS": "BOUNKANI",
+        "DEPARTEMENTS": "NASSIAN",
+        "SOUS-PREFECTURES": "NASSIAN"
+    },
+    {
+        "REGIONS": "BOUNKANI",
+        "DEPARTEMENTS": "NASSIAN",
+        "SOUS-PREFECTURES": "SOMINASSE"
+    },
+    {
+        "REGIONS": "BOUNKANI",
+        "DEPARTEMENTS": "TEHINI",
+        "SOUS-PREFECTURES": "GOGO"
+    },
+    {
+        "REGIONS": "BOUNKANI",
+        "DEPARTEMENTS": "TEHINI",
+        "SOUS-PREFECTURES": "TEHINI"
+    },
+    {
+        "REGIONS": "BOUNKANI",
+        "DEPARTEMENTS": "TEHINI",
+        "SOUS-PREFECTURES": "TOUGBO"
+    },
+    {
+        "REGIONS": "CAVALLY",
+        "DEPARTEMENTS": "BLOLEQUIN",
+        "SOUS-PREFECTURES": "BLOLEQUIN"
+    },
+    {
+        "REGIONS": "CAVALLY",
+        "DEPARTEMENTS": "BLOLEQUIN",
+        "SOUS-PREFECTURES": "DIBOKE"
+    },
+    {
+        "REGIONS": "CAVALLY",
+        "DEPARTEMENTS": "BLOLEQUIN",
+        "SOUS-PREFECTURES": "DOKE"
+    },
+    {
+        "REGIONS": "CAVALLY",
+        "DEPARTEMENTS": "BLOLEQUIN",
+        "SOUS-PREFECTURES": "TINHOU"
+    },
+    {
+        "REGIONS": "CAVALLY",
+        "DEPARTEMENTS": "BLOLEQUIN",
+        "SOUS-PREFECTURES": "ZEAGLO"
+    },
+    {
+        "REGIONS": "CAVALLY",
+        "DEPARTEMENTS": "GUIGLO",
+        "SOUS-PREFECTURES": "BEDY-GOAZON"
+    },
+    {
+        "REGIONS": "CAVALLY",
+        "DEPARTEMENTS": "GUIGLO",
+        "SOUS-PREFECTURES": "GUIGLO"
+    },
+    {
+        "REGIONS": "CAVALLY",
+        "DEPARTEMENTS": "GUIGLO",
+        "SOUS-PREFECTURES": "KAADE"
+    },
+    {
+        "REGIONS": "CAVALLY",
+        "DEPARTEMENTS": "GUIGLO",
+        "SOUS-PREFECTURES": "NIZAHON"
+    },
+    {
+        "REGIONS": "CAVALLY",
+        "DEPARTEMENTS": "TAI",
+        "SOUS-PREFECTURES": "TAÏ"
+    },
+    {
+        "REGIONS": "CAVALLY",
+        "DEPARTEMENTS": "TAI",
+        "SOUS-PREFECTURES": "ZAGNE"
+    },
+    {
+        "REGIONS": "CAVALLY",
+        "DEPARTEMENTS": "TOULEPLEU",
+        "SOUS-PREFECTURES": "BAKOUBLY"
+    },
+    {
+        "REGIONS": "CAVALLY",
+        "DEPARTEMENTS": "TOULEPLEU",
+        "SOUS-PREFECTURES": "MEO"
+    },
+    {
+        "REGIONS": "CAVALLY",
+        "DEPARTEMENTS": "TOULEPLEU",
+        "SOUS-PREFECTURES": "NEZOBLY "
+    },
+    {
+        "REGIONS": "CAVALLY",
+        "DEPARTEMENTS": "TOULEPLEU",
+        "SOUS-PREFECTURES": "PEHE"
+    },
+    {
+        "REGIONS": "CAVALLY",
+        "DEPARTEMENTS": "TOULEPLEU",
+        "SOUS-PREFECTURES": "TIOBLY"
+    },
+    {
+        "REGIONS": "CAVALLY",
+        "DEPARTEMENTS": "TOULEPLEU",
+        "SOUS-PREFECTURES": "TOULEPLEU"
+    },
+    {
+        "REGIONS": "DISTRICT AUTONOME D'ABIDJAN",
+        "DEPARTEMENTS": "ABIDJAN",
+        "SOUS-PREFECTURES": "Préfecture d'Abidjan"
+    },
+    {
+        "REGIONS": "DISTRICT AUTONOME D'ABIDJAN",
+        "DEPARTEMENTS": "ABIDJAN",
+        "SOUS-PREFECTURES": "ANYAMA"
+    },
+    {
+        "REGIONS": "DISTRICT AUTONOME D'ABIDJAN",
+        "DEPARTEMENTS": "ABIDJAN",
+        "SOUS-PREFECTURES": "BINGERVILLE"
+    },
+    {
+        "REGIONS": "DISTRICT AUTONOME D'ABIDJAN",
+        "DEPARTEMENTS": "ABIDJAN",
+        "SOUS-PREFECTURES": "BROFODOUME"
+    },
+    {
+        "REGIONS": "DISTRICT AUTONOME D'ABIDJAN",
+        "DEPARTEMENTS": "ABIDJAN",
+        "SOUS-PREFECTURES": "SONGON"
+    },
+    {
+        "REGIONS": "DISTRICT AUTONOME DE YAMOUSSOUKRO",
+        "DEPARTEMENTS": "ATTIEGOUAKRO",
+        "SOUS-PREFECTURES": "ATTIEGOUAKRO"
+    },
+    {
+        "REGIONS": "DISTRICT AUTONOME DE YAMOUSSOUKRO",
+        "DEPARTEMENTS": "ATTIEGOUAKRO",
+        "SOUS-PREFECTURES": "LOLOBO (D'ATTIEGOUAKRO)"
+    },
+    {
+        "REGIONS": "DISTRICT AUTONOME DE YAMOUSSOUKRO",
+        "DEPARTEMENTS": "YAMOUSSOUKRO",
+        "SOUS-PREFECTURES": "KOSSOU"
+    },
+    {
+        "REGIONS": "DISTRICT AUTONOME DE YAMOUSSOUKRO",
+        "DEPARTEMENTS": "YAMOUSSOUKRO",
+        "SOUS-PREFECTURES": "YAMOUSSOUKRO"
+    },
+    {
+        "REGIONS": "FOLON",
+        "DEPARTEMENTS": "KANIASSO",
+        "SOUS-PREFECTURES": "GOULIA"
+    },
+    {
+        "REGIONS": "FOLON",
+        "DEPARTEMENTS": "KANIASSO",
+        "SOUS-PREFECTURES": "KANIASSO"
+    },
+    {
+        "REGIONS": "FOLON",
+        "DEPARTEMENTS": "KANIASSO",
+        "SOUS-PREFECTURES": "MAHANDIANA-SOKOURANI"
+    },
+    {
+        "REGIONS": "FOLON",
+        "DEPARTEMENTS": "MINIGNAN",
+        "SOUS-PREFECTURES": "KIMBIRILA-NORD"
+    },
+    {
+        "REGIONS": "FOLON",
+        "DEPARTEMENTS": "MINIGNAN",
+        "SOUS-PREFECTURES": "MINIGNAN"
+    },
+    {
+        "REGIONS": "FOLON",
+        "DEPARTEMENTS": "MINIGNAN",
+        "SOUS-PREFECTURES": "SOKORO"
+    },
+    {
+        "REGIONS": "FOLON",
+        "DEPARTEMENTS": "MINIGNAN",
+        "SOUS-PREFECTURES": "TIENKO"
+    },
+    {
+        "REGIONS": "GBEKE",
+        "DEPARTEMENTS": "BEOUMI",
+        "SOUS-PREFECTURES": "ANDO-KEKRENOU"
+    },
+    {
+        "REGIONS": "GBEKE",
+        "DEPARTEMENTS": "BEOUMI",
+        "SOUS-PREFECTURES": "BEOUMI"
+    },
+    {
+        "REGIONS": "GBEKE",
+        "DEPARTEMENTS": "BEOUMI",
+        "SOUS-PREFECTURES": "BODOKRO"
+    },
+    {
+        "REGIONS": "GBEKE",
+        "DEPARTEMENTS": "BEOUMI",
+        "SOUS-PREFECTURES": "KONDROBO"
+    },
+    {
+        "REGIONS": "GBEKE",
+        "DEPARTEMENTS": "BEOUMI",
+        "SOUS-PREFECTURES": "LOLOBO (DE BEOUMI) "
+    },
+    {
+        "REGIONS": "GBEKE",
+        "DEPARTEMENTS": "BEOUMI",
+        "SOUS-PREFECTURES": "MARABADIASSA"
+    },
+    {
+        "REGIONS": "GBEKE",
+        "DEPARTEMENTS": "BEOUMI",
+        "SOUS-PREFECTURES": "N'GUESSANKRO (DE BEOUMI)"
+    },
+    {
+        "REGIONS": "GBEKE",
+        "DEPARTEMENTS": "BOTRO",
+        "SOUS-PREFECTURES": "BOTRO"
+    },
+    {
+        "REGIONS": "GBEKE",
+        "DEPARTEMENTS": "BOTRO",
+        "SOUS-PREFECTURES": "DIABO"
+    },
+    {
+        "REGIONS": "GBEKE",
+        "DEPARTEMENTS": "BOTRO",
+        "SOUS-PREFECTURES": "KROFOINSOU"
+    },
+    {
+        "REGIONS": "GBEKE",
+        "DEPARTEMENTS": "BOTRO",
+        "SOUS-PREFECTURES": "LANGUIBONOU"
+    },
+    {
+        "REGIONS": "GBEKE",
+        "DEPARTEMENTS": "BOUAKE",
+        "SOUS-PREFECTURES": "BOUAKE"
+    },
+    {
+        "REGIONS": "GBEKE",
+        "DEPARTEMENTS": "BOUAKE",
+        "SOUS-PREFECTURES": "BOUNDA"
+    },
+    {
+        "REGIONS": "GBEKE",
+        "DEPARTEMENTS": "BOUAKE",
+        "SOUS-PREFECTURES": "BROBO"
+    },
+    {
+        "REGIONS": "GBEKE",
+        "DEPARTEMENTS": "BOUAKE",
+        "SOUS-PREFECTURES": "DJEBONOUA"
+    },
+    {
+        "REGIONS": "GBEKE",
+        "DEPARTEMENTS": "BOUAKE",
+        "SOUS-PREFECTURES": "MAMINI"
+    },
+    {
+        "REGIONS": "GBEKE",
+        "DEPARTEMENTS": "SAKASSOU",
+        "SOUS-PREFECTURES": "AYAOU-SRAN"
+    },
+    {
+        "REGIONS": "GBEKE",
+        "DEPARTEMENTS": "SAKASSOU",
+        "SOUS-PREFECTURES": "DIBRI-ASSIRIKRO"
+    },
+    {
+        "REGIONS": "GBEKE",
+        "DEPARTEMENTS": "SAKASSOU",
+        "SOUS-PREFECTURES": "SAKASSOU"
+    },
+    {
+        "REGIONS": "GBEKE",
+        "DEPARTEMENTS": "SAKASSOU",
+        "SOUS-PREFECTURES": "TOUMODI-SAKASSOU"
+    },
+    {
+        "REGIONS": "GBOKLE",
+        "DEPARTEMENTS": "FRESCO",
+        "SOUS-PREFECTURES": "DAHIRI"
+    },
+    {
+        "REGIONS": "GBOKLE",
+        "DEPARTEMENTS": "FRESCO",
+        "SOUS-PREFECTURES": "FRESCO"
+    },
+    {
+        "REGIONS": "GBOKLE",
+        "DEPARTEMENTS": "FRESCO",
+        "SOUS-PREFECTURES": "GBAGBAM"
+    },
+    {
+        "REGIONS": "GBOKLE",
+        "DEPARTEMENTS": "SASSANDRA",
+        "SOUS-PREFECTURES": "DAKPADOU"
+    },
+    {
+        "REGIONS": "GBOKLE",
+        "DEPARTEMENTS": "SASSANDRA",
+        "SOUS-PREFECTURES": "GRIHIRI"
+    },
+    {
+        "REGIONS": "GBOKLE",
+        "DEPARTEMENTS": "SASSANDRA",
+        "SOUS-PREFECTURES": "LOBAKUYA"
+    },
+    {
+        "REGIONS": "GBOKLE",
+        "DEPARTEMENTS": "SASSANDRA",
+        "SOUS-PREFECTURES": "MEDON"
+    },
+    {
+        "REGIONS": "GBOKLE",
+        "DEPARTEMENTS": "SASSANDRA",
+        "SOUS-PREFECTURES": "SAGO"
+    },
+    {
+        "REGIONS": "GBOKLE",
+        "DEPARTEMENTS": "SASSANDRA",
+        "SOUS-PREFECTURES": "SASSANDRA"
+    },
+    {
+        "REGIONS": "GOH",
+        "DEPARTEMENTS": "GAGNOA",
+        "SOUS-PREFECTURES": "BAYOTA"
+    },
+    {
+        "REGIONS": "GOH",
+        "DEPARTEMENTS": "GAGNOA",
+        "SOUS-PREFECTURES": "DAHIEPA-KEHI"
+    },
+    {
+        "REGIONS": "GOH",
+        "DEPARTEMENTS": "GAGNOA",
+        "SOUS-PREFECTURES": "DIGNAGO"
+    },
+    {
+        "REGIONS": "GOH",
+        "DEPARTEMENTS": "GAGNOA",
+        "SOUS-PREFECTURES": "OURAGAHIO"
+    },
+    {
+        "REGIONS": "GOH",
+        "DEPARTEMENTS": "GAGNOA",
+        "SOUS-PREFECTURES": "SERIHIO"
+    },
+    {
+        "REGIONS": "GOH",
+        "DEPARTEMENTS": "GAGNOA",
+        "SOUS-PREFECTURES": "GAGNOA"
+    },
+    {
+        "REGIONS": "GOH",
+        "DEPARTEMENTS": "GAGNOA",
+        "SOUS-PREFECTURES": "GALEBRE / GALEBOUO"
+    },
+    {
+        "REGIONS": "GOH",
+        "DEPARTEMENTS": "GAGNOA",
+        "SOUS-PREFECTURES": "GNAGBODOUGNOA"
+    },
+    {
+        "REGIONS": "GOH",
+        "DEPARTEMENTS": "GAGNOA",
+        "SOUS-PREFECTURES": "GUIBEROUA"
+    },
+    {
+        "REGIONS": "GOH",
+        "DEPARTEMENTS": "GAGNOA",
+        "SOUS-PREFECTURES": "OURAGAHIO"
+    },
+    {
+        "REGIONS": "GOH",
+        "DEPARTEMENTS": "GAGNOA",
+        "SOUS-PREFECTURES": "SERIHIO"
+    },
+    {
+        "REGIONS": "GOH",
+        "DEPARTEMENTS": "GAGNOA",
+        "SOUS-PREFECTURES": "YOPOHUE"
+    },
+    {
+        "REGIONS": "GOH",
+        "DEPARTEMENTS": "OUME",
+        "SOUS-PREFECTURES": "DIEGONEFLA"
+    },
+    {
+        "REGIONS": "GOH",
+        "DEPARTEMENTS": "OUME",
+        "SOUS-PREFECTURES": "GUEPAHOUO"
+    },
+    {
+        "REGIONS": "GOH",
+        "DEPARTEMENTS": "OUME",
+        "SOUS-PREFECTURES": "OUME"
+    },
+    {
+        "REGIONS": "GOH",
+        "DEPARTEMENTS": "OUME",
+        "SOUS-PREFECTURES": "TONLA"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "BONDOUKOU",
+        "SOUS-PREFECTURES": "APPIMANDOUM"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "BONDOUKOU",
+        "SOUS-PREFECTURES": "BONDO"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "BONDOUKOU",
+        "SOUS-PREFECTURES": "BONDOUKOU"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "BONDOUKOU",
+        "SOUS-PREFECTURES": "GOUMERE"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "BONDOUKOU",
+        "SOUS-PREFECTURES": "LAOUDI-BA"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "BONDOUKOU",
+        "SOUS-PREFECTURES": "PINDA-BOROKO"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "BONDOUKOU",
+        "SOUS-PREFECTURES": "SAPLI-SEPINGO"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "BONDOUKOU",
+        "SOUS-PREFECTURES": "SOROBANGO"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "BONDOUKOU",
+        "SOUS-PREFECTURES": "TABAGNE"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "BONDOUKOU",
+        "SOUS-PREFECTURES": "TAGADI"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "BONDOUKOU",
+        "SOUS-PREFECTURES": "TAOUDI"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "BONDOUKOU",
+        "SOUS-PREFECTURES": "YEZIMALA"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "KOUN-FAO",
+        "SOUS-PREFECTURES": "BOAHIA"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "KOUN-FAO",
+        "SOUS-PREFECTURES": "KOKOMIAN"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "KOUN-FAO",
+        "SOUS-PREFECTURES": "KOUASSI-DATEKRO"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "KOUN-FAO",
+        "SOUS-PREFECTURES": "KOUN-FAO"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "KOUN-FAO",
+        "SOUS-PREFECTURES": "TANKESSE"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "KOUN-FAO",
+        "SOUS-PREFECTURES": "TIENKOIKRO"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "SANDEGUE",
+        "SOUS-PREFECTURES": "BANDAKAGNI-TOMORA"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "SANDEGUE",
+        "SOUS-PREFECTURES": "DIMANDOUGOU"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "SANDEGUE",
+        "SOUS-PREFECTURES": "SANDEGUE"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "SANDEGUE",
+        "SOUS-PREFECTURES": "YOROBODI"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "TANDA",
+        "SOUS-PREFECTURES": "AMANVI"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "TANDA",
+        "SOUS-PREFECTURES": "DIAMBA"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "TANDA",
+        "SOUS-PREFECTURES": "TANDA"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "TANDA",
+        "SOUS-PREFECTURES": "TCHEDIO"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "TRANSUA",
+        "SOUS-PREFECTURES": "ASSUEFRY"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "TRANSUA",
+        "SOUS-PREFECTURES": "KOUASSI-NIAGUINI"
+    },
+    {
+        "REGIONS": "GONTOUGO",
+        "DEPARTEMENTS": "TRANSUA",
+        "SOUS-PREFECTURES": "TRANSUA"
+    },
+    {
+        "REGIONS": "GRANDS PONTS",
+        "DEPARTEMENTS": "DABOU",
+        "SOUS-PREFECTURES": "DABOU"
+    },
+    {
+        "REGIONS": "GRANDS PONTS",
+        "DEPARTEMENTS": "DABOU",
+        "SOUS-PREFECTURES": "LOPOU"
+    },
+    {
+        "REGIONS": "GRANDS PONTS",
+        "DEPARTEMENTS": "DABOU",
+        "SOUS-PREFECTURES": "TOUPAH"
+    },
+    {
+        "REGIONS": "GRANDS PONTS",
+        "DEPARTEMENTS": "GRAND-LAHOU",
+        "SOUS-PREFECTURES": "AHOUANOU"
+    },
+    {
+        "REGIONS": "GRANDS PONTS",
+        "DEPARTEMENTS": "GRAND-LAHOU",
+        "SOUS-PREFECTURES": "BACANDA"
+    },
+    {
+        "REGIONS": "GRANDS PONTS",
+        "DEPARTEMENTS": "GRAND-LAHOU",
+        "SOUS-PREFECTURES": "EBONOU"
+    },
+    {
+        "REGIONS": "GRANDS PONTS",
+        "DEPARTEMENTS": "GRAND-LAHOU",
+        "SOUS-PREFECTURES": "GRAND-LAHOU"
+    },
+    {
+        "REGIONS": "GRANDS PONTS",
+        "DEPARTEMENTS": "GRAND-LAHOU",
+        "SOUS-PREFECTURES": "TOUKOUZOU"
+    },
+    {
+        "REGIONS": "GRANDS PONTS",
+        "DEPARTEMENTS": "JACQUEVILLE",
+        "SOUS-PREFECTURES": "ATTOUTOU"
+    },
+    {
+        "REGIONS": "GRANDS PONTS",
+        "DEPARTEMENTS": "JACQUEVILLE",
+        "SOUS-PREFECTURES": "JACQUEVILLE"
+    },
+    {
+        "REGIONS": "GUEMON",
+        "DEPARTEMENTS": "BANGOLO",
+        "SOUS-PREFECTURES": "BANGOLO"
+    },
+    {
+        "REGIONS": "GUEMON",
+        "DEPARTEMENTS": "BANGOLO",
+        "SOUS-PREFECTURES": "BEOUE-ZIBIAO"
+    },
+    {
+        "REGIONS": "GUEMON",
+        "DEPARTEMENTS": "BANGOLO",
+        "SOUS-PREFECTURES": "BLENIMEOUIN"
+    },
+    {
+        "REGIONS": "GUEMON",
+        "DEPARTEMENTS": "BANGOLO",
+        "SOUS-PREFECTURES": "DIEOUZON"
+    },
+    {
+        "REGIONS": "GUEMON",
+        "DEPARTEMENTS": "BANGOLO",
+        "SOUS-PREFECTURES": "GOHOUO-ZAGNA"
+    },
+    {
+        "REGIONS": "GUEMON",
+        "DEPARTEMENTS": "BANGOLO",
+        "SOUS-PREFECTURES": "GUINGLO-TAHOUAKE"
+    },
+    {
+        "REGIONS": "GUEMON",
+        "DEPARTEMENTS": "BANGOLO",
+        "SOUS-PREFECTURES": "KAHIN-ZARABAON"
+    },
+    {
+        "REGIONS": "GUEMON",
+        "DEPARTEMENTS": "BANGOLO",
+        "SOUS-PREFECTURES": "ZEO"
+    },
+    {
+        "REGIONS": "GUEMON",
+        "DEPARTEMENTS": "BANGOLO",
+        "SOUS-PREFECTURES": "ZOU"
+    },
+    {
+        "REGIONS": "GUEMON",
+        "DEPARTEMENTS": "DUEKOUE",
+        "SOUS-PREFECTURES": "BAGOHOUO"
+    },
+    {
+        "REGIONS": "GUEMON",
+        "DEPARTEMENTS": "DUEKOUE",
+        "SOUS-PREFECTURES": "DUEKOUE"
+    },
+    {
+        "REGIONS": "GUEMON",
+        "DEPARTEMENTS": "DUEKOUE",
+        "SOUS-PREFECTURES": "GBAPLEU"
+    },
+    {
+        "REGIONS": "GUEMON",
+        "DEPARTEMENTS": "DUEKOUE",
+        "SOUS-PREFECTURES": "GUEHIEBLY"
+    },
+    {
+        "REGIONS": "GUEMON",
+        "DEPARTEMENTS": "DUEKOUE",
+        "SOUS-PREFECTURES": "GUEZON-DUEKOUE"
+    },
+    {
+        "REGIONS": "GUEMON",
+        "DEPARTEMENTS": "FACOBLY",
+        "SOUS-PREFECTURES": "FACOBLY"
+    },
+    {
+        "REGIONS": "GUEMON",
+        "DEPARTEMENTS": "FACOBLY",
+        "SOUS-PREFECTURES": "GUEZON (DE FACOBLY)"
+    },
+    {
+        "REGIONS": "GUEMON",
+        "DEPARTEMENTS": "FACOBLY",
+        "SOUS-PREFECTURES": "KOUA"
+    },
+    {
+        "REGIONS": "GUEMON",
+        "DEPARTEMENTS": "FACOBLY",
+        "SOUS-PREFECTURES": "SEMIEN"
+    },
+    {
+        "REGIONS": "GUEMON",
+        "DEPARTEMENTS": "FACOBLY",
+        "SOUS-PREFECTURES": "TIENY-SIABLY"
+    },
+    {
+        "REGIONS": "GUEMON",
+        "DEPARTEMENTS": "KOUIBLY",
+        "SOUS-PREFECTURES": "KOUIBLY"
+    },
+    {
+        "REGIONS": "GUEMON",
+        "DEPARTEMENTS": "KOUIBLY",
+        "SOUS-PREFECTURES": "NIDROU"
+    },
+    {
+        "REGIONS": "GUEMON",
+        "DEPARTEMENTS": "KOUIBLY",
+        "SOUS-PREFECTURES": "OUYABLY-GNONDROU"
+    },
+    {
+        "REGIONS": "GUEMON",
+        "DEPARTEMENTS": "KOUIBLY",
+        "SOUS-PREFECTURES": "TOTRODROU"
+    },
+    {
+        "REGIONS": "HAMBOL",
+        "DEPARTEMENTS": "DABAKALA",
+        "SOUS-PREFECTURES": "BASSAWA"
+    },
+    {
+        "REGIONS": "HAMBOL",
+        "DEPARTEMENTS": "DABAKALA",
+        "SOUS-PREFECTURES": "BONIEREDOUGOU"
+    },
+    {
+        "REGIONS": "HAMBOL",
+        "DEPARTEMENTS": "DABAKALA",
+        "SOUS-PREFECTURES": "DABAKALA"
+    },
+    {
+        "REGIONS": "HAMBOL",
+        "DEPARTEMENTS": "DABAKALA",
+        "SOUS-PREFECTURES": "FOUMBOLO"
+    },
+    {
+        "REGIONS": "HAMBOL",
+        "DEPARTEMENTS": "DABAKALA",
+        "SOUS-PREFECTURES": "NIEMENE"
+    },
+    {
+        "REGIONS": "HAMBOL",
+        "DEPARTEMENTS": "DABAKALA",
+        "SOUS-PREFECTURES": "SATAMA-SOKORO"
+    },
+    {
+        "REGIONS": "HAMBOL",
+        "DEPARTEMENTS": "DABAKALA",
+        "SOUS-PREFECTURES": "SATAMA-SOKOURA"
+    },
+    {
+        "REGIONS": "HAMBOL",
+        "DEPARTEMENTS": "DABAKALA",
+        "SOUS-PREFECTURES": "SOKALA-SOBARA"
+    },
+    {
+        "REGIONS": "HAMBOL",
+        "DEPARTEMENTS": "DABAKALA",
+        "SOUS-PREFECTURES": "TENDENE-BAMBARASSO"
+    },
+    {
+        "REGIONS": "HAMBOL",
+        "DEPARTEMENTS": "DABAKALA",
+        "SOUS-PREFECTURES": "YAOSSEDOUGOU"
+    },
+    {
+        "REGIONS": "HAMBOL",
+        "DEPARTEMENTS": "KATIOLA",
+        "SOUS-PREFECTURES": "FRONAN"
+    },
+    {
+        "REGIONS": "HAMBOL",
+        "DEPARTEMENTS": "KATIOLA",
+        "SOUS-PREFECTURES": "KATIOLA"
+    },
+    {
+        "REGIONS": "HAMBOL",
+        "DEPARTEMENTS": "KATIOLA",
+        "SOUS-PREFECTURES": "TIMBE"
+    },
+    {
+        "REGIONS": "HAMBOL",
+        "DEPARTEMENTS": "NIAKARAMADOUGOU",
+        "SOUS-PREFECTURES": "ARIKOKAHA"
+    },
+    {
+        "REGIONS": "HAMBOL",
+        "DEPARTEMENTS": "NIAKARAMADOUGOU",
+        "SOUS-PREFECTURES": "BADIKAHA"
+    },
+    {
+        "REGIONS": "HAMBOL",
+        "DEPARTEMENTS": "NIAKARAMADOUGOU",
+        "SOUS-PREFECTURES": "NIAKARAMADOUGOU"
+    },
+    {
+        "REGIONS": "HAMBOL",
+        "DEPARTEMENTS": "NIAKARAMADOUGOU",
+        "SOUS-PREFECTURES": "NIEDIEKAHA"
+    },
+    {
+        "REGIONS": "HAMBOL",
+        "DEPARTEMENTS": "NIAKARAMADOUGOU",
+        "SOUS-PREFECTURES": "TAFIRE"
+    },
+    {
+        "REGIONS": "HAMBOL",
+        "DEPARTEMENTS": "NIAKARAMADOUGOU",
+        "SOUS-PREFECTURES": "TORTIYA"
+    },
+    {
+        "REGIONS": "HAUT-SASSANDRA",
+        "DEPARTEMENTS": "DALOA",
+        "SOUS-PREFECTURES": "BEDIALA"
+    },
+    {
+        "REGIONS": "HAUT-SASSANDRA",
+        "DEPARTEMENTS": "DALOA",
+        "SOUS-PREFECTURES": "DALOA"
+    },
+    {
+        "REGIONS": "HAUT-SASSANDRA",
+        "DEPARTEMENTS": "DALOA",
+        "SOUS-PREFECTURES": "GADOUAN"
+    },
+    {
+        "REGIONS": "HAUT-SASSANDRA",
+        "DEPARTEMENTS": "DALOA",
+        "SOUS-PREFECTURES": "GBOGUHE"
+    },
+    {
+        "REGIONS": "HAUT-SASSANDRA",
+        "DEPARTEMENTS": "DALOA",
+        "SOUS-PREFECTURES": "GONATE"
+    },
+    {
+        "REGIONS": "HAUT-SASSANDRA",
+        "DEPARTEMENTS": "DALOA",
+        "SOUS-PREFECTURES": "ZAÏBO"
+    },
+    {
+        "REGIONS": "HAUT-SASSANDRA",
+        "DEPARTEMENTS": "ISSIA",
+        "SOUS-PREFECTURES": "BOGUEDIA"
+    },
+    {
+        "REGIONS": "HAUT-SASSANDRA",
+        "DEPARTEMENTS": "ISSIA",
+        "SOUS-PREFECTURES": "IBOGUHE"
+    },
+    {
+        "REGIONS": "HAUT-SASSANDRA",
+        "DEPARTEMENTS": "ISSIA",
+        "SOUS-PREFECTURES": "ISSIA"
+    },
+    {
+        "REGIONS": "HAUT-SASSANDRA",
+        "DEPARTEMENTS": "ISSIA",
+        "SOUS-PREFECTURES": "NAHIO"
+    },
+    {
+        "REGIONS": "HAUT-SASSANDRA",
+        "DEPARTEMENTS": "ISSIA",
+        "SOUS-PREFECTURES": "NAMANE"
+    },
+    {
+        "REGIONS": "HAUT-SASSANDRA",
+        "DEPARTEMENTS": "ISSIA",
+        "SOUS-PREFECTURES": "SAÏOUA"
+    },
+    {
+        "REGIONS": "HAUT-SASSANDRA",
+        "DEPARTEMENTS": "ISSIA",
+        "SOUS-PREFECTURES": "TAPEGUIA"
+    },
+    {
+        "REGIONS": "HAUT-SASSANDRA",
+        "DEPARTEMENTS": "VAVOUA",
+        "SOUS-PREFECTURES": "BAZRA-NATTIS"
+    },
+    {
+        "REGIONS": "HAUT-SASSANDRA",
+        "DEPARTEMENTS": "VAVOUA",
+        "SOUS-PREFECTURES": "DANANON"
+    },
+    {
+        "REGIONS": "HAUT-SASSANDRA",
+        "DEPARTEMENTS": "VAVOUA",
+        "SOUS-PREFECTURES": "DANIA"
+    },
+    {
+        "REGIONS": "HAUT-SASSANDRA",
+        "DEPARTEMENTS": "VAVOUA",
+        "SOUS-PREFECTURES": "KETTRO-BASSAM"
+    },
+    {
+        "REGIONS": "HAUT-SASSANDRA",
+        "DEPARTEMENTS": "VAVOUA",
+        "SOUS-PREFECTURES": "SEITIFLA"
+    },
+    {
+        "REGIONS": "HAUT-SASSANDRA",
+        "DEPARTEMENTS": "VAVOUA",
+        "SOUS-PREFECTURES": "VAVOUA"
+    },
+    {
+        "REGIONS": "HAUT-SASSANDRA",
+        "DEPARTEMENTS": "ZOUKOUGBEU",
+        "SOUS-PREFECTURES": "DOMANGBEU"
+    },
+    {
+        "REGIONS": "HAUT-SASSANDRA",
+        "DEPARTEMENTS": "ZOUKOUGBEU",
+        "SOUS-PREFECTURES": "GREGBEU"
+    },
+    {
+        "REGIONS": "HAUT-SASSANDRA",
+        "DEPARTEMENTS": "ZOUKOUGBEU",
+        "SOUS-PREFECTURES": "GUESSABO"
+    },
+    {
+        "REGIONS": "HAUT-SASSANDRA",
+        "DEPARTEMENTS": "ZOUKOUGBEU",
+        "SOUS-PREFECTURES": "ZOUKOUGBEU"
+    },
+    {
+        "REGIONS": "IFFOU",
+        "DEPARTEMENTS": "DAOUKRO",
+        "SOUS-PREFECTURES": "DAOUKRO"
+    },
+    {
+        "REGIONS": "IFFOU",
+        "DEPARTEMENTS": "DAOUKRO",
+        "SOUS-PREFECTURES": "ETTROKRO"
+    },
+    {
+        "REGIONS": "IFFOU",
+        "DEPARTEMENTS": "DAOUKRO",
+        "SOUS-PREFECTURES": "N'GATTAKRO"
+    },
+    {
+        "REGIONS": "IFFOU",
+        "DEPARTEMENTS": "DAOUKRO",
+        "SOUS-PREFECTURES": "SAMANZA"
+    },
+    {
+        "REGIONS": "IFFOU",
+        "DEPARTEMENTS": "M'BAHIAKRO",
+        "SOUS-PREFECTURES": "BONGUERA"
+    },
+    {
+        "REGIONS": "IFFOU",
+        "DEPARTEMENTS": "M'BAHIAKRO",
+        "SOUS-PREFECTURES": "KONDOSSOU"
+    },
+    {
+        "REGIONS": "IFFOU",
+        "DEPARTEMENTS": "M'BAHIAKRO",
+        "SOUS-PREFECTURES": "M'BAHIAKRO"
+    },
+    {
+        "REGIONS": "IFFOU",
+        "DEPARTEMENTS": "OUELLE",
+        "SOUS-PREFECTURES": "AKPASSANOU"
+    },
+    {
+        "REGIONS": "IFFOU",
+        "DEPARTEMENTS": "OUELLE",
+        "SOUS-PREFECTURES": "ANANDA"
+    },
+    {
+        "REGIONS": "IFFOU",
+        "DEPARTEMENTS": "OUELLE",
+        "SOUS-PREFECTURES": "OUELLE"
+    },
+    {
+        "REGIONS": "IFFOU",
+        "DEPARTEMENTS": "PRIKRO",
+        "SOUS-PREFECTURES": "ANIANOU"
+    },
+    {
+        "REGIONS": "IFFOU",
+        "DEPARTEMENTS": "PRIKRO",
+        "SOUS-PREFECTURES": "FAMIENKRO"
+    },
+    {
+        "REGIONS": "IFFOU",
+        "DEPARTEMENTS": "PRIKRO",
+        "SOUS-PREFECTURES": "KOFFI-AMONKRO"
+    },
+    {
+        "REGIONS": "IFFOU",
+        "DEPARTEMENTS": "PRIKRO",
+        "SOUS-PREFECTURES": "NAFANA-PRIKRO"
+    },
+    {
+        "REGIONS": "IFFOU",
+        "DEPARTEMENTS": "PRIKRO",
+        "SOUS-PREFECTURES": "PRIKRO"
+    },
+    {
+        "REGIONS": "INDENIE-DJUABLIN",
+        "DEPARTEMENTS": "ABENGOUROU",
+        "SOUS-PREFECTURES": "ABENGOUROU"
+    },
+    {
+        "REGIONS": "INDENIE-DJUABLIN",
+        "DEPARTEMENTS": "ABENGOUROU",
+        "SOUS-PREFECTURES": "AMELEKIA"
+    },
+    {
+        "REGIONS": "INDENIE-DJUABLIN",
+        "DEPARTEMENTS": "ABENGOUROU",
+        "SOUS-PREFECTURES": "ANIASSUE"
+    },
+    {
+        "REGIONS": "INDENIE-DJUABLIN",
+        "DEPARTEMENTS": "ABENGOUROU",
+        "SOUS-PREFECTURES": "EBILASSOKRO"
+    },
+    {
+        "REGIONS": "INDENIE-DJUABLIN",
+        "DEPARTEMENTS": "ABENGOUROU",
+        "SOUS-PREFECTURES": "NIABLE"
+    },
+    {
+        "REGIONS": "INDENIE-DJUABLIN",
+        "DEPARTEMENTS": "ABENGOUROU",
+        "SOUS-PREFECTURES": "YAKASSE-FEYASSE"
+    },
+    {
+        "REGIONS": "INDENIE-DJUABLIN",
+        "DEPARTEMENTS": "ABENGOUROU",
+        "SOUS-PREFECTURES": "ZARANOU"
+    },
+    {
+        "REGIONS": "INDENIE-DJUABLIN",
+        "DEPARTEMENTS": "AGNIBILEKRO",
+        "SOUS-PREFECTURES": "AGNIBILEKROU"
+    },
+    {
+        "REGIONS": "INDENIE-DJUABLIN",
+        "DEPARTEMENTS": "AGNIBILEKRO",
+        "SOUS-PREFECTURES": "AKOBOISSUE"
+    },
+    {
+        "REGIONS": "INDENIE-DJUABLIN",
+        "DEPARTEMENTS": "AGNIBILEKRO",
+        "SOUS-PREFECTURES": "DAME"
+    },
+    {
+        "REGIONS": "INDENIE-DJUABLIN",
+        "DEPARTEMENTS": "AGNIBILEKRO",
+        "SOUS-PREFECTURES": "DUFFREBO"
+    },
+    {
+        "REGIONS": "INDENIE-DJUABLIN",
+        "DEPARTEMENTS": "AGNIBILEKRO",
+        "SOUS-PREFECTURES": "TANGUELAN"
+    },
+    {
+        "REGIONS": "INDENIE-DJUABLIN",
+        "DEPARTEMENTS": "BETTIE",
+        "SOUS-PREFECTURES": "BETTIE"
+    },
+    {
+        "REGIONS": "INDENIE-DJUABLIN",
+        "DEPARTEMENTS": "BETTIE",
+        "SOUS-PREFECTURES": "DIAMARAKRO"
+    },
+    {
+        "REGIONS": "KABADOUGOU",
+        "DEPARTEMENTS": "GBELEBAN",
+        "SOUS-PREFECTURES": "GBELEBAN"
+    },
+    {
+        "REGIONS": "KABADOUGOU",
+        "DEPARTEMENTS": "GBELEBAN",
+        "SOUS-PREFECTURES": "SAMANGO"
+    },
+    {
+        "REGIONS": "KABADOUGOU",
+        "DEPARTEMENTS": "GBELEBAN",
+        "SOUS-PREFECTURES": "SEYDOUGOU"
+    },
+    {
+        "REGIONS": "KABADOUGOU",
+        "DEPARTEMENTS": "MADINANI",
+        "SOUS-PREFECTURES": "FENGOLO"
+    },
+    {
+        "REGIONS": "KABADOUGOU",
+        "DEPARTEMENTS": "MADINANI",
+        "SOUS-PREFECTURES": "MADINANI"
+    },
+    {
+        "REGIONS": "KABADOUGOU",
+        "DEPARTEMENTS": "MADINANI",
+        "SOUS-PREFECTURES": "N’GOLOBLASSO"
+    },
+    {
+        "REGIONS": "KABADOUGOU",
+        "DEPARTEMENTS": "ODIENNE",
+        "SOUS-PREFECTURES": "BAKO"
+    },
+    {
+        "REGIONS": "KABADOUGOU",
+        "DEPARTEMENTS": "ODIENNE",
+        "SOUS-PREFECTURES": "BOUGOUSSO"
+    },
+    {
+        "REGIONS": "KABADOUGOU",
+        "DEPARTEMENTS": "ODIENNE",
+        "SOUS-PREFECTURES": "DIOULATIEDOUGOU"
+    },
+    {
+        "REGIONS": "KABADOUGOU",
+        "DEPARTEMENTS": "ODIENNE",
+        "SOUS-PREFECTURES": "ODIENNE"
+    },
+    {
+        "REGIONS": "KABADOUGOU",
+        "DEPARTEMENTS": "ODIENNE",
+        "SOUS-PREFECTURES": "TIEME"
+    },
+    {
+        "REGIONS": "KABADOUGOU",
+        "DEPARTEMENTS": "SAMATIGUILA",
+        "SOUS-PREFECTURES": "KIMBIRILA-SUD"
+    },
+    {
+        "REGIONS": "KABADOUGOU",
+        "DEPARTEMENTS": "SAMATIGUILA",
+        "SOUS-PREFECTURES": "SAMATIGUILA"
+    },
+    {
+        "REGIONS": "KABADOUGOU",
+        "DEPARTEMENTS": "SEGUELON",
+        "SOUS-PREFECTURES": "GBONGAHA"
+    },
+    {
+        "REGIONS": "KABADOUGOU",
+        "DEPARTEMENTS": "SEGUELON",
+        "SOUS-PREFECTURES": "SEGUELON "
+    },
+    {
+        "REGIONS": "LA ME",
+        "DEPARTEMENTS": "ADZOPE",
+        "SOUS-PREFECTURES": "ADZOPE"
+    },
+    {
+        "REGIONS": "LA ME",
+        "DEPARTEMENTS": "ADZOPE",
+        "SOUS-PREFECTURES": "AGOU"
+    },
+    {
+        "REGIONS": "LA ME",
+        "DEPARTEMENTS": "ADZOPE",
+        "SOUS-PREFECTURES": "ANNEPE"
+    },
+    {
+        "REGIONS": "LA ME",
+        "DEPARTEMENTS": "ADZOPE",
+        "SOUS-PREFECTURES": "ASSIKOI"
+    },
+    {
+        "REGIONS": "LA ME",
+        "DEPARTEMENTS": "ADZOPE",
+        "SOUS-PREFECTURES": "BECEDI-BRIGNAN"
+    },
+    {
+        "REGIONS": "LA ME",
+        "DEPARTEMENTS": "ADZOPE",
+        "SOUS-PREFECTURES": "YAKASSE-ME"
+    },
+    {
+        "REGIONS": "LA ME",
+        "DEPARTEMENTS": "AKOUPE",
+        "SOUS-PREFECTURES": "AFFERY"
+    },
+    {
+        "REGIONS": "LA ME",
+        "DEPARTEMENTS": "AKOUPE",
+        "SOUS-PREFECTURES": "AKOUPE"
+    },
+    {
+        "REGIONS": "LA ME",
+        "DEPARTEMENTS": "AKOUPE",
+        "SOUS-PREFECTURES": "BECOUEFIN"
+    },
+    {
+        "REGIONS": "LA ME",
+        "DEPARTEMENTS": "ALEPE",
+        "SOUS-PREFECTURES": "ABOISSO-COMOE"
+    },
+    {
+        "REGIONS": "LA ME",
+        "DEPARTEMENTS": "ALEPE",
+        "SOUS-PREFECTURES": "ALEPE"
+    },
+    {
+        "REGIONS": "LA ME",
+        "DEPARTEMENTS": "ALEPE",
+        "SOUS-PREFECTURES": "ALLOSSO"
+    },
+    {
+        "REGIONS": "LA ME",
+        "DEPARTEMENTS": "ALEPE",
+        "SOUS-PREFECTURES": "DANGUIRA"
+    },
+    {
+        "REGIONS": "LA ME",
+        "DEPARTEMENTS": "ALEPE",
+        "SOUS-PREFECTURES": "OGHLWAPO"
+    },
+    {
+        "REGIONS": "LA ME",
+        "DEPARTEMENTS": "YAKASSE-ATTOBROU",
+        "SOUS-PREFECTURES": "ABONGOUA"
+    },
+    {
+        "REGIONS": "LA ME",
+        "DEPARTEMENTS": "YAKASSE-ATTOBROU",
+        "SOUS-PREFECTURES": "BIEBY"
+    },
+    {
+        "REGIONS": "LA ME",
+        "DEPARTEMENTS": "YAKASSE-ATTOBROU",
+        "SOUS-PREFECTURES": "YAKASSE-ATTOBROU"
+    },
+    {
+        "REGIONS": "LOH-DJIBOUA",
+        "DEPARTEMENTS": "DIVO",
+        "SOUS-PREFECTURES": "CHIEPO"
+    },
+    {
+        "REGIONS": "LOH-DJIBOUA",
+        "DEPARTEMENTS": "DIVO",
+        "SOUS-PREFECTURES": "DIDOKO"
+    },
+    {
+        "REGIONS": "LOH-DJIBOUA",
+        "DEPARTEMENTS": "DIVO",
+        "SOUS-PREFECTURES": "DIVO"
+    },
+    {
+        "REGIONS": "LOH-DJIBOUA",
+        "DEPARTEMENTS": "DIVO",
+        "SOUS-PREFECTURES": "HIRE"
+    },
+    {
+        "REGIONS": "LOH-DJIBOUA",
+        "DEPARTEMENTS": "DIVO",
+        "SOUS-PREFECTURES": "NEBO"
+    },
+    {
+        "REGIONS": "LOH-DJIBOUA",
+        "DEPARTEMENTS": "DIVO",
+        "SOUS-PREFECTURES": "OGOUDOU"
+    },
+    {
+        "REGIONS": "LOH-DJIBOUA",
+        "DEPARTEMENTS": "DIVO",
+        "SOUS-PREFECTURES": "ZEGO"
+    },
+    {
+        "REGIONS": "LOH-DJIBOUA",
+        "DEPARTEMENTS": "GUITRY",
+        "SOUS-PREFECTURES": "DAIRO-DIDIZO"
+    },
+    {
+        "REGIONS": "LOH-DJIBOUA",
+        "DEPARTEMENTS": "GUITRY",
+        "SOUS-PREFECTURES": "GUITRY"
+    },
+    {
+        "REGIONS": "LOH-DJIBOUA",
+        "DEPARTEMENTS": "GUITRY",
+        "SOUS-PREFECTURES": "LAUZOUA"
+    },
+    {
+        "REGIONS": "LOH-DJIBOUA",
+        "DEPARTEMENTS": "GUITRY",
+        "SOUS-PREFECTURES": "YOCOBOUE"
+    },
+    {
+        "REGIONS": "LOH-DJIBOUA",
+        "DEPARTEMENTS": "LAKOTA",
+        "SOUS-PREFECTURES": "DJIDJI"
+    },
+    {
+        "REGIONS": "LOH-DJIBOUA",
+        "DEPARTEMENTS": "LAKOTA",
+        "SOUS-PREFECTURES": "GAGORE"
+    },
+    {
+        "REGIONS": "LOH-DJIBOUA",
+        "DEPARTEMENTS": "LAKOTA",
+        "SOUS-PREFECTURES": "GOUDOUKO"
+    },
+    {
+        "REGIONS": "LOH-DJIBOUA",
+        "DEPARTEMENTS": "LAKOTA",
+        "SOUS-PREFECTURES": "LAKOTA"
+    },
+    {
+        "REGIONS": "LOH-DJIBOUA",
+        "DEPARTEMENTS": "LAKOTA",
+        "SOUS-PREFECTURES": "NIAMBEZARIA"
+    },
+    {
+        "REGIONS": "LOH-DJIBOUA",
+        "DEPARTEMENTS": "LAKOTA",
+        "SOUS-PREFECTURES": "ZIKISSO"
+    },
+    {
+        "REGIONS": "MARAHOUE",
+        "DEPARTEMENTS": "BONON",
+        "SOUS-PREFECTURES": "BONON"
+    },
+    {
+        "REGIONS": "MARAHOUE",
+        "DEPARTEMENTS": "BONON",
+        "SOUS-PREFECTURES": "ZAGUIETA"
+    },
+    {
+        "REGIONS": "MARAHOUE",
+        "DEPARTEMENTS": "BOUAFLE",
+        "SOUS-PREFECTURES": "BEGBESSOU"
+    },
+    {
+        "REGIONS": "MARAHOUE",
+        "DEPARTEMENTS": "BOUAFLE",
+        "SOUS-PREFECTURES": "BOUAFLE"
+    },
+    {
+        "REGIONS": "MARAHOUE",
+        "DEPARTEMENTS": "BOUAFLE",
+        "SOUS-PREFECTURES": "N'DOUFFOUKANKRO"
+    },
+    {
+        "REGIONS": "MARAHOUE",
+        "DEPARTEMENTS": "BOUAFLE",
+        "SOUS-PREFECTURES": "PAKOUABO"
+    },
+    {
+        "REGIONS": "MARAHOUE",
+        "DEPARTEMENTS": "BOUAFLE",
+        "SOUS-PREFECTURES": "TIBEITA"
+    },
+    {
+        "REGIONS": "MARAHOUE",
+        "DEPARTEMENTS": "GOHITAFLA",
+        "SOUS-PREFECTURES": "GOHITAFLA"
+    },
+    {
+        "REGIONS": "MARAHOUE",
+        "DEPARTEMENTS": "GOHITAFLA",
+        "SOUS-PREFECTURES": "IRIEFLA"
+    },
+    {
+        "REGIONS": "MARAHOUE",
+        "DEPARTEMENTS": "GOHITAFLA",
+        "SOUS-PREFECTURES": "MAMINIGUI"
+    },
+    {
+        "REGIONS": "MARAHOUE",
+        "DEPARTEMENTS": "SINFRA",
+        "SOUS-PREFECTURES": "BAZRE"
+    },
+    {
+        "REGIONS": "MARAHOUE",
+        "DEPARTEMENTS": "SINFRA",
+        "SOUS-PREFECTURES": "KONONFLA"
+    },
+    {
+        "REGIONS": "MARAHOUE",
+        "DEPARTEMENTS": "SINFRA",
+        "SOUS-PREFECTURES": "KOUETINFLA"
+    },
+    {
+        "REGIONS": "MARAHOUE",
+        "DEPARTEMENTS": "SINFRA",
+        "SOUS-PREFECTURES": "SINFRA"
+    },
+    {
+        "REGIONS": "MARAHOUE",
+        "DEPARTEMENTS": "ZUENOULA",
+        "SOUS-PREFECTURES": "KANZRA"
+    },
+    {
+        "REGIONS": "MARAHOUE",
+        "DEPARTEMENTS": "ZUENOULA",
+        "SOUS-PREFECTURES": "VOUEBOUFLA"
+    },
+    {
+        "REGIONS": "MARAHOUE",
+        "DEPARTEMENTS": "ZUENOULA",
+        "SOUS-PREFECTURES": "ZANZRA"
+    },
+    {
+        "REGIONS": "MARAHOUE",
+        "DEPARTEMENTS": "ZUENOULA",
+        "SOUS-PREFECTURES": "ZUENOULA"
+    },
+    {
+        "REGIONS": "MORONOU",
+        "DEPARTEMENTS": "ARRAH",
+        "SOUS-PREFECTURES": "ARRAH"
+    },
+    {
+        "REGIONS": "MORONOU",
+        "DEPARTEMENTS": "ARRAH",
+        "SOUS-PREFECTURES": "KOTOBI"
+    },
+    {
+        "REGIONS": "MORONOU",
+        "DEPARTEMENTS": "ARRAH",
+        "SOUS-PREFECTURES": "KREGBE"
+    },
+    {
+        "REGIONS": "MORONOU",
+        "DEPARTEMENTS": "BONGOUANOU",
+        "SOUS-PREFECTURES": "ANDE"
+    },
+    {
+        "REGIONS": "MORONOU",
+        "DEPARTEMENTS": "BONGOUANOU",
+        "SOUS-PREFECTURES": "ASSIE-KOUMASSI"
+    },
+    {
+        "REGIONS": "MORONOU",
+        "DEPARTEMENTS": "BONGOUANOU",
+        "SOUS-PREFECTURES": "BONGOUANOU"
+    },
+    {
+        "REGIONS": "MORONOU",
+        "DEPARTEMENTS": "BONGOUANOU",
+        "SOUS-PREFECTURES": "N’GUESSANKRO-BONGOUANOU"
+    },
+    {
+        "REGIONS": "MORONOU",
+        "DEPARTEMENTS": "M'BATTO",
+        "SOUS-PREFECTURES": "ANOUMABA"
+    },
+    {
+        "REGIONS": "MORONOU",
+        "DEPARTEMENTS": "M'BATTO",
+        "SOUS-PREFECTURES": "ASSAHARA"
+    },
+    {
+        "REGIONS": "MORONOU",
+        "DEPARTEMENTS": "M'BATTO",
+        "SOUS-PREFECTURES": "M'BATTO"
+    },
+    {
+        "REGIONS": "MORONOU",
+        "DEPARTEMENTS": "M'BATTO",
+        "SOUS-PREFECTURES": "TIEMELEKRO"
+    },
+    {
+        "REGIONS": "NAWA",
+        "DEPARTEMENTS": "BUYO",
+        "SOUS-PREFECTURES": "BUYO"
+    },
+    {
+        "REGIONS": "NAWA",
+        "DEPARTEMENTS": "BUYO",
+        "SOUS-PREFECTURES": "DAPEOUA"
+    },
+    {
+        "REGIONS": "NAWA",
+        "DEPARTEMENTS": "GUEYO",
+        "SOUS-PREFECTURES": "DABOUYO"
+    },
+    {
+        "REGIONS": "NAWA",
+        "DEPARTEMENTS": "GUEYO",
+        "SOUS-PREFECTURES": "GUEYO"
+    },
+    {
+        "REGIONS": "NAWA",
+        "DEPARTEMENTS": "MEAGUI",
+        "SOUS-PREFECTURES": "GNAMANGUI"
+    },
+    {
+        "REGIONS": "NAWA",
+        "DEPARTEMENTS": "MEAGUI",
+        "SOUS-PREFECTURES": "MEAGUI"
+    },
+    {
+        "REGIONS": "NAWA",
+        "DEPARTEMENTS": "MEAGUI",
+        "SOUS-PREFECTURES": "OUPOYO"
+    },
+    {
+        "REGIONS": "NAWA",
+        "DEPARTEMENTS": "SOUBRE",
+        "SOUS-PREFECTURES": "GRAND-ZATTRY"
+    },
+    {
+        "REGIONS": "NAWA",
+        "DEPARTEMENTS": "SOUBRE",
+        "SOUS-PREFECTURES": "LILIYO"
+    },
+    {
+        "REGIONS": "NAWA",
+        "DEPARTEMENTS": "SOUBRE",
+        "SOUS-PREFECTURES": "OKROUYO"
+    },
+    {
+        "REGIONS": "NAWA",
+        "DEPARTEMENTS": "SOUBRE",
+        "SOUS-PREFECTURES": "SOUBRE"
+    },
+    {
+        "REGIONS": "N'ZI",
+        "DEPARTEMENTS": "BOCANDA",
+        "SOUS-PREFECTURES": "BENGASSOU"
+    },
+    {
+        "REGIONS": "N'ZI",
+        "DEPARTEMENTS": "BOCANDA",
+        "SOUS-PREFECTURES": "BOCANDA"
+    },
+    {
+        "REGIONS": "N'ZI",
+        "DEPARTEMENTS": "BOCANDA",
+        "SOUS-PREFECTURES": "KOUADIOBLEKRO"
+    },
+    {
+        "REGIONS": "N'ZI",
+        "DEPARTEMENTS": "BOCANDA",
+        "SOUS-PREFECTURES": "N'ZEKREZESSOU"
+    },
+    {
+        "REGIONS": "N'ZI",
+        "DEPARTEMENTS": "DIMBOKRO",
+        "SOUS-PREFECTURES": "ABIGUI"
+    },
+    {
+        "REGIONS": "N'ZI",
+        "DEPARTEMENTS": "DIMBOKRO",
+        "SOUS-PREFECTURES": "DIANGOKRO"
+    },
+    {
+        "REGIONS": "N'ZI",
+        "DEPARTEMENTS": "DIMBOKRO",
+        "SOUS-PREFECTURES": "DIMBOKRO"
+    },
+    {
+        "REGIONS": "N'ZI",
+        "DEPARTEMENTS": "DIMBOKRO",
+        "SOUS-PREFECTURES": "NOFOU"
+    },
+    {
+        "REGIONS": "N'ZI",
+        "DEPARTEMENTS": "KOUASSI-KOUASSIKRO",
+        "SOUS-PREFECTURES": "KOUASSI-KOUASSIKRO"
+    },
+    {
+        "REGIONS": "N'ZI",
+        "DEPARTEMENTS": "KOUASSI-KOUASSIKRO",
+        "SOUS-PREFECTURES": "MEKRO"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "DIKODOUGOU",
+        "SOUS-PREFECTURES": "BORON"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "DIKODOUGOU",
+        "SOUS-PREFECTURES": "DIKODOUGOU"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "DIKODOUGOU",
+        "SOUS-PREFECTURES": "GUIEMBE"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "KORHOGO",
+        "SOUS-PREFECTURES": "DASSOUNGBOHO"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "KORHOGO",
+        "SOUS-PREFECTURES": "KANOROBA"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "KORHOGO",
+        "SOUS-PREFECTURES": "KARAKORO"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "KORHOGO",
+        "SOUS-PREFECTURES": "KIEMOU"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "KORHOGO",
+        "SOUS-PREFECTURES": "KOMBOLOKOURA"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "KORHOGO",
+        "SOUS-PREFECTURES": "KOMBORODOUGOU"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "KORHOGO",
+        "SOUS-PREFECTURES": "KONI"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "KORHOGO",
+        "SOUS-PREFECTURES": "KORHOGO"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "KORHOGO",
+        "SOUS-PREFECTURES": "LATAHA"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "KORHOGO",
+        "SOUS-PREFECTURES": "NAFOUN"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "KORHOGO",
+        "SOUS-PREFECTURES": "NAPIELEODOUGOU"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "KORHOGO",
+        "SOUS-PREFECTURES": "N'GANON"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "KORHOGO",
+        "SOUS-PREFECTURES": "NIOFOIN"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "KORHOGO",
+        "SOUS-PREFECTURES": "SIRASSO"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "KORHOGO",
+        "SOUS-PREFECTURES": "SOHOUO"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "KORHOGO",
+        "SOUS-PREFECTURES": "TIORONIARADOUGOU"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "M'BEMBUE",
+        "SOUS-PREFECTURES": "BOUGOU"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "M'BEMBUE",
+        "SOUS-PREFECTURES": "KATIALI"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "M'BEMBUE",
+        "SOUS-PREFECTURES": "KATOGO"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "M'BEMBUE",
+        "SOUS-PREFECTURES": "M'BENGUE"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "SINEMATIALI",
+        "SOUS-PREFECTURES": "BAHOUAKAHA"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "SINEMATIALI",
+        "SOUS-PREFECTURES": "KAGBOLODOUGOU"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "SINEMATIALI",
+        "SOUS-PREFECTURES": "SEDIEGO"
+    },
+    {
+        "REGIONS": "PORO",
+        "DEPARTEMENTS": "SINEMATIALI",
+        "SOUS-PREFECTURES": "SINEMATIALI"
+    },
+    {
+        "REGIONS": "SAN-PEDRO",
+        "DEPARTEMENTS": "SAN-PEDRO",
+        "SOUS-PREFECTURES": "DOBA"
+    },
+    {
+        "REGIONS": "SAN-PEDRO",
+        "DEPARTEMENTS": "SAN-PEDRO",
+        "SOUS-PREFECTURES": "DOGBO"
+    },
+    {
+        "REGIONS": "SAN-PEDRO",
+        "DEPARTEMENTS": "SAN-PEDRO",
+        "SOUS-PREFECTURES": "GABIADJI"
+    },
+    {
+        "REGIONS": "SAN-PEDRO",
+        "DEPARTEMENTS": "SAN-PEDRO",
+        "SOUS-PREFECTURES": "GRAND-BEREBY"
+    },
+    {
+        "REGIONS": "SAN-PEDRO",
+        "DEPARTEMENTS": "SAN-PEDRO",
+        "SOUS-PREFECTURES": "SAN-PEDRO"
+    },
+    {
+        "REGIONS": "SAN-PEDRO",
+        "DEPARTEMENTS": "TABOU",
+        "SOUS-PREFECTURES": "DAPO-IBOKE"
+    },
+    {
+        "REGIONS": "SAN-PEDRO",
+        "DEPARTEMENTS": "TABOU",
+        "SOUS-PREFECTURES": "DJAMANDIOKE"
+    },
+    {
+        "REGIONS": "SAN-PEDRO",
+        "DEPARTEMENTS": "TABOU",
+        "SOUS-PREFECTURES": "DJOUROUTOU"
+    },
+    {
+        "REGIONS": "SAN-PEDRO",
+        "DEPARTEMENTS": "TABOU",
+        "SOUS-PREFECTURES": "GRABO"
+    },
+    {
+        "REGIONS": "SAN-PEDRO",
+        "DEPARTEMENTS": "TABOU",
+        "SOUS-PREFECTURES": "OLODIO"
+    },
+    {
+        "REGIONS": "SAN-PEDRO",
+        "DEPARTEMENTS": "TABOU",
+        "SOUS-PREFECTURES": "TABOU"
+    },
+    {
+        "REGIONS": "SUD-COMOE",
+        "DEPARTEMENTS": "ABOISSO",
+        "SOUS-PREFECTURES": "ABOISSO"
+    },
+    {
+        "REGIONS": "SUD-COMOE",
+        "DEPARTEMENTS": "ABOISSO",
+        "SOUS-PREFECTURES": "ADAOU"
+    },
+    {
+        "REGIONS": "SUD-COMOE",
+        "DEPARTEMENTS": "ABOISSO",
+        "SOUS-PREFECTURES": "ADJOUAN"
+    },
+    {
+        "REGIONS": "SUD-COMOE",
+        "DEPARTEMENTS": "ABOISSO",
+        "SOUS-PREFECTURES": "AYAME"
+    },
+    {
+        "REGIONS": "SUD-COMOE",
+        "DEPARTEMENTS": "ABOISSO",
+        "SOUS-PREFECTURES": "BIANOUAN"
+    },
+    {
+        "REGIONS": "SUD-COMOE",
+        "DEPARTEMENTS": "ABOISSO",
+        "SOUS-PREFECTURES": "KOUAKRO"
+    },
+    {
+        "REGIONS": "SUD-COMOE",
+        "DEPARTEMENTS": "ABOISSO",
+        "SOUS-PREFECTURES": "MAFERE"
+    },
+    {
+        "REGIONS": "SUD-COMOE",
+        "DEPARTEMENTS": "ABOISSO",
+        "SOUS-PREFECTURES": "YAOU"
+    },
+    {
+        "REGIONS": "SUD-COMOE",
+        "DEPARTEMENTS": "ADIAKE",
+        "SOUS-PREFECTURES": "ADIAKE"
+    },
+    {
+        "REGIONS": "SUD-COMOE",
+        "DEPARTEMENTS": "ADIAKE",
+        "SOUS-PREFECTURES": "ASSINIE-MAFIA"
+    },
+    {
+        "REGIONS": "SUD-COMOE",
+        "DEPARTEMENTS": "ADIAKE",
+        "SOUS-PREFECTURES": "ETUEBOUE"
+    },
+    {
+        "REGIONS": "SUD-COMOE",
+        "DEPARTEMENTS": "GRAND-BASSAM",
+        "SOUS-PREFECTURES": "BONGO"
+    },
+    {
+        "REGIONS": "SUD-COMOE",
+        "DEPARTEMENTS": "GRAND-BASSAM",
+        "SOUS-PREFECTURES": "BONOUA"
+    },
+    {
+        "REGIONS": "SUD-COMOE",
+        "DEPARTEMENTS": "GRAND-BASSAM",
+        "SOUS-PREFECTURES": "GRAND-BASSAM"
+    },
+    {
+        "REGIONS": "SUD-COMOE",
+        "DEPARTEMENTS": "TIAPOUM",
+        "SOUS-PREFECTURES": "NOE"
+    },
+    {
+        "REGIONS": "SUD-COMOE",
+        "DEPARTEMENTS": "TIAPOUM",
+        "SOUS-PREFECTURES": "NOUAMOU"
+    },
+    {
+        "REGIONS": "SUD-COMOE",
+        "DEPARTEMENTS": "TIAPOUM",
+        "SOUS-PREFECTURES": "TIAPOU"
+    },
+    {
+        "REGIONS": "TCHOLOGO",
+        "DEPARTEMENTS": "FERKESSEDOUGOU",
+        "SOUS-PREFECTURES": "FERKESSEDOUGOU"
+    },
+    {
+        "REGIONS": "TCHOLOGO",
+        "DEPARTEMENTS": "FERKESSEDOUGOU",
+        "SOUS-PREFECTURES": "KOUMBALA"
+    },
+    {
+        "REGIONS": "TCHOLOGO",
+        "DEPARTEMENTS": "FERKESSEDOUGOU",
+        "SOUS-PREFECTURES": "TOGONIERE"
+    },
+    {
+        "REGIONS": "TCHOLOGO",
+        "DEPARTEMENTS": "KONG",
+        "SOUS-PREFECTURES": "BILIMONO"
+    },
+    {
+        "REGIONS": "TCHOLOGO",
+        "DEPARTEMENTS": "KONG",
+        "SOUS-PREFECTURES": "KONG"
+    },
+    {
+        "REGIONS": "TCHOLOGO",
+        "DEPARTEMENTS": "KONG",
+        "SOUS-PREFECTURES": "NAFANA(DE KONG)"
+    },
+    {
+        "REGIONS": "TCHOLOGO",
+        "DEPARTEMENTS": "KONG",
+        "SOUS-PREFECTURES": "SIKOLO"
+    },
+    {
+        "REGIONS": "TCHOLOGO",
+        "DEPARTEMENTS": "OUANGOLODOUGOU",
+        "SOUS-PREFECTURES": "DIAWALA"
+    },
+    {
+        "REGIONS": "TCHOLOGO",
+        "DEPARTEMENTS": "OUANGOLODOUGOU",
+        "SOUS-PREFECTURES": "KAOUARA"
+    },
+    {
+        "REGIONS": "TCHOLOGO",
+        "DEPARTEMENTS": "OUANGOLODOUGOU",
+        "SOUS-PREFECTURES": "NIELLE"
+    },
+    {
+        "REGIONS": "TCHOLOGO",
+        "DEPARTEMENTS": "OUANGOLODOUGOU",
+        "SOUS-PREFECTURES": "OUANGOLODOUGOU"
+    },
+    {
+        "REGIONS": "TCHOLOGO",
+        "DEPARTEMENTS": "OUANGOLODOUGOU",
+        "SOUS-PREFECTURES": "TOUMOUKORO"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "BIANKOUMA",
+        "SOUS-PREFECTURES": "BIANKOUMA"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "BIANKOUMA",
+        "SOUS-PREFECTURES": "BLAPLEU"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "BIANKOUMA",
+        "SOUS-PREFECTURES": "GBANGBEGOUINE"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "BIANKOUMA",
+        "SOUS-PREFECTURES": "GBONNE"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "BIANKOUMA",
+        "SOUS-PREFECTURES": "GOUINE"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "BIANKOUMA",
+        "SOUS-PREFECTURES": "KPATA"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "BIANKOUMA",
+        "SOUS-PREFECTURES": "SANTA-BIANKOUMA"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "DANANE",
+        "SOUS-PREFECTURES": "DALEU"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "DANANE",
+        "SOUS-PREFECTURES": "DANANE"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "DANANE",
+        "SOUS-PREFECTURES": "GBON-HOUYE "
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "DANANE",
+        "SOUS-PREFECTURES": "KOUAN-HOULE"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "DANANE",
+        "SOUS-PREFECTURES": "MAHAPLEU"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "DANANE",
+        "SOUS-PREFECTURES": "SEILEU"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "DANANE",
+        "SOUS-PREFECTURES": "ZONNEU"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "MAN",
+        "SOUS-PREFECTURES": "BOGOUINE"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "MAN",
+        "SOUS-PREFECTURES": "FAGNAMPLEU"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "MAN",
+        "SOUS-PREFECTURES": "GBANGBEGOUINE YATI"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "MAN",
+        "SOUS-PREFECTURES": "LOGOUALE"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "MAN",
+        "SOUS-PREFECTURES": "MAN"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "MAN",
+        "SOUS-PREFECTURES": "PODIAGOUINE"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "MAN",
+        "SOUS-PREFECTURES": "SANDOUGOU-SOBA"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "MAN",
+        "SOUS-PREFECTURES": "SANGOUINE"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "MAN",
+        "SOUS-PREFECTURES": "YAPLEU"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "MAN",
+        "SOUS-PREFECTURES": "ZAGOUE"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "MAN",
+        "SOUS-PREFECTURES": "ZIOGOUINE"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "SIPILOU",
+        "SOUS-PREFECTURES": "SIPILOU"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "SIPILOU",
+        "SOUS-PREFECTURES": "YORODOUGOU"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "ZOUHAN-HOUNIEN",
+        "SOUS-PREFECTURES": "BANNEU"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "ZOUHAN-HOUNIEN",
+        "SOUS-PREFECTURES": "BIN-HOUYE"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "ZOUHAN-HOUNIEN",
+        "SOUS-PREFECTURES": "GOULALEU"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "ZOUHAN-HOUNIEN",
+        "SOUS-PREFECTURES": "TEAPLEU"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "ZOUHAN-HOUNIEN",
+        "SOUS-PREFECTURES": "YELLEU"
+    },
+    {
+        "REGIONS": "TONKPI",
+        "DEPARTEMENTS": "ZOUHAN-HOUNIEN",
+        "SOUS-PREFECTURES": "ZOUAN-HOUNIEN"
+    },
+    {
+        "REGIONS": "WORODOUGOU",
+        "DEPARTEMENTS": "KANI ",
+        "SOUS-PREFECTURES": "DJIBROSSO"
+    },
+    {
+        "REGIONS": "WORODOUGOU",
+        "DEPARTEMENTS": "KANI ",
+        "SOUS-PREFECTURES": "FADIADOUGOU"
+    },
+    {
+        "REGIONS": "WORODOUGOU",
+        "DEPARTEMENTS": "KANI ",
+        "SOUS-PREFECTURES": "KANI"
+    },
+    {
+        "REGIONS": "WORODOUGOU",
+        "DEPARTEMENTS": "KANI ",
+        "SOUS-PREFECTURES": "MORONDO"
+    },
+    {
+        "REGIONS": "WORODOUGOU",
+        "DEPARTEMENTS": "SEGUELA",
+        "SOUS-PREFECTURES": "BOBI"
+    },
+    {
+        "REGIONS": "WORODOUGOU",
+        "DEPARTEMENTS": "SEGUELA",
+        "SOUS-PREFECTURES": "DIARABANA"
+    },
+    {
+        "REGIONS": "WORODOUGOU",
+        "DEPARTEMENTS": "SEGUELA",
+        "SOUS-PREFECTURES": "DUALLA"
+    },
+    {
+        "REGIONS": "WORODOUGOU",
+        "DEPARTEMENTS": "SEGUELA",
+        "SOUS-PREFECTURES": "KAMALO"
+    },
+    {
+        "REGIONS": "WORODOUGOU",
+        "DEPARTEMENTS": "SEGUELA",
+        "SOUS-PREFECTURES": "MASSALA"
+    },
+    {
+        "REGIONS": "WORODOUGOU",
+        "DEPARTEMENTS": "SEGUELA",
+        "SOUS-PREFECTURES": "SEGUELA"
+    },
+    {
+        "REGIONS": "WORODOUGOU",
+        "DEPARTEMENTS": "SEGUELA",
+        "SOUS-PREFECTURES": "SIFIE"
+    },
+    {
+        "REGIONS": "WORODOUGOU",
+        "DEPARTEMENTS": "SEGUELA",
+        "SOUS-PREFECTURES": "WOROFLA"
+    }
+]

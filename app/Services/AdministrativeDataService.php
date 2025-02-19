@@ -4,6 +4,8 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
+use App\Models\Locality;
+use App\Models\LocalityType;
 
 class AdministrativeDataService
 {
@@ -57,5 +59,45 @@ class AdministrativeDataService
         return $this->getAllLocalities()
             ->where('parent_id', $parentCode)
             ->values();
+    }
+
+    public function getLocalityHierarchy()
+    {
+        $regions = Locality::whereHas('type', function($query) {
+                $query->where('name', 'region');
+            })
+            ->with(['children' => function($query) {
+                $query->whereHas('type', function($q) {
+                    $q->where('name', 'department');
+                })->with(['children' => function($q) {
+                    $q->whereHas('type', function($sq) {
+                        $sq->where('name', 'sub_prefecture');
+                    });
+                }]);
+            }])
+            ->get()
+            ->map(function ($region) {
+                return [
+                    'id' => $region->id,
+                    'name' => $region->name,
+                    'type' => 'region',
+                    'children' => $region->children->map(function ($department) {
+                        return [
+                            'id' => $department->id,
+                            'name' => $department->name,
+                            'type' => 'department',
+                            'children' => $department->children->map(function ($subPrefecture) {
+                                return [
+                                    'id' => $subPrefecture->id,
+                                    'name' => $subPrefecture->name,
+                                    'type' => 'sub_prefecture'
+                                ];
+                            })
+                        ];
+                    })
+                ];
+            });
+
+        return $regions;
     }
 } 

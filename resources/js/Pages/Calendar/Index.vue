@@ -75,8 +75,13 @@
             <MapPinIcon class="h-5 w-5 inline mr-2" />
             {{ selectedMeeting.location || 'Aucun lieu spécifié' }}
           </p>
+          <p v-if="selectedMeeting.local_committee" class="text-sm text-gray-600">
+            <UserGroupIcon class="h-5 w-5 inline mr-2" />
+            {{ selectedMeeting.local_committee.name }}
+          </p>
           <p class="text-sm text-gray-600">
-            {{ selectedMeeting.description || 'Aucune description' }}
+            <TagIcon class="h-5 w-5 inline mr-2" />
+            {{ formatStatus(selectedMeeting.status) }}
           </p>
         </div>
         <div class="mt-6 flex justify-end space-x-3">
@@ -104,17 +109,22 @@ import {
   ClockIcon,
   MapPinIcon,
   ChevronLeftIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
+  UserGroupIcon,
+  TagIcon
 } from '@heroicons/vue/24/outline'
 
 interface Meeting {
   id: number
   title: string
-  description: string
   start_datetime: string
   end_datetime: string
   location: string
   status: string
+  local_committee?: {
+    id: number
+    name: string
+  }
 }
 
 interface Props {
@@ -245,6 +255,16 @@ function formatMonthYear(date: Date) {
     month: 'long',
     year: 'numeric'
   })
+}
+
+function formatStatus(status: string): string {
+  const statusMap: { [key: string]: string } = {
+    'planned': 'Planifiée',
+    'ongoing': 'En cours',
+    'completed': 'Terminée',
+    'cancelled': 'Annulée'
+  };
+  return statusMap[status] || status;
 }
 </script>
 

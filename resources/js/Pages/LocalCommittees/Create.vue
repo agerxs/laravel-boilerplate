@@ -1,341 +1,355 @@
 <template>
-  <AppLayout title="Nouveau Comité Local">
-    <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        Nouveau Comité Local
-      </h2>
-    </template>
+  <Head title="Nouveau comité local" />
 
-    <div class="py-12">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
-          <form @submit.prevent="submit">
+  <AppLayout title="Nouveau comité local">
+    <div class="max-w-7xl mx-auto py-6">
+      <div class="bg-white shadow rounded-lg">
+        <form @submit.prevent="submit">
+          <!-- En-tête -->
+          <div class="px-6 py-4 border-b border-gray-200">
+            <div class="flex justify-between items-center">
+              <h2 class="text-xl font-semibold text-gray-900">
+                Créer un nouveau comité
+              </h2>
+            </div>
+          </div>
+
+          <!-- Contenu du formulaire -->
+          <div class="px-6 py-4 space-y-6">
             <!-- Informations de base -->
-            <div class="mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <!-- Région -->
               <div>
-                <InputLabel for="name" value="Nom du comité" />
-                <TextInput
-                  id="name"
-                  v-model="form.name"
-                  type="text"
-                  class="mt-1 block w-full"
+                <InputLabel for="region" value="Région" />
+                <select
+                  id="region"
+                  v-model="selectedRegion"
+                  class="mt-1 block w-full rounded-md border-gray-300"
                   required
-                />
-                <InputError :message="form.errors.name" class="mt-2" />
+                >
+                  <option value="">Sélectionner une région</option>
+                  <option
+                    v-for="region in localities"
+                    :key="region.id"
+                    :value="region"
+                  >
+                    {{ region.name }}
+                  </option>
+                </select>
+              </div>
+
+              <!-- Département -->
+              <div>
+                <InputLabel for="department" value="Département" />
+                <select
+                  id="department"
+                  v-model="selectedDepartment"
+                  class="mt-1 block w-full rounded-md border-gray-300"
+                  required
+                  :disabled="!selectedRegion"
+                >
+                  <option value="">Sélectionner un département</option>
+                  <option
+                    v-for="department in departments"
+                    :key="department.id"
+                    :value="department"
+                  >
+                    {{ department.name }}
+                  </option>
+                </select>
+              </div>
+
+              <!-- Sous-préfecture -->
+              <div>
+                <InputLabel for="locality_id" value="Sous-préfecture" />
+                <select
+                  id="locality_id"
+                  v-model="form.locality_id"
+                  class="mt-1 block w-full rounded-md border-gray-300"
+                  required
+                  :disabled="!selectedDepartment"
+                  @change="updateCommitteeName"
+                >
+                  <option value="">Sélectionner une sous-préfecture</option>
+                  <option
+                    v-for="subPrefecture in subPrefectures"
+                    :key="subPrefecture.id"
+                    :value="subPrefecture.id"
+                  >
+                    {{ subPrefecture.name }}
+                  </option>
+                </select>
+                <InputError :message="form.errors.locality_id" class="mt-2" />
               </div>
             </div>
 
-            <!-- Bloc localité -->
-            <div class="mb-6">
-              <h3 class="text-lg font-medium text-gray-900 mb-4">Localisation</h3>
-              <LocalitySelector
-                v-model="selectedLocation"
-                :localities="localities"
-              />
-            </div>
-
-            <!-- Adresse -->
-            <div class="mb-6">
-              <InputLabel for="address" value="Adresse complète" />
+            <!-- Nom du comité -->
+            <div class="col-span-full">
+              <InputLabel for="name" value="Nom du comité" />
               <TextInput
-                id="address"
-                v-model="form.address"
+                id="name"
+                v-model="form.name"
                 type="text"
                 class="mt-1 block w-full"
                 required
               />
-              <InputError :message="form.errors.address" class="mt-2" />
-            </div>
-
-            <!-- Description -->
-            <div class="mb-6">
-              <InputLabel for="description" value="Description" />
-              <TextArea
-                id="description"
-                v-model="form.description"
-                class="mt-1 block w-full"
-                :rows="3"
-              />
-              <InputError :message="form.errors.description" class="mt-2" />
+              <InputError :message="form.errors.name" class="mt-2" />
+              <p class="mt-1 text-sm text-gray-500">
+                Le nom est automatiquement généré lors de la sélection d'une sous-préfecture, mais peut être modifié.
+              </p>
             </div>
 
             <!-- Section des membres -->
-            <div class="mt-6">
-              <h3 class="text-lg font-medium text-gray-900">Membres du comité</h3>
-              <p class="mt-1 text-sm text-gray-600">
-                Ajoutez les membres du comité local
-              </p>
+            <div class="mt-8">
+              <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-medium text-gray-900">Membres du comité</h3>
+                <button
+                  type="button"
+                  @click="addMember"
+                  class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-md"
+                >
+                  <PlusIcon class="h-5 w-5 mr-2" />
+                  Ajouter un membre
+                </button>
+              </div>
 
-              <div class="mt-4 space-y-4">
-                <div v-for="(member, index) in form.members" :key="index" class="flex gap-4 items-start p-4 bg-gray-50 rounded-lg">
-                  <!-- Sélection du rôle -->
-                  <div class="flex-1">
-                    <label class="block text-sm font-medium text-gray-700">Rôle</label>
-                    <select
-                      v-model="member.role"
-                      class="mt-1 block w-full rounded-md border-gray-300"
-                      required
-                    >
-                      <option value="">Sélectionner un rôle</option>
-                      <option 
-                        v-for="(label, role) in ROLE_LABELS" 
-                        :key="role"
-                        :value="role"
-                        :disabled="role === ROLES.SECRETARY && index !== 0"
-                      >
-                        {{ label }}
-                      </option>
-                    </select>
-                  </div>
-
-                  <!-- Champs pour utilisateur (secrétaire) -->
-                  <template v-if="member.role === ROLES.SECRETARY">
-                    <div class="flex-1">
-                      <label class="block text-sm font-medium text-gray-700">Utilisateur</label>
-                      <select
-                        v-model="member.user_id"
-                        class="mt-1 block w-full rounded-md border-gray-300"
-                        required
-                      >
-                        <option value="">Sélectionner un utilisateur</option>
-                        <option
-                          v-for="user in availableUsers"
-                          :key="user.id"
-                          :value="user.id"
-                          :disabled="isUserSelected(user.id, index)"
+              <!-- Liste des membres -->
+              <div class="space-y-4">
+                <div v-for="(member, index) in form.members" :key="index" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                  <div class="flex justify-between items-start">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 flex-grow">
+                      <div>
+                        <InputLabel :for="`member-${index}-type`" value="Type de membre" />
+                        <select
+                          :id="`member-${index}-type`"
+                          v-model="member.is_user"
+                          class="mt-1 block w-full rounded-md border-gray-300"
                         >
-                          {{ user.name }}
-                        </option>
-                      </select>
-                    </div>
-                  </template>
+                          <option :value="true">Utilisateur existant</option>
+                          <option :value="false">Nouveau membre</option>
+                        </select>
+                      </div>
 
-                  <!-- Champs pour non-utilisateur -->
-                  <template v-else>
-                    <div class="flex-1">
-                      <label class="block text-sm font-medium text-gray-700">Nom</label>
-                      <TextInput
-                        v-model="member.last_name"
-                        type="text"
-                        class="mt-1 block w-full"
-                        required
-                      />
-                    </div>
-                    <div class="flex-1">
-                      <label class="block text-sm font-medium text-gray-700">Prénom</label>
-                      <TextInput
-                        v-model="member.first_name"
-                        type="text"
-                        class="mt-1 block w-full"
-                        required
-                      />
-                    </div>
-                    <div class="flex-1">
-                      <label class="block text-sm font-medium text-gray-700">Téléphone</label>
-                      <TextInput
-                        v-model="member.phone"
-                        type="tel"
-                        class="mt-1 block w-full"
-                        required
-                      />
-                    </div>
-                  </template>
+                      <template v-if="member.is_user">
+                        <div>
+                          <InputLabel :for="`member-${index}-user`" value="Utilisateur" />
+                          <select
+                            :id="`member-${index}-user`"
+                            v-model="member.user_id"
+                            class="mt-1 block w-full rounded-md border-gray-300"
+                            required
+                          >
+                            <option value="">Sélectionner un utilisateur</option>
+                            <option v-for="user in users" :key="user.id" :value="user.id">
+                              {{ user.name }} ({{ user.locality_name }})
+                            </option>
+                          </select>
+                        </div>
+                      </template>
 
-                  <!-- Bouton supprimer -->
-                  <button
-                    type="button"
-                    class="mt-6"
-                    @click="removeMember(index)"
-                    :disabled="index === 0"
-                    :class="{ 'opacity-50 cursor-not-allowed': index === 0 }"
-                  >
-                    <TrashIcon class="w-5 h-5 text-red-500" />
-                  </button>
+                      <template v-else>
+                        <div>
+                          <InputLabel :for="`member-${index}-firstname`" value="Prénom" />
+                          <TextInput
+                            :id="`member-${index}-firstname`"
+                            v-model="member.first_name"
+                            type="text"
+                            class="mt-1 block w-full"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <InputLabel :for="`member-${index}-lastname`" value="Nom" />
+                          <TextInput
+                            :id="`member-${index}-lastname`"
+                            v-model="member.last_name"
+                            type="text"
+                            class="mt-1 block w-full"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <InputLabel :for="`member-${index}-phone`" value="Téléphone" />
+                          <TextInput
+                            :id="`member-${index}-phone`"
+                            v-model="member.phone"
+                            type="tel"
+                            class="mt-1 block w-full"
+                          />
+                        </div>
+                      </template>
+
+                      <div>
+                        <InputLabel :for="`member-${index}-role`" value="Rôle" />
+                        <select
+                          :id="`member-${index}-role`"
+                          v-model="member.role"
+                          class="mt-1 block w-full rounded-md border-gray-300"
+                          required
+                        >
+                          <option value="">Sélectionner un rôle</option>
+                          <option value="secretary">Secrétaire</option>
+                          <option value="member">Membre</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      @click="removeMember(index)"
+                      class="ml-4 p-2 text-red-600 hover:text-red-800 hover:bg-red-100 rounded-full"
+                      title="Supprimer ce membre"
+                    >
+                      <TrashIcon class="h-5 w-5" />
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              <!-- Bouton ajouter membre -->
-              <button
-                type="button"
-                class="mt-4 inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
-                @click="addMember"
-              >
-                <PlusIcon class="w-4 h-4 mr-2" />
-                Ajouter un membre
-              </button>
+              <!-- Message si aucun membre -->
+              <div v-if="form.members.length === 0" class="text-center py-6 text-gray-500">
+                Aucun membre. Cliquez sur "Ajouter un membre" pour commencer.
+              </div>
             </div>
+          </div>
 
+          <!-- Boutons d'action -->
+          <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
             <div class="flex justify-end space-x-3">
               <Link
                 :href="route('local-committees.index')"
-                class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50"
+                class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
               >
                 Annuler
               </Link>
-              <PrimaryButton :disabled="form.processing">
-                Créer le comité
-              </PrimaryButton>
+              <button
+                type="submit"
+                class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium"
+                :disabled="form.processing"
+              >
+                Créer
+              </button>
             </div>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
     </div>
   </AppLayout>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import { useForm, Link } from '@inertiajs/vue3'
+import { Head, Link, useForm } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import InputLabel from '@/Components/InputLabel.vue'
 import TextInput from '@/Components/TextInput.vue'
-import TextArea from '@/Components/TextArea.vue'
 import InputError from '@/Components/InputError.vue'
-import PrimaryButton from '@/Components/PrimaryButton.vue'
 import { PlusIcon, TrashIcon } from '@heroicons/vue/24/outline'
-import { useToast } from '@/Composables/useToast'
-import LocalitySelector from '@/Components/LocalitySelector.vue'
-
-const toast = useToast()
+import { ref, computed, watch } from 'vue'
 
 interface User {
-  id: number
-  name: string
-  email: string
+  id: number;
+  name: string;
+  locality_name?: string;
+}
+
+interface Locality {
+  id: number;
+  name: string;
+  type: string;
+  children?: Locality[];
 }
 
 interface Member {
-  user_id?: number | ''  // Optionnel car seul le secrétaire est un utilisateur
-  role: string
-  first_name?: string    // Pour les membres non-utilisateurs
-  last_name?: string     // Pour les membres non-utilisateurs
-  phone?: string         // Pour les membres non-utilisateurs
-  is_user: boolean       // Pour distinguer les types de membres
+  id?: number;
+  is_user: boolean;
+  user_id?: number;
+  first_name?: string;
+  last_name?: string;
+  phone?: string;
+  role: string;
+  status: string;
 }
 
 interface Props {
-  users: User[]
-  localities: any[]  // On peut typer plus précisément si nécessaire
+  users: User[];
+  localities: Locality[];
 }
 
-const props = defineProps<Props>()
+const props = defineProps<Props>();
 
-const ROLES = {
-  SECRETARY: 'secretaire',
-  VILLAGE_CHIEF: 'chef_village',
-  YOUTH_PRESIDENT: 'president_jeunes',
-  WOMEN_PRESIDENT: 'presidente_femmes'
-} as const
-
-const ROLE_LABELS = {
-  [ROLES.SECRETARY]: 'Secrétaire',
-  [ROLES.VILLAGE_CHIEF]: 'Chef du village',
-  [ROLES.YOUTH_PRESIDENT]: 'Président des jeunes',
-  [ROLES.WOMEN_PRESIDENT]: 'Présidente des femmes'
-} as const
-
-// État initial du formulaire
-const initialFormState = {
+const form = useForm<{
+  name: string;
+  locality_id: string | number;
+  status: string;
+  members: Member[];
+}>({
   name: '',
-  description: '',
-  address: '',
-  city: '',  // Ajout du champ city pour la validation
-  members: [{
-    user_id: '' as number | '',
-    role: ROLES.SECRETARY,
-    is_user: true,
+  locality_id: '',
+  status: 'active',
+  members: []
+});
+
+// État pour la sélection en cascade
+const selectedRegion = ref<Locality | null>(null);
+const selectedDepartment = ref<Locality | null>(null);
+
+// Computed properties pour les listes filtrées
+const departments = computed(() => {
+  if (!selectedRegion.value) return [];
+  return selectedRegion.value.children || [];
+});
+
+const subPrefectures = computed(() => {
+  if (!selectedDepartment.value) return [];
+  return selectedDepartment.value.children || [];
+});
+
+// Réinitialiser les sélections en cascade
+watch(selectedRegion, () => {
+  selectedDepartment.value = null;
+  form.locality_id = '';
+  form.name = '';
+});
+
+watch(selectedDepartment, () => {
+  form.locality_id = '';
+  form.name = '';
+});
+
+const updateCommitteeName = () => {
+  const subPrefecture = subPrefectures.value.find(sp => sp.id.toString() === form.locality_id.toString());
+  if (subPrefecture) {
+    form.name = `Comité Local de ${subPrefecture.name}`;
+  }
+};
+
+const addMember = () => {
+  form.members.push({
+    is_user: false,
+    role: '',
+    status: 'active',
     first_name: '',
     last_name: '',
     phone: ''
-  }] as Member[]
+  });
+};
+
+const removeMember = (index: number) => {
+  form.members.splice(index, 1);
+};
+
+const submit = () => {
+  form.post(route('local-committees.store'));
+};
+</script>
+
+<style>
+.bg-primary-600 {
+  background-color: rgb(79, 70, 229);
 }
-
-const form = useForm(initialFormState)
-
-const selectedLocation = ref('')
-
-// Surveiller les changements de localité pour mettre à jour l'adresse et la ville
-watch(selectedLocation, (newLocation) => {
-  if (newLocation) {
-    // Si une adresse existe déjà, on la préserve en l'ajoutant à la fin
-    const existingAddress = form.address.split(' - ')[1] || ''
-    form.address = newLocation + (existingAddress ? ' - ' + existingAddress : '')
-    form.city = newLocation  // Mettre à jour le champ city
-  }
-})
-
-// Filtrer les utilisateurs déjà sélectionnés
-const availableUsers = computed(() => {
-  if (!props.users) return []
-  const selectedUserIds = form.members
-    .map(m => m.user_id)
-    .filter((id): id is number => id !== '') // Type guard pour TypeScript
-  return props.users.filter(user => {
-    if (!selectedUserIds.includes(user.id)) return true
-    return selectedUserIds.indexOf(user.id) === selectedUserIds.lastIndexOf(user.id)
-  })
-})
-
-function isUserSelected(userId: number, currentIndex: number) {
-  return form.members.some((member, index) => 
-    Number(member.user_id) === userId && index !== currentIndex
-  )
+.hover\:bg-primary-700:hover {
+  background-color: rgb(67, 56, 202);
 }
-
-function addMember() {
-  form.members.push({
-    user_id: '' as number | '',
-    role: '',
-    first_name: '',
-    last_name: '',
-    phone: '',
-    is_user: false
-  })
-}
-
-function removeMember(index: number) {
-  if (form.members.length > 1) {
-    form.members.splice(index, 1)
-  } else {
-    toast.error('Le comité doit avoir au moins un membre')
-  }
-}
-
-function submit() {
-  if (!form.members.length) {
-    toast.error('Ajoutez au moins un membre')
-    return
-  }
-
-  // Préparer les données avant l'envoi
-  form.members = form.members.map(member => {
-    if (member.role === ROLES.SECRETARY) {
-      // Pour le secrétaire, on garde user_id et on supprime les autres champs
-      return {
-        user_id: member.user_id,
-        role: member.role,
-        is_user: true
-      }
-    } else {
-      // Pour les autres membres, on supprime user_id
-      const { user_id, ...memberData } = member
-      return memberData
-    }
-  })
-
-  // S'assurer que l'adresse contient la localité
-  if (selectedLocation.value && !form.address.startsWith(selectedLocation.value)) {
-    form.address = selectedLocation.value + ' - ' + form.address
-    form.city = selectedLocation.value
-  }
-
-  form.post(route('local-committees.store'), {
-    onSuccess: () => {
-      toast.success('Comité créé avec succès')
-    },
-    onError: () => {
-      toast.error('Une erreur est survenue')
-    }
-  })
-}
-</script> 
+</style> 

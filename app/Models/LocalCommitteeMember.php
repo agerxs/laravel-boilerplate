@@ -8,11 +8,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class LocalCommitteeMember extends Model
 {
     protected $fillable = [
+        'local_committee_id',
         'user_id',
-        'role',
         'first_name',
         'last_name',
-        'phone'
+        'phone',
+        'role',
+        'status'
     ];
 
     public function localCommittee(): BelongsTo

@@ -1,4 +1,6 @@
 <template>
+  <Head title="Nouvelle réunion" />
+
   <AppLayout title="Nouvelle réunion">
     <template #header>
       <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -78,16 +80,12 @@
                 <div class="mt-2">
                   <select
                     v-model="form.local_committee_id"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                     required
                   >
-                    <option value="">Sélectionner un comité</option>
-                    <option
-                      v-for="committee in committees"
-                      :key="committee.id"
-                      :value="committee.id"
-                    >
-                      {{ committee.name }} ({{ committee.city }})
+                    <option value="">Sélectionnez un comité</option>
+                    <option v-for="committee in committees" :key="committee.id" :value="committee.id">
+                      {{ committee.locality?.name }}
                     </option>
                   </select>
                 </div>
@@ -237,7 +235,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useForm } from '@inertiajs/vue3'
+import { useForm, Head, Link } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import InputLabel from '@/Components/InputLabel.vue'
 import TextInput from '@/Components/TextInput.vue'
@@ -264,7 +262,7 @@ interface Member {
 interface Committee {
   id: number
   name: string
-  city: string
+  locality_name: string
 }
 
 interface Props {

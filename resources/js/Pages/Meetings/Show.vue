@@ -686,6 +686,19 @@ interface Participant {
   user?: User
 }
 
+interface Minutes {
+  id: number
+  content: string
+  status: 'draft' | 'published'
+}
+
+interface Attachment {
+  id: number
+  title: string
+  size: number
+  nature_label: string
+}
+
 interface Meeting {
   id: number
   title: string
@@ -693,8 +706,29 @@ interface Meeting {
   start_datetime: string
   end_datetime: string
   location: string
+  status: 'planned' | 'completed' | 'cancelled'
+  local_committees?: Array<{
+    id: number
+    name: string
+    city: string
+    address: string
+    members: Array<{
+      id: number
+      role: string
+      user: {
+        name: string
+        email: string
+      }
+    }>
+  }>
   participants: Participant[]
-  // ... autres propriétés ...
+  minutes?: Minutes
+  agenda?: AgendaItem[]
+  attachments?: Array<Attachment>
+  enrollment_requests?: Array<EnrollmentRequest>
+  organizer?: {
+    name: string
+  }
 }
 
 interface Props {
@@ -1001,13 +1035,13 @@ onMounted(() => {
 // Récupérer l'utilisateur depuis Inertia
 const user = computed(() => usePage().props.auth.user)
 
-function formatStatus(status: string): string {
+function formatStatus(status: 'planned' | 'completed' | 'cancelled'): string {
   const statusMap = {
     'planned': 'Planifiée',
     'completed': 'Terminée',
     'cancelled': 'Annulée'
-  }
-  return statusMap[status] || status
+  } as const;
+  return statusMap[status] || status;
 }
 
 function formatRole(role: string): string {
@@ -1099,7 +1133,7 @@ const deleteEnrollment = (request) => {
     }
 };
 
-const downloadFile = (attachment) => {
+const downloadFile = (attachment: Attachment) => {
     window.location.href = route('attachments.download', attachment.id);
 };
 </script>

@@ -8,10 +8,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Althinect\FilamentSpatieRolesPermissions\Concerns\HasSuperAdmin;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles, HasSuperAdmin;
+    use HasFactory, Notifiable, HasRoles, HasSuperAdmin, SoftDeletes, HasApiTokens;
 
     /**
      * Les attributs qui peuvent être affectés en masse.
@@ -22,12 +25,14 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'locality_id',
+        'organization_id',
+        'job_function_id',
+        'contract_type_id',
+        'assignment_location_id',
+        'cni_number',
         'phone',
-        'position',
-        'department',
-        'address',
-        'city',
-        'postal_code',
+        'whatsapp'
     ];
 
     /**
@@ -47,5 +52,31 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'password' => 'hashed',
     ];
+
+    public function locality(): BelongsTo
+    {
+        return $this->belongsTo(Locality::class);
+    }
+
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class);
+    }
+
+    public function jobFunction(): BelongsTo
+    {
+        return $this->belongsTo(JobFunction::class);
+    }
+
+    public function contractType(): BelongsTo
+    {
+        return $this->belongsTo(ContractType::class);
+    }
+
+    public function assignmentLocation(): BelongsTo
+    {
+        return $this->belongsTo(AssignmentLocation::class);
+    }
 }

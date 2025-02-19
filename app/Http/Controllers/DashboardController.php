@@ -15,22 +15,22 @@ class DashboardController extends Controller
         // Statistiques générales
         $stats = [
             'total_meetings' => Meeting::count(),
-            'upcoming_meetings' => Meeting::where('start_datetime', '>', now())->count(),
+            'upcoming_meetings' => Meeting::where('scheduled_date', '>', now()->format('Y-m-d'))->count(),
             'total_users' => User::count(),
             'total_committees' => LocalCommittee::count(),
         ];
 
         // Réunions à venir (prochains 7 jours)
-        $upcomingMeetings = Meeting::with(['localCommittees'])
-            ->where('start_datetime', '>', now())
-            ->where('start_datetime', '<', now()->addDays(7))
-            ->orderBy('start_datetime')
+        $upcomingMeetings = Meeting::with(['localCommittee.locality'])
+            ->where('scheduled_date', '>', now()->format('Y-m-d'))
+            ->where('scheduled_date', '<', now()->addDays(7)->format('Y-m-d'))
+            ->orderBy('scheduled_date')
             ->take(5)
             ->get();
 
         // Données pour le graphique des réunions par mois
-        $meetingsByMonth = Meeting::selectRaw('COUNT(*) as count, MONTH(start_datetime) as month')
-            ->whereYear('start_datetime', date('Y'))
+        $meetingsByMonth = Meeting::selectRaw('COUNT(*) as count, MONTH(scheduled_date) as month')
+            ->whereYear('scheduled_date', date('Y'))
             ->groupBy('month')
             ->get()
             ->pluck('count', 'month')

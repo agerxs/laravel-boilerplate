@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -10,20 +11,23 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Meeting extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
         'title',
-        'description',
-        'start_datetime',
-        'end_datetime',
-        'location',
-        'status', // planned, ongoing, completed, cancelled
-        'organizer_id',
+        'local_committee_id',
+        'scheduled_date',
+        'status'
     ];
 
     protected $casts = [
-        'start_datetime' => 'datetime',
-        'end_datetime' => 'datetime',
+        'scheduled_date' => 'datetime'
     ];
+
+    public function localCommittee(): BelongsTo
+    {
+        return $this->belongsTo(LocalCommittee::class);
+    }
 
     public function organizer(): BelongsTo
     {

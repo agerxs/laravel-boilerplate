@@ -10,12 +10,23 @@ class CalendarController extends Controller
 {
     public function index()
     {
-        $meetings = Meeting::query()
-            ->select('id', 'title', 'description', 'start_datetime', 'end_datetime', 'location', 'status')
-            ->orderBy('start_datetime')
-            ->get();
-
-        Log::info('Calendar meetings:', $meetings->toArray());
+        $meetings = Meeting::with('localCommittee')
+            ->orderBy('scheduled_date', 'asc')
+            ->get()
+            ->map(function ($meeting) {
+                return [
+                    'id' => $meeting->id,
+                    'title' => $meeting->title,
+                    'start_datetime' => $meeting->scheduled_date->format('Y-m-d H:i:s'),
+                    'end_datetime' => $meeting->scheduled_date->addHours(2)->format('Y-m-d H:i:s'),
+                    'location' => $meeting->localCommittee?->locality?->name ?? 'Non défini',
+                    'status' => $meeting->status,
+                    'local_committee' => $meeting->localCommittee ? [
+                        'id' => $meeting->localCommittee->id,
+                        'name' => $meeting->localCommittee->name,
+                    ] : null,
+                ];
+            });
 
         return Inertia::render('Calendar/Index', [
             'meetings' => $meetings
