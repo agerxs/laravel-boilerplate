@@ -19,7 +19,7 @@ class MeetingSeeder extends Seeder
 
         // Charger les données du fichier JSON
         $jsonData = json_decode(
-            File::get(resource_path('data/sous-pref.json')), 
+            File::get(resource_path('data/clean_json_colocs.json')), 
             true
         );
         echo "Fichier JSON chargé : " . count($jsonData) . " sous-préfectures trouvées\n";

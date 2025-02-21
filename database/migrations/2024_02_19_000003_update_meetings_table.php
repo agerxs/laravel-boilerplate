@@ -29,6 +29,9 @@ return new class extends Migration
             } else {
                 $table->string('status')->default('scheduled');
             }
+
+            // Ajouter une colonne pour le nombre de personnes à enrôler
+            $table->integer('people_to_enroll_count')->nullable();
         });
     }
 
@@ -48,6 +51,9 @@ return new class extends Migration
             
             // Restaurer l'ancien format de status
             $table->string('status')->default('planned')->change();
+
+            // Supprimer la colonne pour le nombre de personnes à enrôler
+            $table->dropColumn('people_to_enroll_count');
         });
     }
 }; 

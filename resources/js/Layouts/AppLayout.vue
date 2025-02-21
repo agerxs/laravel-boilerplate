@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import { Link, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
 import {
-    HomeIcon,
-    UsersIcon,
+    Bars3Icon,
     CalendarIcon,
     DocumentIcon,
+    HomeIcon,
     UserGroupIcon,
-    Bars3Icon,
+    UsersIcon,
     XMarkIcon
 } from '@heroicons/vue/24/outline';
+import { Link, usePage } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
 
 const page = usePage();
 const showingNavigationDropdown = ref(false);
@@ -23,6 +22,7 @@ const navigation = [
     { name: 'Comités Locaux', href: route('local-committees.index'), icon: UserGroupIcon },
     { name: 'Agenda', href: route('calendar.index'), icon: CalendarIcon },
     { name: 'Plaintes & Réclamations', href: '#', icon: DocumentIcon },
+    { name: 'Paiement', href: '#', icon: DocumentIcon },
 ];
 
 defineProps<{
@@ -35,8 +35,8 @@ defineProps<{
         <!-- Sidebar Mobile -->
         <div class="lg:hidden">
             <!-- Overlay -->
-            <div 
-                v-show="showingNavigationDropdown" 
+            <div
+                v-show="showingNavigationDropdown"
                 class="fixed inset-0 bg-gray-600 bg-opacity-75 z-20"
                 @click="showingNavigationDropdown = false"
             ></div>
@@ -230,4 +230,4 @@ defineProps<{
         padding-top: 5rem;
     }
 }
-</style> 
+</style>

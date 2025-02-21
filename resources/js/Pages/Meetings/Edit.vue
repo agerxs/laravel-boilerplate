@@ -52,6 +52,16 @@
             </select>
           </div>
 
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Nombre de personnes à enrôler</label>
+            <input
+              type="number"
+              v-model="form.people_to_enroll_count"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+              required
+            />
+          </div>
+
           <div class="flex justify-end space-x-3">
             <Link
               :href="route('meetings.index')"
@@ -90,6 +100,7 @@ interface Meeting {
   status: string;
   local_committee_id: number;
   locality_name: string;
+  people_to_enroll_count: number;
 }
 
 interface Props {
@@ -103,7 +114,8 @@ const form = useForm({
   title: props.meeting.title,
   local_committee_id: props.meeting.local_committee_id,
   scheduled_date: props.meeting.scheduled_date,
-  status: props.meeting.status
+  status: props.meeting.status,
+  people_to_enroll_count: props.meeting.people_to_enroll_count
 })
 
 const submit = () => {

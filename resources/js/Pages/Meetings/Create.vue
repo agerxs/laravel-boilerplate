@@ -72,6 +72,18 @@
               <InputError :message="form.errors.location" class="mt-2" />
             </div>
 
+            <div>
+              <InputLabel for="people_to_enroll_count" value="Nombre de personnes à enrôler" />
+              <TextInput
+                id="people_to_enroll_count"
+                v-model="form.people_to_enroll_count"
+                type="number"
+                class="mt-1 block w-full"
+                required
+              />
+              <InputError :message="form.errors.people_to_enroll_count" class="mt-2" />
+            </div>
+
             <div class="mt-6">
               <h3 class="text-lg font-medium text-gray-900">Participants</h3>
               
@@ -278,6 +290,7 @@ const form = useForm({
   end_datetime: '',
   location: '',
   local_committee_id: '',
+  people_to_enroll_count: 0,
   guests: [{
     name: '',
     email: ''

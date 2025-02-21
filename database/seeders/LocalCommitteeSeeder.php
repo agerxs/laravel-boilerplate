@@ -17,7 +17,7 @@ class LocalCommitteeSeeder extends Seeder
     {
         Log::info('Début de la création des comités locaux');
         
-        $subPrefecturesData = json_decode(file_get_contents(resource_path('data/sous-pref.json')), true);
+        $subPrefecturesData = json_decode(file_get_contents(resource_path('data/clean_json_colocs.json')), true);
         
         foreach ($subPrefecturesData as $data) {
             // Trouver la sous-préfecture
@@ -48,7 +48,7 @@ class LocalCommitteeSeeder extends Seeder
                     'name' => "Comité Local de {$locality->name}",
                     'locality_id' => $locality->id,
                     'president_id' => $secretary->id,
-                    'installation_date' => $this->parseDate($data['Date de planification de la tenue de la réunion d\'installation du COLOC']),
+                    'installation_date' => $this->parseDate($data['Date de planification de la tenue de la reunion_d\'installation du COLOC']),
                     'ano_validation_date' => $this->parseDate($data['Date de validation de l\'ANO']),
                     'fund_transmission_date' => $this->parseDate($data['Date de transmission des fonds au Sous-Préfet']),
                     'villages_count' => $data['Nombre de villages'] ? intval($data['Nombre de villages']) : null,
