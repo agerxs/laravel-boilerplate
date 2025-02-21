@@ -18,7 +18,8 @@ class Meeting extends Model
         'local_committee_id',
         'scheduled_date',
         'status',
-        'people_to_enroll_count'
+        'people_to_enroll_count',
+        'people_enrolled_count'
     ];
 
     protected $casts = [

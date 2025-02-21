@@ -53,10 +53,20 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700">Nombre de personnes à enrôler</label>
+            <label class="block text-sm font-medium text-gray-700">Nombre de Personnes non enrôlées</label>
             <input
               type="number"
               v-model="form.people_to_enroll_count"
+              class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+              required
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700">Nombre de personnes enrôlées</label>
+            <input
+              type="number"
+              v-model="form.people_enrolled_count"
               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500"
               required
             />
@@ -84,8 +94,8 @@
 </template>
 
 <script setup lang="ts">
-import { Head, Link, useForm } from '@inertiajs/vue3'
-import AppLayout from '@/Layouts/AppLayout.vue'
+import AppLayout from '@/Layouts/AppLayout.vue';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 
 interface Committee {
   id: number;
@@ -101,6 +111,7 @@ interface Meeting {
   local_committee_id: number;
   locality_name: string;
   people_to_enroll_count: number;
+  people_enrolled_count: number;
 }
 
 interface Props {
@@ -115,10 +126,11 @@ const form = useForm({
   local_committee_id: props.meeting.local_committee_id,
   scheduled_date: props.meeting.scheduled_date,
   status: props.meeting.status,
-  people_to_enroll_count: props.meeting.people_to_enroll_count
+  people_to_enroll_count: props.meeting.people_to_enroll_count,
+  people_enrolled_count: props.meeting.people_enrolled_count
 })
 
 const submit = () => {
   form.put(route('meetings.update', props.meeting.id))
 }
-</script> 
+</script>

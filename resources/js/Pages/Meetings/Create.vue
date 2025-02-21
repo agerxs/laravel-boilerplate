@@ -73,7 +73,7 @@
             </div>
 
             <div>
-              <InputLabel for="people_to_enroll_count" value="Nombre de personnes à enrôler" />
+              <InputLabel for="people_to_enroll_count" value="Nombre de Personnes non enrôlées" />
               <TextInput
                 id="people_to_enroll_count"
                 v-model="form.people_to_enroll_count"
@@ -84,9 +84,21 @@
               <InputError :message="form.errors.people_to_enroll_count" class="mt-2" />
             </div>
 
+            <div>
+              <InputLabel for="people_enrolled_count" value="Nombre de personnes enrôlées" />
+              <TextInput
+                id="people_enrolled_count"
+                v-model="form.people_enrolled_count"
+                type="number"
+                class="mt-1 block w-full"
+                required
+              />
+              <InputError :message="form.errors.people_enrolled_count" class="mt-2" />
+            </div>
+
             <div class="mt-6">
               <h3 class="text-lg font-medium text-gray-900">Participants</h3>
-              
+
               <div class="mt-4">
                 <h4 class="font-medium text-gray-700">Comité local</h4>
                 <div class="mt-2">
@@ -246,17 +258,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useForm, Head, Link } from '@inertiajs/vue3'
-import AppLayout from '@/Layouts/AppLayout.vue'
-import InputLabel from '@/Components/InputLabel.vue'
-import TextInput from '@/Components/TextInput.vue'
-import TextArea from '@/Components/TextArea.vue'
 import InputError from '@/Components/InputError.vue'
+import InputLabel from '@/Components/InputLabel.vue'
+import Modal from '@/Components/Modal.vue'
 import PrimaryButton from '@/Components/PrimaryButton.vue'
 import SecondaryButton from '@/Components/SecondaryButton.vue'
-import Modal from '@/Components/Modal.vue'
+import TextArea from '@/Components/TextArea.vue'
+import TextInput from '@/Components/TextInput.vue'
+import AppLayout from '@/Layouts/AppLayout.vue'
 import { PlusIcon, TrashIcon } from '@heroicons/vue/24/outline'
+import { Head, useForm } from '@inertiajs/vue3'
+import { ref } from 'vue'
 
 interface User {
   id: number
@@ -291,6 +303,7 @@ const form = useForm({
   location: '',
   local_committee_id: '',
   people_to_enroll_count: 0,
+  people_enrolled_count: 0,
   guests: [{
     name: '',
     email: ''
@@ -380,4 +393,4 @@ select[multiple] option:checked {
 select[multiple] option:hover {
   background-color: #F3F4F6;
 }
-</style> 
+</style>

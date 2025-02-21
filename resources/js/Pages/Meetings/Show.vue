@@ -173,7 +173,7 @@
             <h3 class="text-lg font-medium text-gray-900">Participants</h3>
             <div class="mt-4">
               <!-- Membres du comité -->
-              
+
 
               <!-- Invités externes -->
               <div v-if="meeting.participants?.length" class="mt-6">
@@ -188,7 +188,7 @@
                           {{ participant.guest_email || participant.user?.email }}
                         </p>
                       </div>
-                      
+
                     </div>
                   </li>
                 </ul>
@@ -198,7 +198,7 @@
         </div>
 
         <!-- Comité Local -->
-        
+
 
         <!-- Pièces jointes -->
         <div class="bg-white shadow sm:rounded-lg">
@@ -332,7 +332,7 @@
                 v-model="form.minutes.content"
                 placeholder="Rédigez le compte rendu ici..."
               />
-              
+
               <div class="mt-4 flex justify-end space-x-3">
                 <button
                   @click="cancelEditMinutes"
@@ -372,11 +372,11 @@
           </div>
         </div>
 
-        <!-- Personnes à enrôler -->
+        <!-- Personnes non enrôlées -->
         <div class="bg-white shadow sm:rounded-lg mt-6">
             <div class="px-4 py-5 sm:p-6">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-medium text-gray-900">Personnes à enrôler</h3>
+                    <h3 class="text-lg font-medium text-gray-900">Personnes non enrôlées</h3>
                     <button
                         @click="showNewEnrollmentModal = true"
                         class="px-4 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700"
@@ -385,7 +385,7 @@
                     </button>
                 </div>
 
-                <!-- Liste des personnes à enrôler -->
+                <!-- Liste des Personnes non enrôlées -->
                 <div class="mt-4">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead>
@@ -410,14 +410,14 @@
                                 </td>
                                 <td class="px-6 py-4 text-right">
                                     <div class="flex justify-end space-x-3">
-                                        <button 
-                                            @click="editEnrollment(request)" 
+                                        <button
+                                            @click="editEnrollment(request)"
                                             class="text-indigo-600 hover:text-indigo-900"
                                         >
                                             Modifier
                                         </button>
-                                        <button 
-                                            @click="deleteEnrollment(request)" 
+                                        <button
+                                            @click="deleteEnrollment(request)"
                                             class="text-red-600 hover:text-red-900"
                                         >
                                             Supprimer
@@ -509,7 +509,7 @@
             <h3 class="text-lg font-medium text-gray-900 mb-4">
                 {{ editingEnrollment ? 'Modifier' : 'Ajouter' }} une personne à enrôler
             </h3>
-            
+
             <form @submit.prevent="submitEnrollment" class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                     <div>
@@ -522,7 +522,7 @@
                             required
                         />
                     </div>
-                    
+
                     <div>
                         <InputLabel for="last_name" value="Nom" />
                         <TextInput
@@ -546,7 +546,7 @@
                             required
                         />
                     </div>
-                    
+
                     <div>
                         <InputLabel for="email" value="Email" />
                         <TextInput
@@ -593,7 +593,7 @@
 
     <!-- Boutons d'action globaux -->
     <div class="fixed bottom-4 right-4 flex space-x-3">
-     
+
 
       <!-- Bouton de sauvegarde -->
       <button
@@ -612,32 +612,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useForm, usePage, router } from '@inertiajs/vue3'
-import AppLayout from '@/Layouts/AppLayout.vue'
-import Modal from '@/Components/Modal.vue'
 import InputLabel from '@/Components/InputLabel.vue'
-import TextInput from '@/Components/TextInput.vue'
-import TextArea from '@/Components/TextArea.vue'
+import Modal from '@/Components/Modal.vue'
 import PrimaryButton from '@/Components/PrimaryButton.vue'
-import SecondaryButton from '@/Components/SecondaryButton.vue'
-import draggable from 'vuedraggable/src/vuedraggable'
-import axios from 'axios'
-import {
-    PencilIcon,
-    TrashIcon,
-    PlusIcon,
-    DocumentIcon,
-    PaperClipIcon,
-    ChevronUpIcon,
-    ChevronDownIcon,
-    DocumentArrowUpIcon,
-    ClockIcon,
-    DocumentArrowDownIcon,
-    EnvelopeIcon
-} from '@heroicons/vue/24/outline'
 import RichTextEditor from '@/Components/RichTextEditor.vue'
+import SecondaryButton from '@/Components/SecondaryButton.vue'
+import TextArea from '@/Components/TextArea.vue'
+import TextInput from '@/Components/TextInput.vue'
 import { useToast } from '@/Composables/useToast'
+import AppLayout from '@/Layouts/AppLayout.vue'
+import {
+    ChevronDownIcon,
+    ChevronUpIcon,
+    EnvelopeIcon,
+    PencilIcon
+} from '@heroicons/vue/24/outline'
+import { router, useForm, usePage } from '@inertiajs/vue3'
+import axios from 'axios'
+import { computed, onMounted, ref } from 'vue'
+import draggable from 'vuedraggable/src/vuedraggable'
 
 interface AgendaItem {
     id: number;
@@ -877,10 +870,10 @@ const deleteFile = async (attachment) => {
 
   try {
     await axios.delete(route('attachments.destroy', attachment.id))
-    
+
     const index = attachments.value.findIndex(a => a.id === attachment.id)
     attachments.value.splice(index, 1)
-    
+
     form.attachments = attachments.value
 
     toast.success('Fichier supprimé avec succès')
@@ -911,10 +904,10 @@ const saveMinutes = async () => {
         status: form.minutes.status
       })
     }
-    
+
     editingMinutes.value = false
     toast.success('Compte rendu enregistré avec succès')
-    
+
     // Mettre à jour le statut de la réunion côté client
     props.meeting.status = 'completed'
   } catch (error) {
@@ -930,10 +923,10 @@ const publishMinutes = async () => {
       content: form.minutes.content,
       status: 'published'
     })
-    
+
     editingMinutes.value = false
     toast.success('Compte rendu publié avec succès')
-    
+
     // Mettre à jour le statut de la réunion côté client
     props.meeting.status = 'completed'
   } catch (error) {
@@ -1148,4 +1141,4 @@ const downloadFile = (attachment: Attachment) => {
     cursor: move;
     cursor: -webkit-grabbing;
 }
-</style> 
+</style>

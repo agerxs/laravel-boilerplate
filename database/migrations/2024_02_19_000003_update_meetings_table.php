@@ -22,7 +22,7 @@ return new class extends Migration
             // Ajouter les nouvelles colonnes
            // $table->foreignId('local_committee_id')->constrained();
             $table->date('scheduled_date')->nullable();
-            
+
             // Renommer la colonne status si elle existe déjà
             if (Schema::hasColumn('meetings', 'status')) {
                 $table->string('status')->default('scheduled')->change();
@@ -30,8 +30,11 @@ return new class extends Migration
                 $table->string('status')->default('scheduled');
             }
 
-            // Ajouter une colonne pour le nombre de personnes à enrôler
+            // Ajouter une colonne pour le nombre de Personnes non enrôlées
             $table->integer('people_to_enroll_count')->nullable();
+
+            // Ajouter une colonne pour le nombre de personnes enrôlées
+            $table->integer('people_enrolled_count')->nullable();
         });
     }
 
@@ -48,12 +51,15 @@ return new class extends Migration
             $table->dateTime('end_datetime')->nullable();
             $table->string('location')->nullable();
             $table->foreignId('organizer_id')->constrained('users');
-            
+
             // Restaurer l'ancien format de status
             $table->string('status')->default('planned')->change();
 
-            // Supprimer la colonne pour le nombre de personnes à enrôler
+            // Supprimer la colonne pour le nombre de Personnes non enrôlées
             $table->dropColumn('people_to_enroll_count');
+
+            // Supprimer la colonne pour le nombre de personnes enrôlées
+            $table->dropColumn('people_enrolled_count');
         });
     }
-}; 
+};
