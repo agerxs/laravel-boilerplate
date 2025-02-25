@@ -10,10 +10,12 @@ class LocalityType extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['name', 'display_name'];
+    protected $fillable = ['libelle'];
+
+    protected $table='locality_type';
 
     public function localities(): HasMany
     {
         return $this->hasMany(Locality::class);
     }
-} 
+}

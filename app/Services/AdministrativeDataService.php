@@ -13,7 +13,7 @@ class AdministrativeDataService
     {
         return Cache::rememberForever('administrative_hierarchy', function () {
             return json_decode(
-                File::get(resource_path('data/hierarchy.json')), 
+                File::get(resource_path('data/hierarchy.json')),
                 true
             );
         });
@@ -23,7 +23,7 @@ class AdministrativeDataService
     {
         return Cache::rememberForever('administrative_localities', function () {
             return json_decode(
-                File::get(resource_path('data/localites.json')), 
+                File::get(resource_path('data/localites.json')),
                 true
             );
         });
@@ -64,11 +64,11 @@ class AdministrativeDataService
     public function getLocalityHierarchy()
     {
         $regions = Locality::whereHas('type', function($query) {
-                $query->where('name', 'region');
+                $query->where('name', 'REGION');
             })
             ->with(['children' => function($query) {
                 $query->whereHas('type', function($q) {
-                    $q->where('name', 'department');
+                    $q->where('name', 'DEPARTEMENT');
                 })->with(['children' => function($q) {
                     $q->whereHas('type', function($sq) {
                         $sq->where('name', 'sub_prefecture');
@@ -80,12 +80,12 @@ class AdministrativeDataService
                 return [
                     'id' => $region->id,
                     'name' => $region->name,
-                    'type' => 'region',
+                    'type' => 'REGION',
                     'children' => $region->children->map(function ($department) {
                         return [
                             'id' => $department->id,
                             'name' => $department->name,
-                            'type' => 'department',
+                            'type' => 'DEPARTEMENT',
                             'children' => $department->children->map(function ($subPrefecture) {
                                 return [
                                     'id' => $subPrefecture->id,
@@ -100,4 +100,4 @@ class AdministrativeDataService
 
         return $regions;
     }
-} 
+}

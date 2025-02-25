@@ -109,7 +109,7 @@
                   >
                     <option value="">Sélectionnez un comité</option>
                     <option v-for="committee in committees" :key="committee.id" :value="committee.id">
-                      {{ committee.locality?.name }}
+                      {{ committee.name }}
                     </option>
                   </select>
                 </div>

@@ -13,6 +13,8 @@ class Locality extends Model
 
     protected $fillable = ['name', 'locality_type_id', 'parent_id'];
 
+    protected $table='localite';
+
     public function type(): BelongsTo
     {
         return $this->belongsTo(LocalityType::class, 'locality_type_id');

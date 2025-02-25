@@ -38,11 +38,11 @@
                 <div class="mt-4 space-y-2">
                   <p class="text-sm text-gray-600">
                     <span class="font-medium">Date :</span>
-                    {{ formatDateTime(meeting.start_datetime) }} - {{ formatDateTime(meeting.end_datetime) }}
+                    {{ formatDateTime(meeting.scheduled_date) }}
                   </p>
                   <p class="text-sm text-gray-600">
                     <span class="font-medium">Lieu :</span>
-                    {{ meeting.location || 'Non spécifié' }}
+                    {{ meeting.local_committee?.locality.name || 'Non spécifié' }}
                   </p>
                   <p class="text-sm text-gray-600">
                     <span class="font-medium">Organisateur :</span>
@@ -114,17 +114,17 @@
         <div class="bg-white shadow sm:rounded-lg">
           <div class="px-4 py-5 sm:p-6">
             <h3 class="text-lg font-medium text-gray-900">Comité Local</h3>
-            <div v-if="meeting.local_committees?.[0]" class="mt-4">
+            <div v-if="meeting.local_committee" class="mt-4">
               <div class="flex justify-between items-start">
                 <div>
                   <h4 class="text-base font-medium text-gray-900">
-                    {{ meeting.local_committees[0].name }}
+                    {{ meeting.local_committee.name }}
                   </h4>
                   <p class="text-sm text-gray-500 mt-1">
-                    {{ meeting.local_committees[0].city }}
+                    {{ meeting.local_committee.city }}
                   </p>
                   <p class="text-sm text-gray-500">
-                    {{ meeting.local_committees[0].address }}
+                    {{ meeting.local_committee.address }}
                   </p>
                 </div>
               </div>
@@ -133,7 +133,7 @@
                 <h5 class="text-sm font-medium text-gray-900 mb-3">Membres du comité</h5>
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div
-                    v-for="member in meeting.local_committees[0].members"
+                    v-for="member in meeting.local_committee.members"
                     :key="member.id"
                     class="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg"
                   >
@@ -173,7 +173,23 @@
             <h3 class="text-lg font-medium text-gray-900">Participants</h3>
             <div class="mt-4">
               <!-- Membres du comité -->
+              <div v-if="meeting.local_committee.members?.length" class="mt-6">
+                <ul class="divide-y divide-gray-200">
+                  <li v-for="participant in meeting.participants" :key="participant.id" class="py-4">
+                    <div class="flex items-center space-x-4">
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900">
+                          {{ participant.guest_name || participant.user?.name }}
+                        </p>
+                        <p class="text-sm text-gray-500">
+                          {{ participant.guest_email || participant.user?.email }}
+                        </p>
+                      </div>
 
+                    </div>
+                  </li>
+                </ul>
+              </div>
 
               <!-- Invités externes -->
               <div v-if="meeting.participants?.length" class="mt-6">
