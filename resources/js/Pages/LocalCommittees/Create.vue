@@ -2,259 +2,392 @@
   <Head title="Nouveau comité local" />
 
   <AppLayout title="Nouveau comité local">
-    <div class="flex">
-      <!-- Main content -->
-      <div class="w-3/4 p-6">
-        <div class="max-w-7xl mx-auto py-6">
-          <div class="bg-white shadow rounded-lg">
-            <!-- Onglets -->
-            <div class="flex border-b border-gray-200">
-              <button
-                @click="activeTab = 'committee'"
-                :class="{'border-indigo-500 text-indigo-600': activeTab === 'committee', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'committee'}"
-                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
-              >
-                Créer un comité
-              </button>
-              <button
-                @click="activeTab = 'representatives'"
-                :class="{'border-indigo-500 text-indigo-600': activeTab === 'representatives', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'representatives'}"
-                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm"
-              >
-                Ajouter des représentants
-              </button>
-            </div>
+    <div class="flex flex-col">
+      <!-- Navigation par onglets -->
+      <div class="flex bg-gray-100 p-4 rounded-t-lg">
+        <button
+          v-for="(step, index) in steps"
+          :key="index"
+          @click="activeStep = index"
+          :class="{
+            'bg-white text-blue-600': activeStep === index,
+            'bg-gray-200 text-gray-500': activeStep !== index
+          }"
+          class="px-4 py-2 rounded-md mx-1 transition duration-300"
+        >
+          {{ step.label }}
+        </button>
+      </div>
 
-            <!-- Contenu des onglets -->
-            <div v-if="activeTab === 'committee'" class="px-6 py-4">
-              <!-- Formulaire de création de comité -->
-              <form @submit.prevent="submit">
-                <!-- En-tête -->
-                <div class="px-6 py-4 border-b border-gray-200">
-                  <div class="flex justify-between items-center">
-                    <h2 class="text-xl font-semibold text-gray-900">
-                      Créer un nouveau comité
-                    </h2>
-                  </div>
+      <!-- Contenu des étapes -->
+      <div class="bg-white shadow rounded-b-lg p-6">
+        <div v-if="activeStep === 0" class="px-6 py-4">
+          <!-- Étape 1: Sélection de la région, département, sous-préfecture -->
+          <form @submit.prevent="nextStep">
+            <div class="px-6 py-4 space-y-6">
+              <!-- Informations de base -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Région -->
+                <div>
+                  <InputLabel for="region" value="Région" />
+                  <select
+                    id="region"
+                    v-model="selectedRegion"
+                    class="mt-1 block w-full rounded-md border-gray-300"
+                    required
+                  >
+                    <option value="">Sélectionner une région</option>
+                    <option
+                      v-for="region in localities"
+                      :key="region.id"
+                      :value="region"
+                    >
+                      {{ region.name }}
+                    </option>
+                  </select>
                 </div>
 
-                <!-- Contenu du formulaire -->
-                <div class="px-6 py-4 space-y-6">
-                  <!-- Informations de base -->
-                  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Région -->
-                    <div>
-                      <InputLabel for="region" value="Région" />
-                      <select
-                        id="region"
-                        v-model="selectedRegion"
-                        class="mt-1 block w-full rounded-md border-gray-300"
-                        required
-                      >
-                        <option value="">Sélectionner une région</option>
-                        <option
-                          v-for="region in localities"
-                          :key="region.id"
-                          :value="region"
-                        >
-                          {{ region.name }}
-                        </option>
-                      </select>
-                    </div>
+                <!-- Département -->
+                <div>
+                  <InputLabel for="department" value="Département" />
+                  <select
+                    id="department"
+                    v-model="selectedDepartment"
+                    class="mt-1 block w-full rounded-md border-gray-300"
+                    required
+                    :disabled="!selectedRegion"
+                  >
+                    <option value="">Sélectionner un département</option>
+                    <option
+                      v-for="department in departments"
+                      :key="department.id"
+                      :value="department"
+                    >
+                      {{ department.name }}
+                    </option>
+                  </select>
+                </div>
 
-                    <!-- Département -->
-                    <div>
-                      <InputLabel for="department" value="Département" />
-                      <select
-                        id="department"
-                        v-model="selectedDepartment"
-                        class="mt-1 block w-full rounded-md border-gray-300"
-                        required
-                        :disabled="!selectedRegion"
-                      >
-                        <option value="">Sélectionner un département</option>
-                        <option
-                          v-for="department in departments"
-                          :key="department.id"
-                          :value="department"
-                        >
-                          {{ department.name }}
-                        </option>
-                      </select>
-                    </div>
+                <!-- Sous-préfecture -->
+                <div>
+                  <InputLabel for="locality_id" value="Sous-préfecture" />
+                  <select
+                    id="locality_id"
+                    v-model="form.locality_id"
+                    class="mt-1 block w-full rounded-md border-gray-300"
+                    required
+                    :disabled="!selectedDepartment"
+                    @change="() => { updateCommitteeName(); fetchVillages(); }"
+                  >
+                    <option value="">Sélectionner une sous-préfecture</option>
+                    <option
+                      v-for="subPrefecture in subPrefectures"
+                      :key="subPrefecture.id"
+                      :value="subPrefecture.id"
+                    >
+                      {{ subPrefecture.name }}
+                    </option>
+                  </select>
+                  <InputError :message="form.errors.locality_id" class="mt-2" />
+                </div>
+              </div>
+            </div>
 
-                    <!-- Sous-préfecture -->
-                    <div>
-                      <InputLabel for="locality_id" value="Sous-préfecture" />
-                      <select
-                        id="locality_id"
-                        v-model="form.locality_id"
-                        class="mt-1 block w-full rounded-md border-gray-300"
-                        required
-                        :disabled="!selectedDepartment"
-                        @change="() => { updateCommitteeName(); fetchVillages(); }"
-                      >
-                        <option value="">Sélectionner une sous-préfecture</option>
-                        <option
-                          v-for="subPrefecture in subPrefectures"
-                          :key="subPrefecture.id"
-                          :value="subPrefecture.id"
-                        >
-                          {{ subPrefecture.name }}
-                        </option>
-                      </select>
-                      <InputError :message="form.errors.locality_id" class="mt-2" />
-                    </div>
-                  </div>
+            <!-- Boutons d'action -->
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+              <div class="flex justify-between space-x-3">
+                <button
+                  type="button"
+                  @click="previousStep"
+                  class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium"
+                >
+                  Précédent
+                </button>
+                <button
+                  type="button"
+                  @click="saveProgress"
+                  class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-sm font-medium"
+                >
+                  Sauvegarder
+                </button>
+                <button
+                  type="button"
+                  @click="nextStep"
+                  class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium"
+                >
+                  Suivant
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
 
-                  <!-- Nom du comité -->
-                  <div class="col-span-full">
-                    <InputLabel for="name" value="Nom du comité" />
-                    <TextInput
-                      id="name"
-                      v-model="form.name"
-                      type="text"
-                      class="mt-1 block w-full"
-                      required
-                    />
-                    <InputError :message="form.errors.name" class="mt-2" />
-                    <p class="mt-1 text-sm text-gray-500">
-                      Le nom est automatiquement généré lors de la sélection d'une sous-préfecture, mais peut être modifié.
-                    </p>
-                  </div>
+        <div v-if="activeStep === 1" class="px-6 py-4">
+          <!-- Étape 2: Ajouter un fichier joint -->
+          <form @submit.prevent="nextStep">
+            <div class="px-6 py-4 space-y-6">
+              <div>
+                <InputLabel for="decree" value="Arrêté ou Décret de création" />
+                <input
+                  type="file"
+                  id="decree"
+                  @change="handleFileChange('decree')"
+                  class="mt-1 block w-full"
+                  required
+                />
+              </div>
+            </div>
 
-                  <!-- Ajout des membres permanents -->
-                  <div class="mt-8">
-                    <h3 class="text-lg font-medium text-gray-900">Membres permanents</h3>
-                    <div class="space-y-4">
-                      <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                          <div>
-                            <InputLabel value="Rôle" />
-                            <TextInput
-                              value="Président"
-                              type="text"
-                              class="mt-1 block w-full bg-gray-100"
-                              disabled
-                            />
-                          </div>
-                          <div>
-                            <InputLabel for="president" value="Sélectionner le Président" />
-                            <select
-                              id="president"
-                              v-model="permanentMembers.president.user_id"
-                              class="mt-1 block w-full rounded-md border-gray-300"
-                              required
-                              @change="updatePresidentDetails"
-                            >
-                              <option value="">Sélectionner un utilisateur</option>
-                              <option
-                                v-for="user in sousPrefets"
-                                :key="user.id"
-                                :value="user.id"
-                              >
-                                {{ user.name }}
-                              </option>
-                            </select>
-                          </div>
-                          <div>
-                            <InputLabel value="Téléphone" />
-                            <TextInput
-                              :value="presidentDetails.phone"
-                              type="text"
-                              class="mt-1 block w-full bg-gray-100"
-                              disabled
-                            />
-                          </div>
-                          <div>
-                            <InputLabel value="Whatsapp" />
-                            <TextInput
-                              :value="presidentDetails.whatsapp"
-                              type="text"
-                              class="mt-1 block w-full bg-gray-100"
-                              disabled
-                            />
-                          </div>
-                        </div>
+            <!-- Boutons d'action -->
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+              <div class="flex justify-between space-x-3">
+                <button
+                  type="button"
+                  @click="previousStep"
+                  class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium"
+                >
+                  Précédent
+                </button>
+                <button
+                  type="button"
+                  @click="saveProgress"
+                  class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-sm font-medium"
+                >
+                  Sauvegarder
+                </button>
+                <button
+                  type="button"
+                  @click="nextStep"
+                  class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium"
+                >
+                  Suivant
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div v-if="activeStep === 2" class="px-6 py-4">
+          <!-- Étape 3: Renseigner les membres permanents -->
+          <form @submit.prevent="nextStep">
+            <div class="px-6 py-4 space-y-6">
+              <!-- Ajout des membres permanents -->
+              <div class="mt-8">
+                <h3 class="text-lg font-medium text-gray-900">Membres permanents</h3>
+                <div class="space-y-4">
+                  <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div>
+                        <InputLabel value="Rôle" />
+                        <TextInput
+                          value="Président"
+                          type="text"
+                          class="mt-1 block w-full bg-gray-100"
+                          disabled
+                        />
                       </div>
-                      <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                          <div>
-                            <InputLabel value="Rôle" />
-                            <TextInput
-                              value="Secrétaire"
-                              type="text"
-                              class="mt-1 block w-full bg-gray-100"
-                              disabled
-                            />
-                          </div>
-                          <div>
-                            <InputLabel for="secretary" value="Sélectionner le Secrétaire" />
-                            <select
-                              id="secretary"
-                              v-model="permanentMembers.secretary.user_id"
-                              class="mt-1 block w-full rounded-md border-gray-300"
-                              required
-                              @change="updateSecretaryDetails"
-                            >
-                              <option value="">Sélectionner un utilisateur</option>
-                              <option
-                                v-for="user in secretaires"
-                                :key="user.id"
-                                :value="user.id"
-                              >
-                                {{ user.name }}
-                              </option>
-                            </select>
-                          </div>
-                          <div>
-                            <InputLabel value="Téléphone" />
-                            <TextInput
-                              :value="secretaryDetails.phone"
-                              type="text"
-                              class="mt-1 block w-full bg-gray-100"
-                              disabled
-                            />
-                          </div>
-                          <div>
-                            <InputLabel value="Adresse" />
-                            <TextInput
-                              :value="secretaryDetails.whatsapp"
-                              type="text"
-                              class="mt-1 block w-full bg-gray-100"
-                              disabled
-                            />
-                          </div>
-                        </div>
+                      <div>
+                        <InputLabel for="president" value="Sélectionner le Président" />
+                        <select
+                          id="president"
+                          v-model="permanentMembers.president.user_id"
+                          class="mt-1 block w-full rounded-md border-gray-300"
+                          required
+                          @change="updatePresidentDetails"
+                        >
+                          <option value="">Sélectionner un utilisateur</option>
+                          <option
+                            v-for="user in sousPrefets"
+                            :key="user.id"
+                            :value="user.id"
+                          >
+                            {{ user.name }}
+                          </option>
+                        </select>
+                      </div>
+                      <div>
+                        <InputLabel value="Téléphone" />
+                        <TextInput
+                          :value="presidentDetails.phone"
+                          type="text"
+                          class="mt-1 block w-full bg-gray-100"
+                          disabled
+                        />
+                      </div>
+                      <div>
+                        <InputLabel value="Whatsapp" />
+                        <TextInput
+                          :value="presidentDetails.whatsapp"
+                          type="text"
+                          class="mt-1 block w-full bg-gray-100"
+                          disabled
+                        />
                       </div>
                     </div>
                   </div>
-                </div>
-
-                <!-- Boutons d'action -->
-                <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
-                  <div class="flex justify-end space-x-3">
-                    <Link
-                      :href="route('local-committees.index')"
-                      class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                    >
-                      Annuler
-                    </Link>
-                    <button
-                      type="button"
-                      @click="activeTab = 'representatives'"
-                      class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium"
-                    >
-                      Suivant
-                    </button>
+                  <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div>
+                        <InputLabel value="Rôle" />
+                        <TextInput
+                          value="Secrétaire"
+                          type="text"
+                          class="mt-1 block w-full bg-gray-100"
+                          disabled
+                        />
+                      </div>
+                      <div>
+                        <InputLabel for="secretary" value="Sélectionner le Secrétaire" />
+                        <select
+                          id="secretary"
+                          v-model="permanentMembers.secretary.user_id"
+                          class="mt-1 block w-full rounded-md border-gray-300"
+                          required
+                          @change="updateSecretaryDetails"
+                        >
+                          <option value="">Sélectionner un utilisateur</option>
+                          <option
+                            v-for="user in secretaires"
+                            :key="user.id"
+                            :value="user.id"
+                          >
+                            {{ user.name }}
+                          </option>
+                        </select>
+                      </div>
+                      <div>
+                        <InputLabel value="Téléphone" />
+                        <TextInput
+                          :value="secretaryDetails.phone"
+                          type="text"
+                          class="mt-1 block w-full bg-gray-100"
+                          disabled
+                        />
+                      </div>
+                      <div>
+                        <InputLabel value="Adresse" />
+                        <TextInput
+                          :value="secretaryDetails.whatsapp"
+                          type="text"
+                          class="mt-1 block w-full bg-gray-100"
+                          disabled
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </form>
+              </div>
             </div>
 
-            <!-- Contenu de l'onglet des représentants -->
-            <div v-if="activeTab === 'representatives'" class="px-6 py-4">
-              <!-- Contenu de VillageRepresentatives.vue -->
+            <!-- Boutons d'action -->
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+              <div class="flex justify-between space-x-3">
+                <button
+                  type="button"
+                  @click="previousStep"
+                  class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium"
+                >
+                  Précédent
+                </button>
+                <button
+                  type="button"
+                  @click="saveProgress"
+                  class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-sm font-medium"
+                >
+                  Sauvegarder
+                </button>
+                <button
+                  type="button"
+                  @click="nextStep"
+                  class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium"
+                >
+                  Suivant
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div v-if="activeStep === 3" class="px-6 py-4">
+          <!-- Étape 4: Réunion d'installation -->
+          <form @submit.prevent="nextStep">
+            <div class="px-6 py-4 space-y-6">
+              <div>
+                <InputLabel for="installation_date" value="Date de la réunion d'installation" />
+                <input
+                  type="date"
+                  id="installation_date"
+                  v-model="installationDate"
+                  class="mt-1 block w-full rounded-md border-gray-300"
+                  required
+                />
+              </div>
+              <div>
+                <InputLabel for="installation_location" value="Lieu de la réunion d'installation" />
+                <TextInput
+                  id="installation_location"
+                  v-model="installationLocation"
+                  type="text"
+                  class="mt-1 block w-full"
+                  required
+                />
+              </div>
+              <div>
+                <InputLabel for="installation_minutes" value="Compte rendu de la réunion d'installation" />
+                <input
+                  type="file"
+                  id="installation_minutes"
+                  @change="handleFileChange('minutes')"
+                  class="mt-1 block w-full"
+                  required
+                />
+              </div>
+              <div>
+                <InputLabel for="attendance_list" value="Liste de présence de la réunion d'installation" />
+                <input
+                  type="file"
+                  id="attendance_list"
+                  @change="handleFileChange('attendance')"
+                  class="mt-1 block w-full"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- Boutons d'action -->
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+              <div class="flex justify-between space-x-3">
+                <button
+                  type="button"
+                  @click="previousStep"
+                  class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium"
+                >
+                  Précédent
+                </button>
+                <button
+                  type="button"
+                  @click="saveProgress"
+                  class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-sm font-medium"
+                >
+                  Sauvegarder
+                </button>
+                <button
+                  type="button"
+                  @click="nextStep"
+                  class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium"
+                >
+                  Suivant
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div v-if="activeStep === 4" class="px-6 py-4">
+          <!-- Étape 5: Renseigner les représentants par village -->
+          <form @submit.prevent="submit">
+            <div class="px-6 py-4 space-y-6">
+              <!-- Logique pour les représentants des villages -->
               <div class="mb-8">
                 <h3 class="text-xl font-medium text-gray-800">Villages non ajoutés</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
@@ -334,53 +467,47 @@
                   </div>
                 </div>
               </div>
+            </div>
 
-              <!-- Boutons d'action -->
-              <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
-                <div class="flex justify-end space-x-3">
-                  <button
-                    type="button"
-                    @click="activeTab = 'committee'"
-                    class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium"
-                  >
-                    Précédent
-                  </button>
-                  <button
-                    type="button"
-                    @click="submit"
-                    class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium"
-                  >
-                    Sauvegarder
-                  </button>
-                </div>
+            <!-- Boutons d'action -->
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+              <div class="flex justify-between space-x-3">
+                <button
+                  type="button"
+                  @click="previousStep"
+                  class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium"
+                >
+                  Précédent
+                </button>
+                <button
+                  type="button"
+                  @click="saveProgress"
+                  class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-sm font-medium"
+                >
+                  Sauvegarder
+                </button>
+                <button
+                  type="submit"
+                  class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium"
+                >
+                  Sauvegarder
+                </button>
               </div>
             </div>
-          </div>
+          </form>
         </div>
       </div>
-
-      <!-- Sidebar -->
-      <aside class="w-1/4 bg-gray-100 p-4 border-l border-gray-200">
-        <h3 class="text-lg font-medium text-gray-900">Villages associés</h3>
-        <p class="mt-2 text-sm text-gray-500">Nombre de villages : <strong class="text-indigo-600">{{ villages.length }}</strong></p>
-        <ul class="list-disc list-inside mt-2">
-          <li v-for="village in villages" :key="village.id" class="text-sm text-gray-700">
-            {{ village.name }}
-          </li>
-        </ul>
-      </aside>
     </div>
   </AppLayout>
 </template>
 
 <script setup lang="ts">
-import { Head, Link, useForm } from '@inertiajs/vue3'
+import { Head, useForm } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import InputLabel from '@/Components/InputLabel.vue'
 import TextInput from '@/Components/TextInput.vue'
 import InputError from '@/Components/InputError.vue'
 import { ref, computed, watch } from 'vue'
-import { defineProps } from '@vue/composition-api'
 
 interface User {
   id: number;
@@ -563,8 +690,27 @@ const submit = () => {
   });
 };
 
-// État pour les onglets
-const activeTab = ref('committee');
+// État pour les étapes
+const activeStep = ref(0);
+const steps = [
+  { label: 'Sélection de la région' },
+  { label: 'Ajouter un fichier joint' },
+  { label: 'Membres permanents' },
+  { label: 'Réunion d\'installation' },
+  { label: 'Représentants par village' }
+];
+
+const nextStep = () => {
+  if (activeStep.value < steps.length - 1) {
+    activeStep.value++;
+  }
+};
+
+const previousStep = () => {
+  if (activeStep.value > 0) {
+    activeStep.value--;
+  }
+};
 
 // Logique pour les représentants des villages
 const selectedVillage = ref(null);
@@ -630,6 +776,30 @@ const removeVillage = (index: number) => {
 
 const editIndex = ref(null);
 const editRepresentatives = ref([]);
+
+const installationDate = ref('');
+const installationLocation = ref('');
+const installationMinutesFile = ref<File | null>(null);
+const attendanceListFile = ref<File | null>(null);
+
+const handleFileChange = (type: string) => (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const file = target.files ? target.files[0] : null;
+  if (type === 'minutes') {
+    installationMinutesFile.value = file;
+  } else if (type === 'attendance') {
+    attendanceListFile.value = file;
+  }
+};
+
+const saveProgress = () => {
+  form.post(route('local-committees.save-progress'), {
+    preserveState: true,
+    onSuccess: () => {
+      alert('Progression sauvegardée avec succès.');
+    }
+  });
+};
 </script>
 
 <style>
