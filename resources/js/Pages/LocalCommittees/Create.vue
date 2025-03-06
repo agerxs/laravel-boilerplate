@@ -22,6 +22,33 @@
       <!-- Contenu des étapes -->
       <div class="bg-white shadow rounded-b-lg p-6">
         <div v-if="activeStep === 0" class="px-6 py-4">
+          <!-- Boutons d'action -->
+          <div class="flex justify-end space-x-3 mb-4">
+            <button
+              v-if="activeStep > 0"
+              type="button"
+              @click="previousStep"
+              class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium"
+            >
+              Précédent
+            </button>
+            <button
+              type="button"
+              @click="saveProgress"
+              class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-sm font-medium"
+            >
+              Sauvegarder
+            </button>
+            <button
+              v-if="activeStep < steps.length - 1"
+              type="button"
+              @click="nextStep"
+              class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium"
+            >
+              Suivant
+            </button>
+          </div>
+
           <!-- Étape 1: Sélection de la région, département, sous-préfecture -->
           <form @submit.prevent="nextStep">
             <div class="px-6 py-4 space-y-6">
@@ -46,7 +73,6 @@
                     </option>
                   </select>
                 </div>
-
                 <!-- Département -->
                 <div>
                   <InputLabel for="department" value="Département" />
@@ -67,7 +93,6 @@
                     </option>
                   </select>
                 </div>
-
                 <!-- Sous-préfecture -->
                 <div>
                   <InputLabel for="locality_id" value="Sous-préfecture" />
@@ -92,37 +117,37 @@
                 </div>
               </div>
             </div>
-
-            <!-- Boutons d'action -->
-            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
-              <div class="flex justify-end space-x-3">
-                <button
-                  type="button"
-                  @click="previousStep"
-                  class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium"
-                >
-                  Précédent
-                </button>
-                <button
-                  type="button"
-                  @click="saveProgress"
-                  class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-sm font-medium"
-                >
-                  Sauvegarder
-                </button>
-                <button
-                  type="button"
-                  @click="nextStep"
-                  class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium"
-                >
-                  Suivant
-                </button>
-              </div>
-            </div>
           </form>
         </div>
 
         <div v-if="activeStep === 1" class="px-6 py-4">
+          <!-- Boutons d'action -->
+          <div class="flex justify-end space-x-3 mb-4">
+            <button
+              v-if="activeStep > 0"
+              type="button"
+              @click="previousStep"
+              class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium"
+            >
+              Précédent
+            </button>
+            <button
+              type="button"
+              @click="saveProgress"
+              class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-sm font-medium"
+            >
+              Sauvegarder
+            </button>
+            <button
+              v-if="activeStep < steps.length - 1"
+              type="button"
+              @click="nextStep"
+              class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium"
+            >
+              Suivant
+            </button>
+          </div>
+
           <!-- Étape 2: Ajouter un fichier joint -->
           <form @submit.prevent="nextStep">
             <div class="px-6 py-4 space-y-6">
@@ -137,37 +162,37 @@
                 />
               </div>
             </div>
-
-            <!-- Boutons d'action -->
-            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
-              <div class="flex justify-end space-x-3">
-                <button
-                  type="button"
-                  @click="previousStep"
-                  class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium"
-                >
-                  Précédent
-                </button>
-                <button
-                  type="button"
-                  @click="saveProgress"
-                  class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-sm font-medium"
-                >
-                  Sauvegarder
-                </button>
-                <button
-                  type="button"
-                  @click="nextStep"
-                  class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium"
-                >
-                  Suivant
-                </button>
-              </div>
-            </div>
           </form>
         </div>
 
         <div v-if="activeStep === 2" class="px-6 py-4">
+          <!-- Boutons d'action -->
+          <div class="flex justify-end space-x-3 mb-4">
+            <button
+              v-if="activeStep > 0"
+              type="button"
+              @click="previousStep"
+              class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium"
+            >
+              Précédent
+            </button>
+            <button
+              type="button"
+              @click="saveProgress"
+              class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-sm font-medium"
+            >
+              Sauvegarder
+            </button>
+            <button
+              v-if="activeStep < steps.length - 1"
+              type="button"
+              @click="nextStep"
+              class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium"
+            >
+              Suivant
+            </button>
+          </div>
+
           <!-- Étape 3: Renseigner les membres permanents -->
           <form @submit.prevent="nextStep">
             <div class="px-6 py-4 space-y-6">
@@ -278,37 +303,37 @@
                 </div>
               </div>
             </div>
-
-            <!-- Boutons d'action -->
-            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
-              <div class="flex justify-end space-x-3">
-                <button
-                  type="button"
-                  @click="previousStep"
-                  class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium"
-                >
-                  Précédent
-                </button>
-                <button
-                  type="button"
-                  @click="saveProgress"
-                  class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-sm font-medium"
-                >
-                  Sauvegarder
-                </button>
-                <button
-                  type="button"
-                  @click="nextStep"
-                  class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium"
-                >
-                  Suivant
-                </button>
-              </div>
-            </div>
           </form>
         </div>
 
         <div v-if="activeStep === 3" class="px-6 py-4">
+          <!-- Boutons d'action -->
+          <div class="flex justify-end space-x-3 mb-4">
+            <button
+              v-if="activeStep > 0"
+              type="button"
+              @click="previousStep"
+              class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium"
+            >
+              Précédent
+            </button>
+            <button
+              type="button"
+              @click="saveProgress"
+              class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-sm font-medium"
+            >
+              Sauvegarder
+            </button>
+            <button
+              v-if="activeStep < steps.length - 1"
+              type="button"
+              @click="nextStep"
+              class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium"
+            >
+              Suivant
+            </button>
+          </div>
+
           <!-- Étape 4: Réunion d'installation -->
           <form @submit.prevent="nextStep">
             <div class="px-6 py-4 space-y-6">
@@ -353,37 +378,37 @@
                 />
               </div>
             </div>
-
-            <!-- Boutons d'action -->
-            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
-              <div class="flex justify-end space-x-3">
-                <button
-                  type="button"
-                  @click="previousStep"
-                  class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium"
-                >
-                  Précédent
-                </button>
-                <button
-                  type="button"
-                  @click="saveProgress"
-                  class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-sm font-medium"
-                >
-                  Sauvegarder
-                </button>
-                <button
-                  type="button"
-                  @click="nextStep"
-                  class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium"
-                >
-                  Suivant
-                </button>
-              </div>
-            </div>
           </form>
         </div>
 
         <div v-if="activeStep === 4" class="px-6 py-4">
+          <!-- Boutons d'action -->
+          <div class="flex justify-end space-x-3 mb-4">
+            <button
+              v-if="activeStep > 0"
+              type="button"
+              @click="previousStep"
+              class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium"
+            >
+              Précédent
+            </button>
+            <button
+              type="button"
+              @click="saveProgress"
+              class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-sm font-medium"
+            >
+              Sauvegarder
+            </button>
+            <button
+              v-if="activeStep < steps.length - 1"
+              type="button"
+              @click="nextStep"
+              class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium"
+            >
+              Suivant
+            </button>
+          </div>
+
           <!-- Étape 5: Renseigner les représentants par village -->
           <form @submit.prevent="submit">
             <div class="px-6 py-4 space-y-6">
@@ -466,32 +491,6 @@
                     </button>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            <!-- Boutons d'action -->
-            <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
-              <div class="flex justify-end space-x-3">
-                <button
-                  type="button"
-                  @click="previousStep"
-                  class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium"
-                >
-                  Précédent
-                </button>
-                <button
-                  type="button"
-                  @click="saveProgress"
-                  class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-sm font-medium"
-                >
-                  Sauvegarder
-                </button>
-                <button
-                  type="submit"
-                  class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium"
-                >
-                  Sauvegarder
-                </button>
               </div>
             </div>
           </form>
