@@ -95,7 +95,7 @@
 
             <!-- Boutons d'action -->
             <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
-              <div class="flex justify-between space-x-3">
+              <div class="flex justify-end space-x-3">
                 <button
                   type="button"
                   @click="previousStep"
@@ -140,7 +140,7 @@
 
             <!-- Boutons d'action -->
             <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
-              <div class="flex justify-between space-x-3">
+              <div class="flex justify-end space-x-3">
                 <button
                   type="button"
                   @click="previousStep"
@@ -281,7 +281,7 @@
 
             <!-- Boutons d'action -->
             <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
-              <div class="flex justify-between space-x-3">
+              <div class="flex justify-end space-x-3">
                 <button
                   type="button"
                   @click="previousStep"
@@ -356,7 +356,7 @@
 
             <!-- Boutons d'action -->
             <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
-              <div class="flex justify-between space-x-3">
+              <div class="flex justify-end space-x-3">
                 <button
                   type="button"
                   @click="previousStep"
@@ -471,7 +471,7 @@
 
             <!-- Boutons d'action -->
             <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
-              <div class="flex justify-between space-x-3">
+              <div class="flex justify-end space-x-3">
                 <button
                   type="button"
                   @click="previousStep"
