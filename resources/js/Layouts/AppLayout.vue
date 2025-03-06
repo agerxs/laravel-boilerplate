@@ -14,7 +14,7 @@ import { computed, ref } from 'vue';
 const page = usePage();
 const showingNavigationDropdown = ref(false);
 
-const user = computed(() => page.props.auth.user);
+const user = computed(() => page.props.auth?.user || { name: 'Invité' });
 
 const navigation = [
     { name: 'Tableau de bord', href: route('dashboard'), icon: HomeIcon },

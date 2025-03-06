@@ -60,57 +60,40 @@
           </div>
         </div>
 
-        <!-- Ordre du jour -->
+        <!-- Liste de présence -->
         <div class="bg-white shadow sm:rounded-lg">
           <div class="px-4 py-5 sm:p-6">
-            <div class="flex justify-between items-center">
-              <h3 class="text-lg font-medium text-gray-900">Ordre du jour</h3>
-              <button
-                @click="showNewAgendaItemModal = true"
-                class="px-4 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700"
-              >
-                Ajouter un point
-              </button>
+            <h3 class="text-lg font-medium text-gray-900">Liste de Présence</h3>
+            <div class="mt-4">
+              <ul class="divide-y divide-gray-200">
+                <li v-for="participant in meeting.participants" :key="participant.id" class="py-4">
+                  <div class="flex items-center space-x-4">
+                    <div class="flex-1 min-w-0">
+                      <p class="text-sm font-medium text-gray-900">
+                        {{ participant.guest_name || participant.user?.name }}
+                      </p>
+                      <p class="text-sm text-gray-500">
+                        {{ participant.guest_email || participant.user?.email }}
+                      </p>
+                    </div>
+                    <div>
+                      <span
+                        :class="{
+                          'text-green-600': participant.status === 'present',
+                          'text-red-600': participant.status !== 'present'
+                        }"
+                      >
+                        {{ participant.status === 'present' ? 'Présent' : 'Absent' }}
+                      </span>
+                    </div>
+                  </div>
+                </li>
+              </ul>
             </div>
-
-            <draggable
-              v-model="form.agenda"
-              class="space-y-4 mt-4"
-              handle=".handle"
-              v-bind="dragOptions"
-              @end="updateAgendaOrder"
-              item-key="id"
-            >
-              <template #item="{ element: item }">
-                <div class="flex items-start space-x-4 p-4 border rounded-lg bg-white">
-                  <div class="handle cursor-move text-gray-400 flex flex-col justify-center">
-                    <ChevronUpIcon class="h-5 w-5" />
-                    <ChevronDownIcon class="h-5 w-5" />
-                  </div>
-                  <div class="flex-grow">
-                    <div class="flex justify-between">
-                      <h4 class="font-medium">{{ item.title }}</h4>
-                      <div class="flex items-center space-x-2">
-                        <span class="text-sm text-gray-500">{{ item.duration_minutes }} min</span>
-                        <button
-                          @click="editAgendaItem(item)"
-                          class="text-gray-400 hover:text-gray-600"
-                        >
-                          <PencilIcon class="h-5 w-5" />
-                        </button>
-                      </div>
-                    </div>
-                    <p class="text-sm text-gray-600 mt-1">{{ item.description }}</p>
-                    <div class="mt-2 text-sm text-gray-500">
-                      Présentateur : {{ item.presenter?.name || 'Non assigné' }}
-                    </div>
-                  </div>
-                </div>
-              </template>
-            </draggable>
           </div>
         </div>
 
+        <!-- Comité Local -->
         <div class="bg-white shadow sm:rounded-lg">
           <div class="px-4 py-5 sm:p-6">
             <h3 class="text-lg font-medium text-gray-900">Comité Local</h3>
@@ -166,55 +149,28 @@
               Aucun comité local associé
             </div>
           </div>
-        </div>
-        <!-- Participants -->
-        <div class="bg-white shadow sm:rounded-lg">
-          <div class="px-4 py-5 sm:p-6">
-            <h3 class="text-lg font-medium text-gray-900">Participants</h3>
-            <div class="mt-4">
-              <!-- Membres du comité -->
-              <div v-if="meeting.local_committee.members?.length" class="mt-6">
-                <ul class="divide-y divide-gray-200">
-                  <li v-for="participant in meeting.participants" :key="participant.id" class="py-4">
-                    <div class="flex items-center space-x-4">
-                      <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-gray-900">
-                          {{ participant.guest_name || participant.user?.name }}
-                        </p>
-                        <p class="text-sm text-gray-500">
-                          {{ participant.guest_email || participant.user?.email }}
-                        </p>
-                      </div>
 
-                    </div>
-                  </li>
-                </ul>
-              </div>
-
-              <!-- Invités externes -->
-              <div v-if="meeting.participants?.length" class="mt-6">
-                <ul class="divide-y divide-gray-200">
-                  <li v-for="participant in meeting.participants" :key="participant.id" class="py-4">
-                    <div class="flex items-center space-x-4">
-                      <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-gray-900">
-                          {{ participant.guest_name || participant.user?.name }}
-                        </p>
-                        <p class="text-sm text-gray-500">
-                          {{ participant.guest_email || participant.user?.email }}
-                        </p>
-                      </div>
-
-                    </div>
-                  </li>
-                </ul>
-              </div>
-            </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div v-for="village in meeting.local_committee.locality?.children" :key="village.id" class="bg-white shadow-md rounded-lg p-4">
+            <h3 class="text-xl font-medium text-gray-800">
+              {{ village.name }} <span class="text-sm text-gray-500">({{ village.representatives.length }} représentants)</span>
+            </h3>
+            <ul class="list-none mt-2">
+              <li v-for="rep in village.representatives" :key="rep.id" class="flex items-center space-x-4 py-2">
+                <div class="flex-shrink-0">
+                  <div class="h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center text-white">
+                    {{ getInitials(rep) }}
+                  </div>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium text-gray-900">{{ rep.first_name }} {{ rep.last_name }}</p>
+                  <p class="text-sm text-gray-500">{{ rep.phone }} - {{ formatRole(rep.role) }}</p>
+                </div>
+              </li>
+            </ul>
           </div>
         </div>
-
-        <!-- Comité Local -->
-
+        </div>
 
         <!-- Pièces jointes -->
         <div class="bg-white shadow sm:rounded-lg">
@@ -388,64 +344,7 @@
           </div>
         </div>
 
-        <!-- Personnes non enrôlées -->
-        <div class="bg-white shadow sm:rounded-lg mt-6">
-            <div class="px-4 py-5 sm:p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-medium text-gray-900">Personnes non enrôlées</h3>
-                    <button
-                        @click="showNewEnrollmentModal = true"
-                        class="px-4 py-2 bg-indigo-600 text-white text-sm rounded-md hover:bg-indigo-700"
-                    >
-                        Ajouter une personne
-                    </button>
-                </div>
-
-                <!-- Liste des Personnes non enrôlées -->
-                <div class="mt-4">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead>
-                            <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contact</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Adresse</th>
-                                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            <tr v-for="request in enrollmentRequests" :key="request.id">
-                                <td class="px-6 py-4">
-                                    {{ request.first_name }} {{ request.last_name }}
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div>{{ request.phone }}</div>
-                                    <div class="text-sm text-gray-500">{{ request.email }}</div>
-                                </td>
-                                <td class="px-6 py-4">
-                                    <div>{{ request.address }}</div>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <div class="flex justify-end space-x-3">
-                                        <button
-                                            @click="editEnrollment(request)"
-                                            class="text-indigo-600 hover:text-indigo-900"
-                                        >
-                                            Modifier
-                                        </button>
-                                        <button
-                                            @click="deleteEnrollment(request)"
-                                            class="text-red-600 hover:text-red-900"
-                                        >
-                                            Supprimer
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+    
       </div>
     </div>
 
@@ -745,6 +644,21 @@ interface Props {
   user: User
 }
 
+const getInitials = (member: Member): string => {
+  if (member.user_id && member.user) {
+    return member.user.name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 2);
+  }
+  if (member.first_name && member.last_name) {
+    return (member.first_name[0] + member.last_name[0]).toUpperCase();
+  }
+  return 'XX';
+}
+
 const props = defineProps<Props>()
 
 const showNewAgendaItemModal = ref(false)
@@ -1020,7 +934,9 @@ const handleFileImport = async (event: Event) => {
 
 // Charger les commentaires et l'historique au montage
 onMounted(() => {
+  console.log(props.meeting);
     if (props.meeting.id) {
+      
         axios.get(route('meeting.comments.index', props.meeting.id))
             .then(response => {
                 comments.value = response.data.comments

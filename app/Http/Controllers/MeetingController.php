@@ -24,48 +24,35 @@ class MeetingController extends Controller
         protected MeetingInvitationService $invitationService
     ) {}
 
-    public function index()
+    public function index(Request $request)
     {
-        $meetings = Meeting::query()
-            ->with(['localCommittee.locality'])
-            ->orderBy('scheduled_date', 'desc')
-            ->paginate(10)
-            ->through(function ($meeting) {
-                return [
-                    'id' => $meeting->id,
-                    'title' => $meeting->title,
-                    'scheduled_date' => $meeting->scheduled_date,
-                    'status' => $meeting->status,
-                    'locality_name' => $meeting->localCommittee?->locality?->name ?? 'Non défini',
-                    'local_committee_id' => $meeting->local_committee_id
-                ];
-            });
+        $query = Meeting::query();
+
+        if ($request->has('search')) {
+            $query->where('title', 'like', '%' . $request->input('search') . '%');
+        }
+
+        $meetings = $query->paginate(10)->withQueryString();
 
         return Inertia::render('Meetings/Index', [
             'meetings' => $meetings,
+            'filters' => $request->only('search'),
         ]);
     }
 
     public function create()
     {
-        $committees = LocalCommittee::with('locality')
-            ->get()
-            ->map(function ($committee) {
-                return [
-                    'id' => $committee->id,
-                    'name' => $committee->name,
-                    'locality_name' => $committee->locality->name,
-                ];
-            });
-        
+        $localCommittees = LocalCommittee::all();
         return Inertia::render('Meetings/Create', [
-            'committees' => $committees
+            'localCommittees' => $localCommittees,
         ]);
     }
 
     public function show(Meeting $meeting)
     {
-        $meeting->load(['localCommittee.locality']);
+        $meeting->load(['localCommittee']);
+        $committee = LocalCommittee::with(['locality.children.representatives'])->findOrFail($meeting->local_committee_id);
+
         
         return Inertia::render('Meetings/Show', [
             'meeting' => [
@@ -75,12 +62,7 @@ class MeetingController extends Controller
                 'status' => $meeting->status,
                 'locality_name' => $meeting->localCommittee?->locality?->name ?? 'Non défini',
                 'local_committee_id' => $meeting->local_committee_id,
-                'local_committee' => [
-                    'name' => $meeting->localCommittee?->name,
-                    'locality' => [
-                        'name' => $meeting->localCommittee?->locality?->name
-                    ]
-                ]
+                'local_committee' => $committee
             ],
             'user' => auth()->user()
         ]);
@@ -90,56 +72,46 @@ class MeetingController extends Controller
     {
         $meeting->load(['localCommittee.locality']);
         
-        $committees = LocalCommittee::with('locality')
-            ->get()
-            ->map(function ($committee) {
-                return [
-                    'id' => $committee->id,
-                    'name' => $committee->name,
-                    'locality_name' => $committee->locality->name,
-                ];
-            });
+        $localCommittees = LocalCommittee::all();
 
         return Inertia::render('Meetings/Edit', [
-            'meeting' => [
-                'id' => $meeting->id,
-                'title' => $meeting->title,
-                'scheduled_date' => $meeting->scheduled_date,
-                'status' => $meeting->status,
-                'local_committee_id' => $meeting->local_committee_id,
-                'locality_name' => $meeting->localCommittee?->locality?->name ?? 'Non défini',
-            ],
-            'committees' => $committees
+            'meeting' => $meeting,
+            'localCommittees' => $localCommittees,
         ]);
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => 'required|string',
-            'local_committee_id' => 'required|exists:local_committees,id',
+            'title' => 'required|string|max:255',
             'scheduled_date' => 'required|date',
-            'status' => 'required|in:scheduled,completed,cancelled'
+            'scheduled_time' => 'required',
+            'localCommittee' => 'required|exists:local_committees,id',
         ]);
 
-        $meeting = Meeting::create($validated);
+        $validated['local_committee_id'] = $validated['localCommittee'];
+        unset($validated['localCommittee']);
 
-        return redirect()->route('meetings.show', $meeting)
-            ->with('success', 'Réunion créée avec succès');
+        Meeting::create($validated);
+
+        return redirect()->route('meetings.index')->with('success', 'Réunion planifiée avec succès');
     }
 
     public function update(Request $request, Meeting $meeting)
     {
         $validated = $request->validate([
-            'title' => 'required|string',
-            'local_committee_id' => 'required|exists:local_committees,id',
+            'title' => 'required|string|max:255',
             'scheduled_date' => 'required|date',
-            'status' => 'required|in:scheduled,completed,cancelled'
+            'scheduled_time' => 'required',
+            'localCommittee' => 'required|exists:local_committees,id',
         ]);
+
+        $validated['local_committee_id'] = $validated['localCommittee'];
+        unset($validated['localCommittee']);
 
         $meeting->update($validated);
 
-        return redirect()->back()->with('success', 'Réunion mise à jour avec succès');
+        return redirect()->route('meetings.index')->with('success', 'Réunion mise à jour avec succès');
     }
 
     public function export(Meeting $meeting, MeetingExportService $exportService)
@@ -185,5 +157,34 @@ class MeetingController extends Controller
                 'message' => 'Erreur lors de l\'envoi des notifications'
             ], 500);
         }
+    }
+
+    public function reschedule(Request $request, $meetingId)
+    {
+        $request->validate([
+            'date' => 'required|date',
+            'reason' => 'required|string|max:255',
+        ]);
+
+        $meeting = Meeting::findOrFail($meetingId);
+        $meeting->scheduled_date = $request->input('date');
+        $meeting->reschedule_reason = $request->input('reason');
+        $meeting->save();
+
+        return response()->json(['message' => 'La réunion a été reportée avec succès.']);
+    }
+
+    public function showRescheduleForm($meetingId)
+    {
+        $meeting = Meeting::findOrFail($meetingId);
+
+        return Inertia::render('Meetings/Reschedule', [
+            'meetingId' => $meeting->id,
+            'meeting' => [
+                'title' => $meeting->title,
+                'scheduled_date' => $meeting->scheduled_date,
+                'locality_name' => $meeting->localCommittee?->locality?->name ?? 'Non défini',
+            ],
+        ]);
     }
 } 

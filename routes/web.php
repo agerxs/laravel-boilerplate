@@ -13,6 +13,7 @@ use App\Http\Controllers\LocalCommitteeController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EnrollmentRequestController;
+use App\Http\Controllers\VillageRepresentativesController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -79,6 +80,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/local-committees/{localCommittee}', [LocalCommitteeController::class, 'show'])
         ->name('local-committees.show');
 
+    Route::get('/local-committees/{committeeId}/village-representatives', [LocalCommitteeController::class, 'showVillageRepresentatives'])->name('local-committees.village-representatives');
+    Route::post('/local-committees/add-representatives', [LocalCommitteeController::class, 'addRepresentatives'])->name('local-committees.add-representatives');
+
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
 
     Route::post('/meetings/{meeting}/cancel', [MeetingController::class, 'cancel'])
@@ -96,6 +100,10 @@ Route::middleware(['auth'])->group(function () {
         ->name('enrollment-requests.update');
     Route::delete('/enrollment-requests/{enrollmentRequest}', [EnrollmentRequestController::class, 'destroy'])
         ->name('enrollment-requests.destroy');
+
+    Route::get('/village-representatives', [VillageRepresentativesController::class, 'index'])->name('village-representatives.index');
+
+    Route::post('/local-committees/{committeeId}/save-villages', [LocalCommitteeController::class, 'saveVillages'])->name('local-committees.save-villages');
 });
 
 require __DIR__.'/auth.php';

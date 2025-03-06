@@ -15,8 +15,9 @@ class Meeting extends Model
 
     protected $fillable = [
         'title',
-        'local_committee_id',
         'scheduled_date',
+        'scheduled_time',
+        'local_committee_id',
         'status',
         'people_to_enroll_count',
         'people_enrolled_count'
@@ -61,10 +62,6 @@ class Meeting extends Model
         return $this->hasMany(MeetingComment::class);
     }
 
-    public function localCommittees(): BelongsToMany
-    {
-        return $this->belongsToMany(LocalCommittee::class, 'meeting_local_committees');
-    }
 
     public function enrollmentRequests(): HasMany
     {

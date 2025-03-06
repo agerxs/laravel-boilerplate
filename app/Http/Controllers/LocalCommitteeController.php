@@ -10,6 +10,8 @@ use Inertia\Inertia;
 use App\Services\AdministrativeDataService;
 use Illuminate\Validation\Rule;
 use App\Models\Locality;
+use App\Models\Village;
+use App\Models\Representative;
 
 class LocalCommitteeController extends Controller
 {
@@ -43,32 +45,54 @@ class LocalCommitteeController extends Controller
         ]);
     }
 
-    public function show(LocalCommittee $localCommittee)
+    public function show($id)
     {
-        $localCommittee->load(['locality', 'members.user' => function($query) {
-            $query->select('id', 'name', 'phone');
-        }]);
-        
+            $committee = LocalCommittee::with(['locality.children.representatives'])->findOrFail($id);
         return Inertia::render('LocalCommittees/Show', [
-            'committee' => $localCommittee
+            'committee' => $committee,
         ]);
     }
 
     public function create()
     {
+        // Récupérer les utilisateurs avec le rôle "Sous-préfet"
+        $sousPrefets = User::role('Sous-prefet')
+            ->with('locality')
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'phone' => $user->phone,
+                    'whatsapp' => $user->whatsapp,
+                    'address' => $user->address,
+                    'locality_name' => $user->locality?->name,
+                ];
+            });
+
+        // Récupérer les utilisateurs avec le rôle "Secrétaire"
+        $secretaires = User::role('Secrétaire')
+            ->with('locality')
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'phone' => $user->phone,
+                    'whatsapp' => $user->whatsapp,
+                    'address' => $user->address,
+                    'locality_name' => $user->locality?->name,
+                ];
+            });
+
+        // Récupérer la hiérarchie des localités
+        $localities = $this->administrativeService->getLocalityHierarchy();
+
+        // Passer les données à la vue Inertia
         return Inertia::render('LocalCommittees/Create', [
-            'users' => User::role('Secretaire')
-                ->with('locality')
-                ->get()
-                ->map(function ($user) {
-                    return [
-                        'id' => $user->id,
-                        'name' => $user->name,
-                        'locality_name' => $user->locality?->name,
-                        'phone' => $user->phone
-                    ];
-                }),
-            'localities' => $this->administrativeService->getLocalityHierarchy()
+            'sousPrefets' => $sousPrefets,
+            'secretaires' => $secretaires,
+            'localities' => $localities,
         ]);
     }
 
@@ -76,18 +100,23 @@ class LocalCommitteeController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'locality_id' => 'required|exists:localities,id',
+            'locality_id' => 'required|exists:localite,id',
             'status' => 'required|in:active,inactive,pending',
             'members' => 'required|array|min:1',
             'members.*.is_user' => 'required|boolean',
-            'members.*.role' => ['required', 'string', Rule::in(['secretary', 'member'])],
+            'members.*.role' => ['required', 'string', Rule::in(['secretary', 'president'])],
             'members.*.status' => 'required|in:active,inactive',
-            // Validation pour les membres utilisateurs
             'members.*.user_id' => 'required_if:members.*.is_user,true|exists:users,id|nullable',
-            // Validation pour les membres non-utilisateurs
             'members.*.first_name' => 'required_if:members.*.is_user,false|string|max:255|nullable',
             'members.*.last_name' => 'required_if:members.*.is_user,false|string|max:255|nullable',
-            'members.*.phone' => 'nullable|string|max:20'
+            'members.*.phone' => 'nullable|string|max:20',
+            'villages' => 'required|array',
+            'villages.*.id' => 'required|exists:localite,id',
+            'villages.*.representatives' => 'required|array',
+            'villages.*.representatives.*.first_name' => 'required|string|max:255',
+            'villages.*.representatives.*.last_name' => 'required|string|max:255',
+            'villages.*.representatives.*.phone' => 'nullable|string|max:20',
+            'villages.*.representatives.*.role' => 'required|string|max:255',
         ]);
 
         $committee = LocalCommittee::create([
@@ -96,7 +125,7 @@ class LocalCommitteeController extends Controller
             'status' => $validated['status']
         ]);
 
-        // Créer les membres
+        
         foreach ($validated['members'] as $memberData) {
             $member = [
                 'role' => $memberData['role'],
@@ -106,37 +135,65 @@ class LocalCommitteeController extends Controller
             if ($memberData['is_user']) {
                 $member['user_id'] = $memberData['user_id'];
             } else {
+              
                 $member['first_name'] = $memberData['first_name'];
                 $member['last_name'] = $memberData['last_name'];
                 $member['phone'] = $memberData['phone'] ?? null;
             }
-
-            $committee->members()->create($member);
+           
+           $committee->members()->create($member);
         }
 
-        return redirect()
-            ->route('local-committees.show', $committee)
-            ->with('success', 'Comité local créé avec succès');
+        foreach ($validated['villages'] as $villageData) {
+            $village = Locality::find($villageData['id']);
+            foreach ($villageData['representatives'] as $repData) {
+                $result=$village->representatives()->create($repData);
+            }
+        }
+
+        return redirect()->route('local-committees.index')->with('success', 'Comité local créé avec succès');
     }
 
-    public function edit(LocalCommittee $localCommittee)
+    public function edit($id)
     {
-        $localCommittee->load(['locality', 'members.user']);
+        $committee = LocalCommittee::with(['locality.children.representatives', 'members.user'])->findOrFail($id);
+        $localities = $this->administrativeService->getLocalityHierarchy();
+        $users = User::all();
+        $sousPrefets = User::role('Sous-prefet')
+            ->with('locality')
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'phone' => $user->phone,
+                    'whatsapp' => $user->whatsapp,
+                    'address' => $user->address,
+                    'locality_name' => $user->locality?->name,
+                ];
+            });
 
-        return Inertia::render('LocalCommittees/Edit', [
-            'committee' => $localCommittee,
-            'users' => User::role('Secretaire')
-                ->with('locality')
-                ->get()
-                ->map(function ($user) {
-                    return [
-                        'id' => $user->id,
-                        'name' => $user->name,
-                        'locality_name' => $user->locality?->name,
-                        'phone' => $user->phone
-                    ];
-                }),
-            'localities' => $this->administrativeService->getLocalityHierarchy()
+        // Récupérer les utilisateurs avec le rôle "Secrétaire"
+        $secretaires = User::role('Secrétaire')
+            ->with('locality')
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'phone' => $user->phone,
+                    'whatsapp' => $user->whatsapp,
+                    'address' => $user->address,
+                    'locality_name' => $user->locality?->name,
+                ];
+            });
+
+        return Inertia::render('LocalCommittees/Form', [
+            'committee' => $committee,
+            'localities' => $localities,
+            'users' => $users,  
+            'sousPrefets' => $sousPrefets,
+            'secretaires' => $secretaires,
         ]);
     }
 
@@ -144,18 +201,25 @@ class LocalCommitteeController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'locality_id' => 'required|exists:localities,id',
+            'locality_id' => 'required|exists:localite,id',
             'status' => 'required|in:active,inactive,pending',
             'members' => 'required|array|min:1',
             'members.*.is_user' => 'required|boolean',
-            'members.*.role' => ['required', 'string', Rule::in(['secretary', 'member'])],
+            'members.*.role' => ['required', 'string', Rule::in(['secretary', 'president'])],
             'members.*.status' => 'required|in:active,inactive',
             // Validation pour les membres utilisateurs
             'members.*.user_id' => 'required_if:members.*.is_user,true|exists:users,id|nullable',
             // Validation pour les membres non-utilisateurs
             'members.*.first_name' => 'required_if:members.*.is_user,false|string|max:255|nullable',
             'members.*.last_name' => 'required_if:members.*.is_user,false|string|max:255|nullable',
-            'members.*.phone' => 'nullable|string|max:20'
+            'members.*.phone' => 'nullable|string|max:20',
+            'villages' => 'required|array',
+            'villages.*.id' => 'required|exists:localite,id',
+            'villages.*.representatives' => 'required|array',
+            'villages.*.representatives.*.first_name' => 'required|string|max:255',
+            'villages.*.representatives.*.last_name' => 'required|string|max:255',
+            'villages.*.representatives.*.phone' => 'nullable|string|max:20',
+            'villages.*.representatives.*.role' => 'required|string|max:255',
         ]);
 
         $localCommittee->update([
@@ -168,6 +232,7 @@ class LocalCommitteeController extends Controller
         $localCommittee->members()->delete();
 
         // Ajouter les nouveaux membres
+        
         foreach ($validated['members'] as $memberData) {
             $member = [
                 'role' => $memberData['role'],
@@ -177,17 +242,25 @@ class LocalCommitteeController extends Controller
             if ($memberData['is_user']) {
                 $member['user_id'] = $memberData['user_id'];
             } else {
+              
                 $member['first_name'] = $memberData['first_name'];
                 $member['last_name'] = $memberData['last_name'];
                 $member['phone'] = $memberData['phone'] ?? null;
             }
-
-            $localCommittee->members()->create($member);
+           
+           $localCommittee->members()->create($member);
         }
 
-        return redirect()
-            ->route('local-committees.show', $localCommittee)
-            ->with('success', 'Comité local mis à jour avec succès');
+        foreach ($validated['villages'] as $villageData) {
+            $village = Locality::find($villageData['id']);
+            $village->representatives()->delete();
+            foreach ($villageData['representatives'] as $repData) {
+                $result=$village->representatives()->create($repData);
+            }
+        }
+
+        return redirect()->route('local-committees.index')->with('success', 'Comité local créé avec succès');
+
     }
 
     public function destroy(LocalCommittee $localCommittee)
@@ -197,4 +270,47 @@ class LocalCommitteeController extends Controller
         return redirect()->route('local-committees.index')
             ->with('success', 'Comité local supprimé avec succès');
     }
+
+    public function showVillageRepresentatives($committeeId)
+    {
+        $committee = LocalCommittee::with('members.user')->findOrFail($committeeId);
+
+        return Inertia::render('LocalCommittees/VillageRepresentatives', [
+            'committee' => $committee,
+            'permanentMembers' => $committee->members->whereIn('role', ['president', 'secretary']),
+        ]);
+    }
+
+    public function saveVillages(Request $request, $committeeId)
+    {
+        $validated = $request->validate([
+            'villages' => 'required|array',
+            'villages.*.id' => [
+                'required',
+                Rule::exists('localite', 'id')->where(function ($query) {
+                    $query->where('locality_type_id', 7);
+                }),
+            ],
+            'villages.*.representatives' => 'required|array',
+            'villages.*.representatives.*.first_name' => 'nullable|string|max:255',
+            'villages.*.representatives.*.last_name' => 'nullable|string|max:255',
+            'villages.*.representatives.*.phone' => 'nullable|string|max:20',
+            'villages.*.representatives.*.role' => 'nullable|string|max:255',
+        ]);
+
+        foreach ($validated['villages'] as $villageData) {
+            $village = Locality::where('id', $villageData['id'])->where('locality_type_id', 7)->first();
+            if ($village) {
+                foreach ($villageData['representatives'] as $repData) {
+                    // Vérifiez que les champs requis sont remplis
+                    if (!empty($repData['first_name']) && !empty($repData['last_name']) && !empty($repData['role'])) {
+                        $village->representatives()->create($repData);
+                    }
+                }
+            }
+        }
+
+        return redirect()->route('local-committees.index')->with('success', 'Villages et représentants ajoutés avec succès.');
+    }
+
 } 

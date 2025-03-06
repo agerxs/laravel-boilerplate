@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Locality extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, HasFactory;
 
     protected $fillable = ['name', 'locality_type_id', 'parent_id'];
 
@@ -28,5 +29,10 @@ class Locality extends Model
     public function children(): HasMany
     {
         return $this->hasMany(Locality::class, 'parent_id');
+    }
+
+    public function representatives()
+    {
+        return $this->hasMany(Representative::class, 'locality_id');
     }
 }

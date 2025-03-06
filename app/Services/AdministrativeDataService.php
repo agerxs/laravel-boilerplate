@@ -72,7 +72,11 @@ class AdministrativeDataService
                 })->with(['children' => function($q) {
                     $q->whereHas('type', function($sq) {
                         $sq->where('name', 'sub_prefecture');
-                    });
+                    })->with(['children' => function($sq) {
+                        $sq->whereHas('type', function($tq) {
+                            $tq->where('name', 'village');
+                        });
+                    }]);
                 }]);
             }])
             ->get()
@@ -90,7 +94,14 @@ class AdministrativeDataService
                                 return [
                                     'id' => $subPrefecture->id,
                                     'name' => $subPrefecture->name,
-                                    'type' => 'sub_prefecture'
+                                    'type' => 'sub_prefecture',
+                                    'children' => $subPrefecture->children->map(function ($villageOrCommune) {
+                                        return [
+                                            'id' => $villageOrCommune->id,
+                                            'name' => $villageOrCommune->name,
+                                            'type' => $villageOrCommune->type->name
+                                        ];
+                                    })
                                 ];
                             })
                         ];

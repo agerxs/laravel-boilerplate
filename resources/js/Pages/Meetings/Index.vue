@@ -22,6 +22,16 @@
         </Link>
       </div>
 
+      <!-- Champ de recherche -->
+      <div class="mb-4">
+        <input
+          v-model="search"
+          type="text"
+          placeholder="Rechercher..."
+          class="border rounded-md p-2 w-full"
+        />
+      </div>
+
       <!-- Table -->
       <div class="bg-white rounded-lg shadow overflow-hidden">
         <table class="min-w-full divide-y divide-gray-200">
@@ -80,15 +90,22 @@
                 >
                   <XCircleIcon class="h-5 w-5" />
                 </button>
+                <Link
+                  :href="route('meetings.reschedule.form', meeting.id)"
+                  class="text-yellow-600 hover:text-yellow-900 ml-4 inline-flex items-center"
+                  title="Reporter la réunion"
+                >
+                  <ClockIcon class="h-5 w-5" />
+                </Link>
               </td>
             </tr>
           </tbody>
         </table>
+      </div>
 
-        <!-- Pagination -->
-        <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
-          <Pagination :links="meetings.links" />
-        </div>
+      <!-- Pagination -->
+      <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+        <Pagination :links="meetings.links" />
       </div>
     </div>
   </AppLayout>
@@ -98,11 +115,12 @@
 import { Link, router, Head } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import Pagination from '@/Components/Pagination.vue'
-import { ref } from 'vue'
+import { ref, computed, watch} from 'vue'
 import {
   PlusIcon,
   EyeIcon,
   XCircleIcon,
+  ClockIcon,
 } from '@heroicons/vue/24/outline'
 import { useToast } from '@/Composables/useToast'
 import axios from 'axios'
@@ -121,10 +139,24 @@ interface Props {
     data: Meeting[];
     links: any[];
   };
+  filters: {
+    search: string;
+  };
 }
 
 const props = defineProps<Props>()
 const toast = useToast()
+
+const search = ref(props.filters.search)
+
+watch(search, (value) => {
+  router.get(
+    route('meetings.index'),
+    { search: value },
+    { preserveState: true, preserveScroll: true }
+  )
+})
+
 
 const formatDate = (date: string) => {
   if (!date) return 'Date non définie';
@@ -134,6 +166,7 @@ const formatDate = (date: string) => {
     day: 'numeric'
   });
 }
+
 
 const cancelMeeting = async (meeting: Meeting) => {
   if (!confirm('Êtes-vous sûr de vouloir annuler cette réunion ?')) return;
@@ -147,6 +180,7 @@ const cancelMeeting = async (meeting: Meeting) => {
     toast.error('Erreur lors de l\'annulation de la réunion');
   }
 }
+
 </script>
 
 <style>

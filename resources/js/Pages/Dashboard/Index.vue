@@ -97,13 +97,29 @@
             </div>
           </div>
         </div>
+
+        <div>
+          <label for="subPrefecture">Sous-préfecture :</label>
+          <select v-model="selectedSubPrefecture" @change="fetchVillages">
+            <option v-for="subPrefecture in subPrefectures" :key="subPrefecture.id" :value="subPrefecture.id">
+              {{ subPrefecture.name }}
+            </option>
+          </select>
+        </div>
+
+        <div v-if="villages.length > 0">
+          <p>Nombre de villages : {{ villages.length }}</p>
+          <ul>
+            <li v-for="village in villages" :key="village.id">{{ village.name }}</li>
+          </ul>
+        </div>
       </div>
     </div>
   </AppLayout>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { Link } from '@inertiajs/vue3'
 import {
@@ -171,4 +187,34 @@ const formatDateTime = (datetime: string) => {
     minute: '2-digit'
   })
 }
+
+const subPrefectures = ref([])
+const selectedSubPrefecture = ref(null)
+const villages = ref([])
+
+const fetchVillages = () => {
+  if (selectedSubPrefecture.value) {
+    fetch(`/api/sub-prefectures/${selectedSubPrefecture.value}/villages`)
+      .then(response => response.json())
+      .then(data => {
+        villages.value = data
+      })
+      .catch(error => {
+        console.error('Erreur lors de la récupération des villages:', error)
+      })
+  }
+}
+
+const fetchSubPrefectures = () => {
+  fetch('/api/sub-prefectures')
+    .then(response => response.json())
+    .then(data => {
+      subPrefectures.value = data
+    })
+    .catch(error => {
+      console.error('Erreur lors de la récupération des sous-préfectures:', error)
+    })
+}
+
+fetchSubPrefectures()
 </script> 

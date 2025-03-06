@@ -3,91 +3,40 @@
 
   <AppLayout :title="committee.name">
     <div class="max-w-7xl mx-auto py-6">
-      <div class="bg-white shadow rounded-lg">
-        <!-- En-tête -->
-        <div class="px-6 py-4 border-b border-gray-200">
-          <div class="flex justify-between items-center">
-            <h2 class="text-xl font-semibold text-gray-900">
-              Détails du comité
-            </h2>
-            <Link
-              :href="route('local-committees.edit', committee.id)"
-              class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 rounded-lg text-white text-sm"
-            >
-              <PencilIcon class="h-5 w-5 mr-2" />
-              Modifier
-            </Link>
-          </div>
-        </div>
+      <h1 class="text-3xl font-extrabold mb-6 text-gray-900">
+        {{ committee.name }} <span class="text-lg text-gray-500">({{ committee.locality?.children.length || 0 }} villages)</span>
+      </h1>
 
-        <!-- Informations générales -->
-        <div class="px-6 py-4">
-          <dl class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <dt class="text-sm font-medium text-gray-500">Sous-préfecture</dt>
-              <dd class="mt-1 text-sm text-gray-900">{{ committee.locality?.name }}</dd>
-            </div>
-            <div>
-              <dt class="text-sm font-medium text-gray-500">Statut</dt>
-              <dd class="mt-1">
-                <StatusBadge :status="committee.status" />
-              </dd>
-            </div>
-          </dl>
-        </div>
-
-        <!-- Liste des membres -->
-        <div class="px-6 py-4 border-t border-gray-200">
-          <h3 class="text-lg font-medium text-gray-900 mb-4">Membres du comité</h3>
-          <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-              <thead class="bg-gray-50">
-                <tr>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nom
-                  </th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Rôle
-                  </th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Téléphone
-                  </th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Statut
-                  </th>
-                </tr>
-              </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
-                <tr v-for="member in committee.members" :key="member.id">
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="flex items-center">
-                      <div class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center mr-3">
-                        <span class="text-sm font-medium text-gray-600">
-                          {{ getInitials(member) }}
-                        </span>
-                      </div>
-                      <div class="text-sm font-medium text-gray-900">
-                        {{ getMemberName(member) }}
-                      </div>
-                    </div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">{{ formatRole(member.role) }}</div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">
-                      {{ getMemberPhone(member) }}
-                    </div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <StatusBadge :status="member.status" />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+      <div class="mb-8">
+        <h2 class="text-2xl font-semibold text-indigo-600">Villages et représentants</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div v-for="village in committee.locality?.children" :key="village.id" class="bg-white shadow-md rounded-lg p-4">
+            <h3 class="text-xl font-medium text-gray-800">
+              {{ village.name }} <span class="text-sm text-gray-500">({{ village.representatives.length }} représentants)</span>
+            </h3>
+            <ul class="list-none mt-2">
+              <li v-for="rep in village.representatives" :key="rep.id" class="flex items-center space-x-4 py-2">
+                <div class="flex-shrink-0">
+                  <div class="h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center text-white">
+                    {{ getInitials(rep) }}
+                  </div>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium text-gray-900">{{ rep.first_name }} {{ rep.last_name }}</p>
+                  <p class="text-sm text-gray-500">{{ rep.phone }} - {{ formatRole(rep.role) }}</p>
+                </div>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
+
+      <Link
+        :href="route('local-committees.index')"
+        class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+      >
+        Retour à la liste
+      </Link>
     </div>
   </AppLayout>
 </template>
@@ -118,8 +67,20 @@ interface Committee {
   status: string;
   locality?: {
     name: string;
+    children:[]
   };
   members: Member[];
+  villages: {
+    id: number;
+    name: string;
+    representatives: {
+      id: number;
+      first_name: string;
+      last_name: string;
+      phone: string;
+      role: string;
+    }[];
+  }[];
 }
 
 interface Props {
@@ -155,7 +116,7 @@ const getInitials = (member: Member): string => {
 
 const formatRole = (role: string): string => {
   const roles: { [key: string]: string } = {
-    'president': 'Secrétaire',
+    'president': 'Président',
     'vice_president': 'Vice-président',
     'treasurer': 'Trésorier',
     'secretary': 'Secrétaire',

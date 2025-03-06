@@ -79,20 +79,29 @@
                 <StatusBadge :status="committee.status" />
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <Link
-                  :href="route('local-committees.show', committee.id)"
-                  class="text-primary-600 hover:text-primary-900 mr-4"
-                  title="Voir le comité"
-                >
-                  <EyeIcon class="h-5 w-5" />
-                </Link>
-                <Link
-                  :href="route('local-committees.edit', committee.id)"
-                  class="text-primary-600 hover:text-primary-900"
-                  title="Modifier le comité"
-                >
-                  <PencilIcon class="h-5 w-5" />
-                </Link>
+                <div class="flex items-center justify-end space-x-2">
+                  <Link
+                    :href="route('local-committees.show', { id: committee.id })"
+                    class="text-blue-500 hover:text-blue-700"
+                    title="Voir le comité"
+                  >
+                    <EyeIcon class="h-5 w-5" />
+                  </Link>
+                  <Link
+                    :href="route('local-committees.edit', committee.id)"
+                    class="text-primary-600 hover:text-primary-900"
+                    title="Modifier le comité"
+                  >
+                    <PencilIcon class="h-5 w-5" />
+                  </Link>
+                  <button
+                    @click="deleteCommittee(committee.id)"
+                    class="text-red-500 hover:text-red-700"
+                    title="Supprimer le comité"
+                  >
+                    <TrashIcon class="h-5 w-5" />
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -119,6 +128,7 @@ import {
   PlusIcon,
   EyeIcon,
   PencilIcon,
+  TrashIcon
 } from '@heroicons/vue/24/outline'
 
 interface Member {
@@ -163,6 +173,16 @@ watch(search, (value) => {
     { preserveState: true, preserveScroll: true }
   )
 })
+
+const deleteCommittee = (id: number) => {
+  if (confirm('Êtes-vous sûr de vouloir supprimer ce comité ?')) {
+    router.delete(route('local-committees.destroy', id), {
+      onSuccess: () => {
+        alert('Comité supprimé avec succès.');
+      }
+    });
+  }
+}
 
 const getMemberName = (member: Member): string => {
   if (member.user_id && member.user) {
