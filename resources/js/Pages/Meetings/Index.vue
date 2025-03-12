@@ -33,37 +33,60 @@
       </div>
 
       <!-- Table -->
-      <div class="bg-white rounded-lg shadow overflow-hidden">
+      <div class="bg-white rounded-lg shadow overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th 
+                scope="col" 
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                @click="sortBy('title')"
+              >
                 Titre
+                <span v-if="sortColumn === 'title'" class="ml-1">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
               </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Sous-préfecture
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th 
+                scope="col" 
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                @click="sortBy('scheduled_date')"
+              >
                 Date
+                <span v-if="sortColumn === 'date'" class="ml-1">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
               </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th 
+                scope="col" 
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                @click="sortBy('status')"
+              >
                 Statut
+                <span v-if="sortColumn === 'status'" class="ml-1">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
               </th>
-              <th scope="col" class="relative px-6 py-3">
-                <span class="sr-only">Actions</span>
+              <th 
+                scope="col" 
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                @click="sortBy('local_committee')"
+              >
+                Comité Local
+                <span v-if="sortColumn === 'local_committee'" class="ml-1">
+                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
+                </span>
+              </th>
+              <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
               </th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="meeting in meetings.data" :key="meeting.id" class="hover:bg-gray-50">
+            <tr v-for="meeting in sortedMeetings" :key="meeting.id" class="hover:bg-gray-50">
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm font-medium text-gray-900">
                   {{ meeting.title }}
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">
-                  {{ meeting.locality_name }}
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
@@ -73,6 +96,11 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <MeetingStatusBadge :status="meeting.status" />
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-900">
+                  {{ meeting.locality_name }}
+                </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <Link
@@ -141,6 +169,8 @@ interface Props {
   };
   filters: {
     search: string;
+    sort?: string;
+    direction?: string;
   };
 }
 
@@ -148,6 +178,79 @@ const props = defineProps<Props>()
 const toast = useToast()
 
 const search = ref(props.filters.search)
+
+// État pour le tri
+const sortColumn = ref(props.filters.sort || 'scheduled_date')
+const sortDirection = ref(props.filters.direction || 'desc')
+
+// Fonction pour changer la colonne de tri
+const sortBy = (column) => {
+  let direction;
+  
+  // Si on clique sur la même colonne, on inverse la direction
+  if (sortColumn.value === column) {
+    direction = sortDirection.value === 'asc' ? 'desc' : 'asc';
+    sortDirection.value = direction;
+  } else {
+    // Pour une nouvelle colonne, on commence par asc
+    sortColumn.value = column;
+    direction = 'asc';
+    sortDirection.value = direction;
+  }
+  
+  // Effectuer une requête au serveur avec les paramètres de tri
+  router.get(
+    route('meetings.index'),
+    { 
+      search: search.value,
+      sort: column,
+      direction: direction
+    },
+    { 
+      preserveState: true, 
+      preserveScroll: true 
+    }
+  );
+}
+
+// Computed property pour les réunions triées
+const sortedMeetings = computed(() => {
+  return [...props.meetings.data].sort((a, b) => {
+    let valueA, valueB;
+    
+    // Déterminer les valeurs à comparer en fonction de la colonne
+    switch (sortColumn.value) {
+      case 'title':
+        valueA = a.title.toLowerCase();
+        valueB = b.title.toLowerCase();
+        break;
+      case 'date':
+        valueA = new Date(a.scheduled_date);
+        valueB = new Date(b.scheduled_date);
+        break;
+      case 'status':
+        valueA = a.status.toLowerCase();
+        valueB = b.status.toLowerCase();
+        break;
+      case 'local_committee':
+        valueA = a.locality_name.toLowerCase();
+        valueB = b.locality_name.toLowerCase();
+        break;
+      default:
+        valueA = a[sortColumn.value];
+        valueB = b[sortColumn.value];
+    }
+    
+    // Comparer les valeurs
+    if (valueA < valueB) {
+      return sortDirection.value === 'asc' ? -1 : 1;
+    }
+    if (valueA > valueB) {
+      return sortDirection.value === 'asc' ? 1 : -1;
+    }
+    return 0;
+  });
+});
 
 watch(search, (value) => {
   router.get(

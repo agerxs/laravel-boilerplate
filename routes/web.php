@@ -64,15 +64,16 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/meetings/{meeting}/comments', [MeetingCommentController::class, 'store'])
         ->name('meeting.comments.store');
 
-    // Routes pour les comités locaux
-    Route::get('/local-committees', [LocalCommitteeController::class, 'index'])
-        ->name('local-committees.index');
-    Route::get('/local-committees/create', [LocalCommitteeController::class, 'create'])
-        ->name('local-committees.create');
-    Route::post('/local-committees', [LocalCommitteeController::class, 'store'])
-        ->name('local-committees.store');
-    Route::get('/local-committees/{localCommittee}/edit', [LocalCommitteeController::class, 'edit'])
-        ->name('local-committees.edit');
+    // Routes pour les brouillons - Placez ces routes AVANT les routes avec des paramètres
+    Route::get('/local-committees/drafts', [LocalCommitteeController::class, 'getDrafts'])->name('local-committees.drafts');
+    Route::get('/local-committees/load-draft/{id}', [LocalCommitteeController::class, 'loadDraft'])->name('local-committees.load-draft');
+    Route::delete('/local-committees/delete-draft/{id}', [LocalCommitteeController::class, 'deleteDraft'])->name('local-committees.delete-draft');
+
+    // Routes pour les comités locaux avec des paramètres
+    Route::get('/local-committees', [LocalCommitteeController::class, 'index'])->name('local-committees.index');
+    Route::get('/local-committees/create', [LocalCommitteeController::class, 'create'])->name('local-committees.create');
+    Route::post('/local-committees', [LocalCommitteeController::class, 'store'])->name('local-committees.store');
+    Route::get('/local-committees/{localCommittee}/edit', [LocalCommitteeController::class, 'edit'])->name('local-committees.edit');
     Route::put('/local-committees/{localCommittee}', [LocalCommitteeController::class, 'update'])
         ->name('local-committees.update');
     Route::delete('/local-committees/{localCommittee}', [LocalCommitteeController::class, 'destroy'])
@@ -104,6 +105,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/village-representatives', [VillageRepresentativesController::class, 'index'])->name('village-representatives.index');
 
     Route::post('/local-committees/{committeeId}/save-villages', [LocalCommitteeController::class, 'saveVillages'])->name('local-committees.save-villages');
+
+    Route::post('/local-committees/save-progress', [LocalCommitteeController::class, 'saveProgress'])->name('local-committees.save-progress');
 });
 
 require __DIR__.'/auth.php';

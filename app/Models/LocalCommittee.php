@@ -52,4 +52,9 @@ class LocalCommittee extends Model
         return $this->belongsToMany(Meeting::class)
             ->withTimestamps();
     }
+
+    public function representatives(): HasMany
+    {
+        return $this->hasMany(Representative::class);
+    }
 } 

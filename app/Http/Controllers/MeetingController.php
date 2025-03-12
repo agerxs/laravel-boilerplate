@@ -26,17 +26,52 @@ class MeetingController extends Controller
 
     public function index(Request $request)
     {
-        $query = Meeting::query();
-
+        $query = Meeting::query()
+            ->with('localCommittee.locality')
+            ->select('meetings.*');
+        
+        // Appliquer la recherche si elle existe
         if ($request->has('search')) {
-            $query->where('title', 'like', '%' . $request->input('search') . '%');
+            $search = $request->input('search');
+            $query->where('title', 'like', "%{$search}%");
         }
-
-        $meetings = $query->paginate(10)->withQueryString();
-
+        
+        // Appliquer le tri
+        $sortColumn = $request->input('sort', 'scheduled_date');
+        $direction = $request->input('direction', 'desc');
+        
+        // Valider la colonne de tri pour éviter les injections SQL
+        $allowedColumns = ['title', 'scheduled_date', 'status'];
+        
+        if (in_array($sortColumn, $allowedColumns)) {
+            $query->orderBy($sortColumn, $direction);
+        } else if ($sortColumn === 'local_committee') {
+            // Tri spécial pour le comité local (nécessite un join)
+            $query->join('local_committees', 'meetings.local_committee_id', '=', 'local_committees.id')
+                  ->join('localities', 'local_committees.locality_id', '=', 'localities.id')
+                  ->orderBy('localities.name', $direction)
+                  ->select('meetings.*'); // Important pour éviter les conflits de colonnes
+        }
+        
+        $meetings = $query->paginate(10)
+            ->withQueryString()
+            ->through(function ($meeting) {
+                return [
+                    'id' => $meeting->id,
+                    'title' => $meeting->title,
+                    'scheduled_date' => $meeting->scheduled_date,
+                    'status' => $meeting->status,
+                    'locality_name' => $meeting->localCommittee->locality->name ?? 'Non défini',
+                ];
+            });
+        
         return Inertia::render('Meetings/Index', [
             'meetings' => $meetings,
-            'filters' => $request->only('search'),
+            'filters' => [
+                'search' => $request->input('search', ''),
+                'sort' => $sortColumn,
+                'direction' => $direction
+            ]
         ]);
     }
 
@@ -50,9 +85,10 @@ class MeetingController extends Controller
 
     public function show(Meeting $meeting)
     {
+       
         $meeting->load(['localCommittee']);
         $committee = LocalCommittee::with(['locality.children.representatives'])->findOrFail($meeting->local_committee_id);
-
+       
         
         return Inertia::render('Meetings/Show', [
             'meeting' => [
