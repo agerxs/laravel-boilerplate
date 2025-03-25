@@ -95,7 +95,7 @@
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <MeetingStatusBadge :status="meeting.status" />
+                <MeetingStatusBadge :status="meeting.status" :scheduled-date="meeting.scheduled_date" />
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="text-sm text-gray-900">
@@ -103,28 +103,32 @@
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <Link
-                  :href="route('meetings.show', { meeting: meeting.id })"
-                  class="text-primary-600 hover:text-primary-900 mr-4 inline-flex items-center"
-                  title="Voir la réunion"
-                >
-                  <EyeIcon class="h-5 w-5" />
-                </Link>
-                <button
-                  v-if="meeting.status === 'scheduled'"
-                  @click="cancelMeeting(meeting)"
-                  class="text-red-600 hover:text-red-900 inline-flex items-center"
-                  title="Annuler la réunion"
-                >
-                  <XCircleIcon class="h-5 w-5" />
-                </button>
-                <Link
-                  :href="route('meetings.reschedule.form', meeting.id)"
-                  class="text-yellow-600 hover:text-yellow-900 ml-4 inline-flex items-center"
-                  title="Reporter la réunion"
-                >
-                  <ClockIcon class="h-5 w-5" />
-                </Link>
+                <div class="action-buttons-container">
+                  <Link
+                    :href="route('meetings.show', { meeting: meeting.id })"
+                    class="text-primary-600 hover:text-primary-900 action-button"
+                    title="Voir la réunion"
+                  >
+                    <EyeIcon class="h-5 w-5" />
+                  </Link>
+                  <button
+                    v-if="meeting.status === 'scheduled' && !isSubPrefect"
+                    @click="cancelMeeting(meeting)"
+                    class="text-red-600 hover:text-red-900 action-button"
+                    title="Annuler la réunion"
+                  >
+                    <XCircleIcon class="h-5 w-5" />
+                  </button>
+                  <Link
+                    v-if="!isSubPrefect && meeting.status !== 'prevalidated' && meeting.status !== 'validated' && meeting.status !== 'cancelled' && meeting.status !== 'completed'"
+                    :href="route('meetings.reschedule.form', meeting.id)"
+                    class="text-yellow-600 hover:text-yellow-900 action-button"
+                    title="Reporter la réunion"
+                  >
+                    <ClockIcon class="h-5 w-5" />
+                  </Link>
+                  <MeetingValidationButtons :meeting="meeting" />
+                </div>
               </td>
             </tr>
           </tbody>
@@ -153,6 +157,8 @@ import {
 import { useToast } from '@/Composables/useToast'
 import axios from 'axios'
 import MeetingStatusBadge from '@/Components/MeetingStatusBadge.vue'
+import MeetingValidationButtons from '@/Components/MeetingValidationButtons.vue'
+import { usePage } from '@inertiajs/vue3'
 
 interface Meeting {
   id: number;
@@ -284,6 +290,16 @@ const cancelMeeting = async (meeting: Meeting) => {
   }
 }
 
+// Ajouter d'abord la vérification du rôle de sous-préfet dans la partie script
+const user = computed(() => usePage().props.auth.user)
+
+// Vérifier si l'utilisateur est un sous-préfet
+const isSubPrefect = computed(() => {
+  return user.value?.roles?.some(role => 
+    ['sous-prefet', 'Sous-prefet'].includes(role.name)
+  ) || false
+})
+
 </script>
 
 <style>
@@ -298,5 +314,23 @@ const cancelMeeting = async (meeting: Meeting) => {
 }
 .hover\:text-primary-900:hover {
   color: rgb(49, 46, 129);
+}
+
+/* Styles pour les boutons d'action */
+.action-buttons-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
 }
 </style> 

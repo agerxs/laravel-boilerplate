@@ -1,0 +1,123 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Models\Meeting;
+use App\Models\MeetingAttendee;
+use Illuminate\Http\Request;
+use Carbon\Carbon;
+
+class AttendeeController extends Controller
+{
+    /**
+     * Liste des participants d'une réunion
+     */
+    public function index(Meeting $meeting)
+    {
+        $attendees = $meeting->attendees()
+            ->with('village')
+            ->get()
+            ->map(function ($attendee) {
+                return [
+                    'id' => $attendee->id,
+                    'name' => $attendee->name,
+                    'phone' => $attendee->phone,
+                    'role' => $attendee->role,
+                    'village' => [
+                        'id' => $attendee->localite_id,
+                        'name' => $attendee->village ? $attendee->village->name : ($attendee->localite_id ? 'Village à identifier' : 'Pas de village associé')
+                    ],
+                    'is_expected' => $attendee->is_expected,
+                    'is_present' => $attendee->is_present,
+                    'attendance_status' => $attendee->attendance_status,
+                    'replacement_name' => $attendee->replacement_name,
+                    'replacement_phone' => $attendee->replacement_phone,
+                    'replacement_role' => $attendee->replacement_role,
+                    'arrival_time' => $attendee->arrival_time,
+                    'comments' => $attendee->comments,
+                    'payment_status' => $attendee->payment_status
+                ];
+            });
+
+        return response()->json([
+            'attendees' => $attendees
+        ]);
+    }
+
+    /**
+     * Marquer un participant comme présent
+     */
+    public function markPresent(Request $request, MeetingAttendee $attendee)
+    {
+        $request->validate([
+            'arrival_time' => 'nullable|date',
+        ]);
+
+        $arrivalTime = $request->input('arrival_time') 
+            ? Carbon::parse($request->input('arrival_time')) 
+            : now();
+
+        $attendee->markAsPresent($arrivalTime);
+
+        return response()->json([
+            'message' => 'Participant marqué comme présent',
+            'attendee' => $attendee
+        ]);
+    }
+
+    /**
+     * Marquer un participant comme absent
+     */
+    public function markAbsent(MeetingAttendee $attendee)
+    {
+        $attendee->markAsAbsent();
+
+        return response()->json([
+            'message' => 'Participant marqué comme absent',
+            'attendee' => $attendee
+        ]);
+    }
+
+    /**
+     * Enregistrer un remplaçant
+     */
+    public function setReplacement(Request $request, MeetingAttendee $attendee)
+    {
+        $request->validate([
+            'replacement_name' => 'required|string|max:255',
+            'replacement_phone' => 'nullable|string|max:20',
+            'replacement_role' => 'nullable|string|max:255',
+        ]);
+
+        $attendee->setReplacement(
+            $request->input('replacement_name'),
+            $request->input('replacement_phone'),
+            $request->input('replacement_role')
+        );
+
+        return response()->json([
+            'message' => 'Remplaçant enregistré avec succès',
+            'attendee' => $attendee
+        ]);
+    }
+
+    /**
+     * Ajouter un commentaire
+     */
+    public function addComment(Request $request, MeetingAttendee $attendee)
+    {
+        $request->validate([
+            'comments' => 'required|string',
+        ]);
+
+        $attendee->update([
+            'comments' => $request->input('comments')
+        ]);
+
+        return response()->json([
+            'message' => 'Commentaire ajouté avec succès',
+            'attendee' => $attendee
+        ]);
+    }
+} 

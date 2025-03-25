@@ -79,4 +79,12 @@ class User extends Authenticatable
     {
         return $this->belongsTo(AssignmentLocation::class);
     }
+
+    /**
+     * Obtient le rôle principal de l'utilisateur
+     */
+    public function getPrimaryRole()
+    {
+        return $this->roles()->first();
+    }
 }

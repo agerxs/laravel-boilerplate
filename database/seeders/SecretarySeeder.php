@@ -21,7 +21,7 @@ class SecretarySeeder extends Seeder
         $secretaryRole = Role::firstOrCreate(['name' => 'secretaire']);
         
         // Analyse préliminaire pour trouver les doublons
-        $secretariesData = json_decode(file_get_contents(resource_path('data/secretaires.json')), true);
+        $secretariesData = json_decode(file_get_contents(resource_path('data/secretaires_dates_harmonisees_v2.json')), true);
         
         $emails = [];
         $cnis = [];
@@ -99,14 +99,14 @@ class SecretarySeeder extends Seeder
             $existingUser = User::where('phone', $phone)->first();
 
             if ($existingUser) {
-                $message = "Ignoré : {$secretary['Nom et Prénom']} - Numéro de téléphone déjà existant";
+                $message = "{$secretary['Nom et Prénom']} - Numéro de téléphone déjà existant";
                 echo $message . "\n";
                 Log::info($message);
-                continue;
+               // continue;
             }
 
             $locality = Locality::whereHas('type', function($query) {
-                $query->where('name', 'sub_prefecture');
+                $query->where('name', 'subprefecture');
             })
             ->where('name', trim($secretary['SOUS-PREFECTURES']))
             ->first();

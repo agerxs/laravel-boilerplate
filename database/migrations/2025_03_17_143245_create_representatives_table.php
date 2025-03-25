@@ -1,26 +1,33 @@
 <?php
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
         Schema::create('representatives', function (Blueprint $table) {
-            $table->id();
+            $table->bigIncrements('id');
             $table->string('first_name');
             $table->string('last_name');
             $table->string('phone')->nullable();
             $table->string('role');
             $table->unsignedBigInteger('locality_id');
-            //$table->foreign('locality_id')->references('id')->on('localite')->onDelete('cascade');
+            $table->unsignedBigInteger('local_committee_id')->nullable()->index('representatives_local_committee_id_foreign');
             $table->timestamps();
         });
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
         Schema::dropIfExists('representatives');
     }
-}; 
+};

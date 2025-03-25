@@ -97,22 +97,6 @@
             </div>
           </div>
         </div>
-
-        <div>
-          <label for="subPrefecture">Sous-préfecture :</label>
-          <select v-model="selectedSubPrefecture" @change="fetchVillages">
-            <option v-for="subPrefecture in subPrefectures" :key="subPrefecture.id" :value="subPrefecture.id">
-              {{ subPrefecture.name }}
-            </option>
-          </select>
-        </div>
-
-        <div v-if="villages.length > 0">
-          <p>Nombre de villages : {{ villages.length }}</p>
-          <ul>
-            <li v-for="village in villages" :key="village.id">{{ village.name }}</li>
-          </ul>
-        </div>
       </div>
     </div>
   </AppLayout>
@@ -162,17 +146,21 @@ const chartData = computed(() => ({
     }]
   },
   byStatus: {
-    labels: ['Planifiée', 'Terminée', 'Annulée'],
+    labels: ['Planifiée', 'Prévalidée', 'Validée', 'Terminée', 'Annulée'],
     datasets: [{
       data: [
-        props.meetingsByStatus['planned'] || 0,
+        (props.meetingsByStatus['scheduled'] || 0) + (props.meetingsByStatus['planned'] || 0),
+        props.meetingsByStatus['prevalidated'] || 0,
+        props.meetingsByStatus['validated'] || 0,
         props.meetingsByStatus['completed'] || 0,
         props.meetingsByStatus['cancelled'] || 0
       ],
       backgroundColor: [
-        'rgb(59, 130, 246)',
-        'rgb(16, 185, 129)',
-        'rgb(239, 68, 68)'
+        'rgb(234, 179, 8)',    // Jaune pour planifiée
+        'rgb(59, 130, 246)',   // Bleu pour prévalidée
+        'rgb(124, 58, 237)',   // Violet pour validée
+        'rgb(16, 185, 129)',   // Vert pour terminée
+        'rgb(239, 68, 68)'     // Rouge pour annulée
       ]
     }]
   }

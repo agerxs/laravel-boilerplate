@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('local_committee_progress', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id')->unique();
             $table->string('name')->nullable();
             $table->unsignedBigInteger('locality_id')->nullable();
             $table->string('status')->nullable();
@@ -21,9 +21,6 @@ return new class extends Migration
             $table->json('files')->nullable();
             $table->integer('last_active_step')->default(0);
             $table->timestamps();
-            
-            // Chaque utilisateur ne peut avoir qu'un seul brouillon en cours
-            $table->unique('user_id');
         });
     }
 
@@ -34,4 +31,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('local_committee_progress');
     }
-}; 
+};

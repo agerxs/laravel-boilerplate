@@ -1,0 +1,611 @@
+openapi: 3.0.0
+info:
+  title: API Meeting-Lara
+  description: API RESTful pour l'application Meeting-Lara
+  version: 1.0.0
+  contact:
+    name: Support Meeting-Lara
+    email: support@meeting-lara.com
+
+servers:
+  - url: https://api.meeting-lara.com/api
+    description: Serveur de production
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        roles:
+          type: array
+          items:
+            type: string
+
+    Meeting:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        scheduled_date:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [scheduled, completed, cancelled, prevalidated, validated]
+        local_committee:
+          $ref: '#/components/schemas/LocalCommittee'
+        attendees:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attendee'
+        agenda:
+          type: array
+          items:
+            $ref: '#/components/schemas/AgendaItem'
+        minutes:
+          $ref: '#/components/schemas/Minutes'
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attachment'
+        enrollmentRequests:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnrollmentRequest'
+
+    LocalCommittee:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        locality:
+          $ref: '#/components/schemas/Locality'
+
+    Locality:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    Attendee:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        phone:
+          type: string
+        role:
+          type: string
+        village:
+          $ref: '#/components/schemas/Village'
+        is_expected:
+          type: boolean
+        is_present:
+          type: boolean
+        attendance_status:
+          type: string
+          enum: [present, absent]
+        arrival_time:
+          type: string
+          format: date-time
+        comments:
+          type: string
+        payment_status:
+          type: string
+          enum: [pending, paid, cancelled]
+
+    Village:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+
+    AgendaItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        duration_minutes:
+          type: integer
+        order:
+          type: integer
+
+    Minutes:
+      type: object
+      properties:
+        id:
+          type: integer
+        content:
+          type: string
+        status:
+          type: string
+          enum: [draft, published, pending_validation, validated]
+
+    Attachment:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        path:
+          type: string
+        type:
+          type: string
+
+    EnrollmentRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        first_name:
+          type: string
+        last_name:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+          format: email
+        address:
+          type: string
+        notes:
+          type: string
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+
+paths:
+  /login:
+    post:
+      summary: Connexion utilisateur
+      tags:
+        - Authentification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: Connexion réussie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Identifiants invalides
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /register:
+    post:
+      summary: Inscription utilisateur
+      tags:
+        - Authentification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+                - password_confirmation
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  format: password
+                password_confirmation:
+                  type: string
+                  format: password
+      responses:
+        '201':
+          description: Inscription réussie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        '422':
+          description: Erreur de validation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /meetings:
+    get:
+      summary: Liste des réunions
+      tags:
+        - Réunions
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+          description: Filtrer par statut
+        - in: query
+          name: date_from
+          schema:
+            type: string
+            format: date
+          description: Date de début
+        - in: query
+          name: date_to
+          schema:
+            type: string
+            format: date
+          description: Date de fin
+        - in: query
+          name: local_committee_id
+          schema:
+            type: integer
+          description: ID du comité local
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+            default: 10
+          description: Nombre d'éléments par page
+      responses:
+        '200':
+          description: Liste des réunions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meetings:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Meeting'
+                  meta:
+                    type: object
+                    properties:
+                      current_page:
+                        type: integer
+                      last_page:
+                        type: integer
+                      per_page:
+                        type: integer
+                      total:
+                        type: integer
+
+  /meetings/{meeting}:
+    get:
+      summary: Détails d'une réunion
+      tags:
+        - Réunions
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: meeting
+          required: true
+          schema:
+            type: integer
+          description: ID de la réunion
+      responses:
+        '200':
+          description: Détails de la réunion
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  meeting:
+                    $ref: '#/components/schemas/Meeting'
+        '404':
+          description: Réunion non trouvée
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /meetings/{meeting}/attendance:
+    post:
+      summary: Marquer la présence
+      tags:
+        - Réunions
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: meeting
+          required: true
+          schema:
+            type: integer
+          description: ID de la réunion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - attendee_id
+                - status
+              properties:
+                attendee_id:
+                  type: integer
+                status:
+                  type: string
+                  enum: [present, absent]
+                arrival_time:
+                  type: string
+                  format: date-time
+                replacement_name:
+                  type: string
+                replacement_phone:
+                  type: string
+                replacement_role:
+                  type: string
+                comments:
+                  type: string
+      responses:
+        '200':
+          description: Présence mise à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  attendee:
+                    $ref: '#/components/schemas/Attendee'
+
+  /meetings/{meeting}/attendees:
+    get:
+      summary: Liste des participants
+      tags:
+        - Participants
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: meeting
+          required: true
+          schema:
+            type: integer
+          description: ID de la réunion
+      responses:
+        '200':
+          description: Liste des participants
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  attendees:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Attendee'
+
+  /meetings/{meeting}/enrollments:
+    get:
+      summary: Liste des demandes d'enrôlement
+      tags:
+        - Enrôlements
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: meeting
+          required: true
+          schema:
+            type: integer
+          description: ID de la réunion
+      responses:
+        '200':
+          description: Liste des demandes d'enrôlement
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  requests:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EnrollmentRequest'
+
+    post:
+      summary: Créer une demande d'enrôlement
+      tags:
+        - Enrôlements
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: meeting
+          required: true
+          schema:
+            type: integer
+          description: ID de la réunion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - first_name
+                - last_name
+              properties:
+                first_name:
+                  type: string
+                last_name:
+                  type: string
+                phone:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                address:
+                  type: string
+                notes:
+                  type: string
+      responses:
+        '201':
+          description: Demande d'enrôlement créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  request:
+                    $ref: '#/components/schemas/EnrollmentRequest'
+
+  /sub-prefectures:
+    get:
+      summary: Liste des sous-préfectures
+      tags:
+        - Données de référence
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Liste des sous-préfectures
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sub_prefectures:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        code:
+                          type: string
+
+  /sub-prefectures/{subPrefectureId}/villages:
+    get:
+      summary: Villages d'une sous-préfecture
+      tags:
+        - Données de référence
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: subPrefectureId
+          required: true
+          schema:
+            type: integer
+          description: ID de la sous-préfecture
+      responses:
+        '200':
+          description: Liste des villages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  villages:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        code:
+                          type: string
+
+  /local-committees:
+    get:
+      summary: Liste des comités locaux
+      tags:
+        - Données de référence
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Liste des comités locaux
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  local_committees:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LocalCommittee' 

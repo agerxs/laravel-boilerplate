@@ -64,14 +64,14 @@ class AdministrativeDataService
     public function getLocalityHierarchy()
     {
         $regions = Locality::whereHas('type', function($query) {
-                $query->where('name', 'REGION');
+                $query->where('id', 3);
             })
             ->with(['children' => function($query) {
                 $query->whereHas('type', function($q) {
-                    $q->where('name', 'DEPARTEMENT');
+                    $q->where('name', 'departement');
                 })->with(['children' => function($q) {
                     $q->whereHas('type', function($sq) {
-                        $sq->where('name', 'sub_prefecture');
+                        $sq->where('name', 'subprefecture');
                     })->with(['children' => function($sq) {
                         $sq->whereHas('type', function($tq) {
                             $tq->where('name', 'village');
@@ -94,7 +94,7 @@ class AdministrativeDataService
                                 return [
                                     'id' => $subPrefecture->id,
                                     'name' => $subPrefecture->name,
-                                    'type' => 'sub_prefecture',
+                                    'type' => 'subprefecture',
                                     'children' => $subPrefecture->children->map(function ($villageOrCommune) {
                                         return [
                                             'id' => $villageOrCommune->id,

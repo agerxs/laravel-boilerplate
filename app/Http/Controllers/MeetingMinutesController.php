@@ -7,6 +7,8 @@ use App\Models\MeetingMinutes;
 use Illuminate\Http\Request;
 use App\Mail\MeetingMinutesSent;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class MeetingMinutesController extends Controller
 {
@@ -34,7 +36,7 @@ class MeetingMinutesController extends Controller
     {
         $validated = $request->validate([
             'content' => 'required|string',
-            'status' => 'required|in:draft,published'
+            'status' => 'required|in:draft,published,pending_validation,validated'
         ]);
 
         $minutes->update($validated);
@@ -49,61 +51,142 @@ class MeetingMinutesController extends Controller
         ]);
     }
 
-    public function import(Request $request, Meeting $meeting)
+    /**
+     * Demander la validation d'un compte-rendu par le sous-préfet
+     */
+    public function requestValidation(Request $request, MeetingMinutes $minutes)
     {
-        $request->validate([
-            'file' => 'required|file|mimes:doc,docx'
+        // Vérifier si le compte-rendu est déjà validé ou en attente de validation
+        if ($minutes->status === 'validated') {
+            return response()->json([
+                'message' => 'Ce compte-rendu a déjà été validé',
+                'minutes' => $minutes
+            ], 400);
+        }
+
+        if ($minutes->status === 'pending_validation') {
+            return response()->json([
+                'message' => 'Ce compte-rendu est déjà en attente de validation',
+                'minutes' => $minutes
+            ], 400);
+        }
+
+        // Mettre à jour le statut du compte-rendu
+        $minutes->update([
+            'status' => 'pending_validation',
+            'validation_requested_at' => now()
         ]);
 
-        $file = $request->file('file');
-        
-        // Utilisez PhpWord pour lire le fichier
-        $phpWord = \PhpOffice\PhpWord\IOFactory::load($file->getPathname());
-        
-        // Convertir en HTML
-        $htmlWriter = new \PhpOffice\PhpWord\Writer\HTML($phpWord);
-        $html = '';
-        ob_start();
-        $htmlWriter->save('php://output');
-        $html = ob_get_clean();
-        
+        // TODO: Notifier le sous-préfet qu'un compte-rendu est en attente de validation
+
         return response()->json([
-            'content' => $html
+            'message' => 'Demande de validation envoyée avec succès',
+            'minutes' => $minutes->fresh()
         ]);
     }
 
-    public function sendByEmail(Meeting $meeting)
+    /**
+     * Valider un compte-rendu (réservé aux sous-préfets)
+     */
+    public function validate(Request $request, MeetingMinutes $minutes)
+    {
+        // Vérifier si l'utilisateur est un sous-préfet
+        if (!Auth::user()->hasRole(['sous-prefet', 'Sous-prefet'])) {
+            return response()->json([
+                'message' => 'Vous n\'êtes pas autorisé à valider ce compte-rendu'
+            ], 403);
+        }
+
+        $validated = $request->validate([
+            'validation_comments' => 'nullable|string',
+            'decision' => 'required|in:validate,reject'
+        ]);
+
+        if ($validated['decision'] === 'validate') {
+            // Valider le compte-rendu
+            $minutes->update([
+                'status' => 'validated',
+                'validated_at' => now(),
+                'validated_by' => Auth::id(),
+                'validation_comments' => $validated['validation_comments']
+            ]);
+
+            return response()->json([
+                'message' => 'Compte-rendu validé avec succès',
+                'minutes' => $minutes->fresh()
+            ]);
+        } else {
+            // Rejeter la validation et remettre en statut "published"
+            $minutes->update([
+                'status' => 'published',
+                'validation_comments' => $validated['validation_comments']
+            ]);
+
+            return response()->json([
+                'message' => 'Validation du compte-rendu rejetée',
+                'minutes' => $minutes->fresh()
+            ]);
+        }
+    }
+
+    public function import(Request $request, Meeting $meeting)
+    {
+        // Valider la demande
+        $request->validate([
+            'content' => 'required|string',
+        ]);
+
+        // Vérifier si le compte rendu existe déjà
+        if ($meeting->minutes) {
+            // Mettre à jour le compte rendu existant
+            $meeting->minutes->update([
+                'content' => $request->input('content'),
+                'status' => 'draft'
+            ]);
+            $minutes = $meeting->minutes;
+        } else {
+            // Créer un nouveau compte rendu
+            $minutes = $meeting->minutes()->create([
+                'content' => $request->input('content'),
+                'status' => 'draft'
+            ]);
+        }
+
+        // Mettre à jour le statut de la réunion
+        $meeting->update(['status' => 'completed']);
+
+        return response()->json([
+            'message' => 'Compte rendu importé avec succès',
+            'minutes' => $minutes
+        ]);
+    }
+
+    public function sendByEmail(Request $request, Meeting $meeting)
     {
         try {
-            $meeting->load(['minutes', 'attachments', 'participants']);
+            // Valider que la réunion a bien un compte rendu
+            if (!$meeting->minutes) {
+                return response()->json([
+                    'message' => 'Cette réunion n\'a pas de compte rendu'
+                ], 400);
+            }
 
-            // Envoyer aux participants qui sont des utilisateurs
-            $meeting->participants()
-                ->whereNotNull('user_id')
-                ->with('user')
-                ->get()
-                ->each(function ($participant) use ($meeting) {
-                    if ($participant->user) {
-                        Mail::to($participant->user->email)
-                            ->send(new MeetingMinutesSent($meeting));
-                    }
-                });
+            // Récupérer les destinataires
+            $recipients = $request->input('recipients', []);
 
-            // Envoyer aux invités externes
-            $meeting->participants()
-                ->whereNotNull('guest_email')
-                ->get()
-                ->each(function ($participant) use ($meeting) {
-                    Mail::to($participant->guest_email)
-                        ->send(new MeetingMinutesSent($meeting));
-                });
+            // Envoyer le mail à chaque destinataire
+            foreach ($recipients as $recipient) {
+                Mail::to($recipient)->send(new MeetingMinutesSent($meeting));
+            }
 
             return response()->json([
                 'message' => 'Compte rendu envoyé avec succès'
             ]);
         } catch (\Exception $e) {
+            Log::error('Erreur lors de l\'envoi du compte rendu : ' . $e->getMessage());
+            
             return response()->json([
-                'message' => 'Erreur lors de l\'envoi du compte rendu'
+                'message' => 'Une erreur est survenue lors de l\'envoi du compte rendu'
             ], 500);
         }
     }

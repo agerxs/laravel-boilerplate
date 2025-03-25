@@ -15,6 +15,7 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('local_committee_id');
             $table->unsignedBigInteger('user_id')->nullable()->index('local_committee_members_user_id_foreign');
+            $table->boolean('is_user')->default(false);
             $table->string('role')->default('member');
             $table->string('status')->default('active');
             $table->timestamps();

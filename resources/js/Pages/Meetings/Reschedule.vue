@@ -49,7 +49,7 @@
 <script setup lang="ts">
 import { Head, router, usePage } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useToast } from '@/Composables/useToast'
 import axios from 'axios'
 
@@ -74,7 +74,7 @@ const formatDate = (date: string) => {
 
 const submit = async () => {
   try {
-    await axios.put(route('meetings.reschedule', { meeting: props.meetingId }), {
+    await axios.post(route('meetings.reschedule.submit', { meeting: props.meetingId }), {
       date: newDate.value,
       reason: reason.value
     });
@@ -85,4 +85,21 @@ const submit = async () => {
     toast.error('Erreur lors du report de la réunion');
   }
 }
+
+onMounted(() => {
+  // Vérifier si la réunion est dans un état qui permet le report
+  axios.get(route('meetings.show', props.meetingId))
+    .then(response => {
+      const meetingStatus = response.data.props.meeting.status;
+      if (meetingStatus === 'completed' || meetingStatus === 'cancelled' || 
+          meetingStatus === 'prevalidated' || meetingStatus === 'validated') {
+        toast.error('Cette réunion ne peut pas être reportée');
+        router.visit(route('meetings.show', props.meetingId));
+      }
+    })
+    .catch(error => {
+      console.error('Erreur lors de la vérification du statut:', error);
+      toast.error('Erreur lors du chargement de la réunion');
+    });
+});
 </script> 

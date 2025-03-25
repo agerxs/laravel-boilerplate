@@ -8,8 +8,25 @@ import {
     UsersIcon,
     XMarkIcon
 } from '@heroicons/vue/24/outline';
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link, usePage, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
+import ResponsiveImage from '@/Components/ResponsiveImage.vue';
+import NavLink from '@/Components/NavLink.vue';
+import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
+import { useToast } from '@/Composables/useToast';
+import Toast from '@/Components/Toast.vue';
+
+interface PageProps {
+  auth?: {
+    user: {
+      name: string;
+      // Ajoutez d'autres propriétés si nécessaire
+    };
+  };
+  flash?: {
+    message?: string;
+  };
+}
 
 const page = usePage();
 const showingNavigationDropdown = ref(false);
@@ -28,9 +45,19 @@ const navigation = [
 defineProps<{
     title?: string;
 }>();
+
+// Import et initialisation du composable useToast
+const { toasts } = useToast();
 </script>
 
 <template>
+    <div v-if="page.props.flash && page.props.flash.message" class="mb-8">
+        <div class="p-2 bg-green-500 items-center text-green-100 leading-none lg:rounded-full flex lg:inline-flex">
+            <span class="flex rounded-full bg-green-200 uppercase px-2 py-1 text-xs font-bold mr-3 text-green-500">Success</span>
+            <span class="font-semibold mr-2 text-left flex-auto">{{ page.props.flash.message }}</span>
+        </div>
+    </div>
+
     <div class="min-h-screen bg-gray-100">
         <!-- Sidebar Mobile -->
         <div class="lg:hidden">
@@ -39,12 +66,17 @@ defineProps<{
                 v-show="showingNavigationDropdown"
                 class="fixed inset-0 bg-gray-600 bg-opacity-75 z-20"
                 @click="showingNavigationDropdown = false"
+                role="presentation"
+                aria-hidden="true"
             ></div>
 
             <!-- Menu mobile -->
             <div
                 v-show="showingNavigationDropdown"
                 class="fixed inset-y-0 left-0 flex flex-col w-64 bg-white border-r border-gray-200 z-30"
+                role="dialog"
+                aria-modal="true"
+                :aria-label="'Menu de navigation'"
             >
                 <div class="flex items-center justify-between h-16 px-4 border-b border-gray-200">
                     <div class="flex items-center flex-shrink-0 px-4 text-2xl font-bold">
@@ -53,14 +85,14 @@ defineProps<{
                     <button
                         @click="showingNavigationDropdown = false"
                         class="text-gray-500 hover:text-gray-700"
+                        aria-label="Fermer le menu"
                     >
-                        <span class="sr-only">Fermer le menu</span>
                         <XMarkIcon class="h-6 w-6" />
                     </button>
                 </div>
 
                 <!-- Navigation mobile -->
-                <nav class="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+                <nav class="flex-1 px-2 py-4 space-y-1 overflow-y-auto" role="navigation" aria-label="Navigation principale">
                     <Link
                         v-for="item in navigation"
                         :key="item.name"
@@ -69,9 +101,10 @@ defineProps<{
                             route().current(item.href)
                                 ? 'bg-gray-100 text-gray-900'
                                 : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
-                            'group flex items-center px-2 py-2 text-sm font-medium rounded-md'
+                            'group flex items-center px-2 py-2 text-sm font-medium rounded-md nav-link'
                         ]"
                         @click="showingNavigationDropdown = false"
+                        :aria-current="route().current(item.href) ? 'page' : undefined"
                     >
                         <component
                             :is="item.icon"
@@ -81,6 +114,7 @@ defineProps<{
                                     : 'text-gray-400 group-hover:text-gray-500',
                                 'mr-3 flex-shrink-0 h-6 w-6'
                             ]"
+                            aria-hidden="true"
                         />
                         {{ item.name }}
                     </Link>
@@ -157,7 +191,13 @@ defineProps<{
                     <div class="flex-shrink-0 w-full group block">
                         <div class="flex items-center">
                             <div>
-                                <img class="inline-block h-9 w-9 rounded-full" :src="`https://ui-avatars.com/api/?name=${user.name}`" :alt="user.name">
+                                <ResponsiveImage
+                                    :src="`https://ui-avatars.com/api/?name=${user.name}`"
+                                    :alt="user.name"
+                                    :width="36"
+                                    :height="36"
+                                    class="rounded-full"
+                                />
                             </div>
                             <div class="ml-3">
                                 <p class="text-sm font-medium text-gray-700 group-hover:text-gray-900">
@@ -219,6 +259,13 @@ defineProps<{
                     </div>
                 </div>
             </main>
+        </div>
+    </div>
+
+    <!-- Ajout du composant Toast pour afficher les notifications -->
+    <div class="fixed bottom-4 right-4 z-50 space-y-2">
+        <div v-for="toast in toasts" :key="toast.id">
+            <Toast :message="toast.message" :type="toast.type" />
         </div>
     </div>
 </template>

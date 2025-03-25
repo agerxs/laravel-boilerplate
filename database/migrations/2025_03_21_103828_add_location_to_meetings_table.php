@@ -4,19 +4,25 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddScheduledTimeToMeetingsTable extends Migration
+return new class extends Migration
 {
-    public function up()
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
         Schema::table('meetings', function (Blueprint $table) {
-            $table->time('scheduled_time')->nullable();
+            $table->string('location')->nullable()->after('scheduled_date');
         });
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
         Schema::table('meetings', function (Blueprint $table) {
-            $table->dropColumn('scheduled_time');
+            $table->dropColumn('location');
         });
     }
-} 
+};

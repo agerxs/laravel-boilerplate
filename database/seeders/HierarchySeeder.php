@@ -21,7 +21,7 @@ class HierarchySeeder extends Seeder
         foreach ($types as $key => $displayName) {
             $localityTypes[$key] = LocalityType::create([
                 'name' => $key,
-                'display_name' => $displayName
+                //'display_name' => $displayName
             ]);
         }
 

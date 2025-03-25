@@ -19,13 +19,13 @@ class MeetingSeeder extends Seeder
 
         // Charger les données du fichier JSON
         $jsonData = json_decode(
-            File::get(resource_path('data/clean_json_colocs.json')), 
+            File::get(resource_path('data/sous-pref_dates_harmonisees_v2.json')), 
             true
         );
         echo "Fichier JSON chargé : " . count($jsonData) . " sous-préfectures trouvées\n";
 
         // Récupérer le type "sous-prefecture"
-        $subPrefectureType = LocalityType::where('name', 'sub_prefecture')->first();
+        $subPrefectureType = LocalityType::where('name', 'subprefecture')->first();
         if (!$subPrefectureType) {
             echo "ERREUR : Type 'sub_prefecture' non trouvé\n";
             return;

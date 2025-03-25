@@ -2,17 +2,44 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\MeetingController;
+use App\Http\Controllers\Api\AttendeeController;
+use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\SubPrefectureController;
 use App\Http\Controllers\LocalCommitteeController;
-use App\Http\Controllers\MeetingController;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/sub-prefectures', [SubPrefectureController::class, 'index']);
-Route::get('/sub-prefectures/{subPrefectureId}/villages', [SubPrefectureController::class, 'villages']);
-Route::get('/local-committees', [LocalCommitteeController::class, 'index'])->name('localCommittees.index');
+// Routes publiques
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/register', [AuthController::class, 'register']);
+
+// Routes protégées
+Route::middleware(['auth:sanctum'])->group(function () {
+    // Routes d'authentification
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/user', [AuthController::class, 'user']);
+
+    // Routes pour les réunions
+    Route::get('/meetings', [MeetingController::class, 'index']);
+    Route::get('/meetings/{meeting}', [MeetingController::class, 'show']);
+    Route::post('/meetings/{meeting}/attendance', [MeetingController::class, 'markAttendance']);
+    Route::post('/meetings/{meeting}/enroll', [MeetingController::class, 'enroll']);
+    Route::post('/meetings/{meeting}/unenroll', [MeetingController::class, 'unenroll']);
+
+    // Routes pour les participants
+    Route::get('/meetings/{meeting}/attendees', [AttendeeController::class, 'index']);
+    Route::post('/attendees/{attendee}/present', [AttendeeController::class, 'markPresent']);
+    Route::post('/attendees/{attendee}/absent', [AttendeeController::class, 'markAbsent']);
+    Route::post('/attendees/{attendee}/comment', [AttendeeController::class, 'addComment']);
+
+    // Routes pour les données de référence
+    Route::get('/sub-prefectures', [SubPrefectureController::class, 'index']);
+    Route::get('/local-committees', [LocalCommitteeController::class, 'index']);
+});
+
 Route::get('/meetings/create', [MeetingController::class, 'create'])->name('meetings.create');
 Route::post('/meetings', [MeetingController::class, 'store'])->name('meetings.store');
 Route::get('/meetings/{meeting}/edit', [MeetingController::class, 'edit'])->name('meetings.edit');

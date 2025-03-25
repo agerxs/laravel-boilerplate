@@ -18,9 +18,16 @@ return new class extends Migration
             $table->timestamps();
             $table->unsignedBigInteger('local_committee_id');
             $table->date('scheduled_date')->nullable();
+            $table->string('reschedule_reason')->nullable();
             $table->softDeletes();
             $table->integer('people_to_enroll_count')->nullable();
             $table->integer('people_enrolled_count')->nullable();
+            $table->string('decree_file_path')->nullable();
+            $table->string('installation_minutes_file_path')->nullable();
+            $table->string('attendance_list_file_path')->nullable();
+            $table->integer('target_enrollments')->default(0);
+            $table->integer('actual_enrollments')->default(0);
+            $table->time('scheduled_time')->nullable();
         });
     }
 

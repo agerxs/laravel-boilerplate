@@ -17,7 +17,7 @@ class SubPrefectSeeder extends Seeder
         $subPrefectRole = Role::firstOrCreate(['name' => 'sous-prefet']);
         
         // Charger les données des sous-préfets
-        $subPrefectsData = json_decode(file_get_contents(resource_path('data/sous-pref.json')), true);
+        $subPrefectsData = json_decode(file_get_contents(resource_path('data/sous-pref_dates_harmonisees_v2.json')), true);
         
         $phones = [];
         
@@ -25,26 +25,31 @@ class SubPrefectSeeder extends Seeder
         
         foreach ($subPrefectsData as $subPrefect) {
             // Vérifier si le nom et le contact sont renseignés
-            if (empty(trim($subPrefect['Nom du Sous-Préfet'])) || empty(trim($subPrefect['Contact ']))) {
-                Log::info("Ignoré : Sous-préfecture {$subPrefect['Sous-Préfecture']} - Nom ou contact non renseigné");
+            if (empty(trim($subPrefect['Nom du Sous-Préfet'])) ) {
+                Log::info("Ignoré : Sous-préfecture {$subPrefect['Sous-Préfecture']} - Nom non renseigné");
                 continue;
+            }
+            if(empty(trim($subPrefect['Contact '])))
+            {
+                Log::info("Ignoré : Sous-préfecture {$subPrefect['Sous-Préfecture']} - Contact non renseigné");
+               
             }
 
             // Nettoyer le numéro de téléphone
             $phone = preg_replace('/[^0-9]/', '', $subPrefect['Contact ']);
             
             // Vérifier si l'utilisateur existe déjà par téléphone
-            $existingUser = User::where('phone', $phone)->first();
-            if ($existingUser) {
-                $message = "Ignoré : {$subPrefect['Nom du Sous-Préfet']} - Numéro de téléphone déjà existant";
-                echo $message . "\n";
-                Log::info($message);
-                continue;
-            }
+            //$existingUser = User::where('phone', $phone)->first();
+            //if ($existingUser) {
+            //    $message = "Ignoré : {$subPrefect['Nom du Sous-Préfet']} - Numéro de téléphone déjà existant";
+            //    echo $message . "\n";
+            //    Log::info($message);
+            //    continue;
+            //}
 
             // Trouver la localité (sous-préfecture)
             $locality = Locality::whereHas('type', function($query) {
-                $query->where('name', 'sub_prefecture');
+                $query->where('name', 'subprefecture');
             })
             ->where('name', trim($subPrefect['Sous-Préfecture']))
             ->first();

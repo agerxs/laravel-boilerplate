@@ -1,3 +1,68 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Styles responsifs globaux */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  body {
+    @apply antialiased;
+  }
+}
+
+@layer components {
+  /* Optimisation des formulaires pour mobile */
+  input, select, textarea {
+    @apply text-base;
+    font-size: 16px; /* Évite le zoom automatique sur iOS */
+    max-width: 100%;
+  }
+
+  /* Boutons et liens tactiles */
+  button, .btn, a {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  /* Navigation mobile */
+  .nav-link {
+    @apply px-4 py-3 my-1;
+  }
+
+  /* Images responsives */
+  img {
+    @apply max-w-full h-auto;
+  }
+}
+
+/* Media queries pour les ajustements mobiles */
+@media (max-width: 640px) {
+  .text-2xl {
+    font-size: 1.25rem;
+  }
+  .text-xl {
+    font-size: 1.125rem;
+  }
+  .px-4 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .py-6 {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  }
+}
+
+/* Style pour les champs obligatoires */
+.required::after {
+  content: " *";
+  color: #dc2626; /* Rouge */
+}
+
+/* Style alternatif si vous préférez l'astérisque avant le label */
+.required::before {
+  content: "* ";
+  color: #dc2626;
+}

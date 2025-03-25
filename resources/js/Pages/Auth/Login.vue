@@ -26,6 +26,25 @@ const submit = () => {
         },
     });
 };
+
+// Fonctions pour la connexion rapide
+const loginAsAdmin = () => {
+    form.email = 'admin@gmail.com';
+    form.password = '12345678';
+    submit();
+};
+
+const loginAsSousPrefet = () => {
+    form.email = 'sousprefet@test.com';
+    form.password = 'password123';
+    submit();
+};
+
+const loginAsSecretaire = () => {
+    form.email = 'secretaire@test.com';
+    form.password = 'password123';
+    submit();
+};
 </script>
 
 <template>
@@ -95,6 +114,42 @@ const submit = () => {
                 </PrimaryButton>
             </div>
         </form>
+
+        <!-- Boutons de connexion rapide pour la démo -->
+        <div class="mt-8">
+            <div class="relative">
+                <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                    <div class="w-full border-t border-gray-200"></div>
+                </div>
+                <div class="relative flex justify-center text-sm font-medium leading-6">
+                    <span class="bg-white px-6 text-gray-900">Connexion rapide (démo)</span>
+                </div>
+            </div>
+
+            <div class="mt-6 grid grid-cols-3 gap-3">
+                <button
+                    type="button"
+                    @click="loginAsAdmin"
+                    class="flex w-full items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                >
+                    Administrateur
+                </button>
+                <button
+                    type="button"
+                    @click="loginAsSousPrefet"
+                    class="flex w-full items-center justify-center rounded-md bg-yellow-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-yellow-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-600"
+                >
+                    Sous-préfet
+                </button>
+                <button
+                    type="button"
+                    @click="loginAsSecretaire"
+                    class="flex w-full items-center justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                >
+                    Secrétaire
+                </button>
+            </div>
+        </div>
 
         <div>
             <div class="relative mt-10">

@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('local_committee_members', function (Blueprint $table) {
-            $table->boolean('is_user')->default(false)->after('user_id');
+        Schema::table('representatives', function (Blueprint $table) {
+            $table->foreign(['local_committee_id'])->references(['id'])->on('local_committees')->onUpdate('no action')->onDelete('set null');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('local_committee_members', function (Blueprint $table) {
-            $table->dropColumn('is_user');
+        Schema::table('representatives', function (Blueprint $table) {
+            $table->dropForeign('representatives_local_committee_id_foreign');
         });
     }
-}; 
+};

@@ -56,6 +56,18 @@ class AttachmentController extends Controller
 
             $attachment->load('uploader');
 
+            // Recharger la réunion avec ses pièces jointes pour Inertia
+            $meeting->load('attachments');
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Fichier ajouté avec succès',
+                    'attachment' => $attachment,
+                    'meeting' => $meeting
+                ]);
+            }
+
             return redirect()->back()->with('success', 'Fichier ajouté avec succès');
 
         } catch (\Exception $e) {

@@ -28,23 +28,41 @@ class LocalCommitteeController extends Controller
 
     public function index(Request $request)
     {
-        $query = LocalCommittee::query()
-            ->with(['locality', 'members.user'])
-            ->orderBy('created_at', 'desc');
-
+        $query = LocalCommittee::with(['locality', 'members.user']);
+        
+        $user = auth()->user();
+        
+        // Filtrer par localité si l'utilisateur est un préfet ou un secrétaire
+        if ($user->hasRole(['prefet', 'Prefet', 'sous-prefet', 'Sous-prefet', 'secretaire', 'Secrétaire'])) {
+            if ($user->hasRole(['prefet', 'Prefet'])) {
+                // Pour les préfets, montrer les comités de leur département et des sous-préfectures associées
+                $query->whereHas('locality', function ($q) use ($user) {
+                    $q->where('id', $user->locality_id)
+                      ->orWhere('parent_id', $user->locality_id);
+                });
+            } else {
+                // Pour les autres (sous-préfets et secrétaires), montrer uniquement les comités de leur localité
+                $query->where('locality_id', $user->locality_id);
+            }
+        }
+        
+        // Appliquer des filtres si nécessaire
         if ($request->has('search')) {
-            $search = $request->get('search');
+            $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhereHas('locality', fn($q) => $q->where('name', 'like', "%{$search}%"))
-                  ->orWhereHas('members.user', fn($q) => $q->where('name', 'like', "%{$search}%"));
+                  ->orWhereHas('locality', function ($sq) use ($search) {
+                      $sq->where('name', 'like', "%{$search}%");
+                  });
             });
         }
-
+        
+        $committees = $query->paginate(10)->withQueryString();
+        
         return Inertia::render('LocalCommittees/Index', [
-            'committees' => $query->paginate(10),
+            'committees' => $committees,
             'filters' => [
-                'search' => $request->get('search', '')
+                'search' => $request->input('search', '')
             ]
         ]);
     }
@@ -91,7 +109,7 @@ class LocalCommitteeController extends Controller
 
         // Récupérer la hiérarchie des localités
         $localities = $this->administrativeService->getLocalityHierarchy();
-
+        
         // Passer les données à la vue Inertia
         return Inertia::render('LocalCommittees/Create', [
             'sousPrefets' => $sousPrefets,
@@ -201,6 +219,7 @@ class LocalCommitteeController extends Controller
     {
         $committee = LocalCommittee::with(['locality.children.representatives', 'members.user'])->findOrFail($id);
         $localities = $this->administrativeService->getLocalityHierarchy();
+       
         $users = User::all();
         $sousPrefets = User::role('Sous-prefet')
             ->with('locality')
@@ -522,6 +541,36 @@ class LocalCommitteeController extends Controller
         $draft->delete();
         
         return response()->json(['message' => 'Brouillon supprimé avec succès']);
+    }
+
+    public function getVillages($id)
+    {
+        $committee = LocalCommittee::findOrFail($id);
+        
+        // Récupérer les villages associés au comité local
+        $villages = $committee->villages()->with('representatives')->get()->map(function ($village) {
+            return [
+                'id' => $village->id,
+                'name' => $village->name,
+                'representatives' => $village->representatives->map(function ($rep) {
+                    return [
+                        'id' => $rep->id,
+                        'first_name' => $rep->first_name,
+                        'last_name' => $rep->last_name,
+                        'phone' => $rep->phone,
+                        'role' => $rep->role
+                    ];
+                })
+            ];
+        });
+        
+        return response()->json([
+            'committee' => [
+                'id' => $committee->id,
+                'name' => $committee->name
+            ],
+            'villages' => $villages
+        ]);
     }
 
 } 

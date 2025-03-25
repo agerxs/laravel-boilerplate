@@ -1,0 +1,513 @@
+openapi: 3.1.0
+info:
+  title: API Meeting-Lara
+  version: 1.0.0
+  description: API pour l'application mobile Meeting-Lara
+
+servers:
+  - url: http://localhost:8000/api
+    description: Serveur de développement
+  - url: https://api.meeting-lara.com/api
+    description: Serveur de production
+
+tags:
+  - name: Authentification
+    description: Endpoints pour la gestion de l'authentification
+  - name: Réunions
+    description: Endpoints pour la gestion des réunions
+  - name: Participants
+    description: Endpoints pour la gestion des participants
+  - name: Données de référence
+    description: Endpoints pour accéder aux données de référence
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [admin, sous-prefet, village-representative]
+
+    Meeting:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        date:
+          type: string
+          format: date-time
+        location:
+          type: string
+        status:
+          type: string
+          enum: [planifiee, en_cours, terminee, annulee, reportee, prevalidee, validee]
+        village_id:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Attendee:
+      type: object
+      properties:
+        id:
+          type: integer
+        meeting_id:
+          type: integer
+        user_id:
+          type: integer
+        status:
+          type: string
+          enum: [present, absent]
+        comment:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    SubPrefecture:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    LocalCommittee:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    AttendancePhoto:
+      type: object
+      properties:
+        id:
+          type: integer
+        attendee_id:
+          type: integer
+        photo_url:
+          type: string
+          format: uri
+        taken_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+paths:
+  /login:
+    post:
+      tags:
+        - Authentification
+      summary: Connexion utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Connexion réussie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Identifiants invalides
+
+  /register:
+    post:
+      tags:
+        - Authentification
+      summary: Inscription utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                role:
+                  type: string
+                  enum: [village-representative]
+      responses:
+        '201':
+          description: Inscription réussie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '422':
+          description: Données invalides
+
+  /meetings:
+    get:
+      tags:
+        - Réunions
+      summary: Liste des réunions
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Liste des réunions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Meeting'
+
+  /meetings/{meeting}:
+    get:
+      tags:
+        - Réunions
+      summary: Détails d'une réunion
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: meeting
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Détails de la réunion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meeting'
+        '404':
+          description: Réunion non trouvée
+
+  /meetings/{meeting}/attendance:
+    post:
+      tags:
+        - Réunions
+      summary: Marquer la présence
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: meeting
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [present, absent]
+                comment:
+                  type: string
+      responses:
+        '200':
+          description: Présence marquée avec succès
+        '404':
+          description: Réunion non trouvée
+
+  /meetings/{meeting}/enroll:
+    post:
+      tags:
+        - Réunions
+      summary: S'inscrire à une réunion
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: meeting
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Inscription réussie
+        '404':
+          description: Réunion non trouvée
+
+  /meetings/{meeting}/unenroll:
+    post:
+      tags:
+        - Réunions
+      summary: Se désinscrire d'une réunion
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: meeting
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Désinscription réussie
+        '404':
+          description: Réunion non trouvée
+
+  /meetings/{meeting}/attendees:
+    get:
+      tags:
+        - Participants
+      summary: Liste des participants
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: meeting
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Liste des participants
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attendee'
+        '404':
+          description: Réunion non trouvée
+
+  /attendees/{attendee}/present:
+    post:
+      tags:
+        - Participants
+      summary: Marquer un participant comme présent
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: attendee
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Statut mis à jour avec succès
+        '404':
+          description: Participant non trouvé
+
+  /attendees/{attendee}/absent:
+    post:
+      tags:
+        - Participants
+      summary: Marquer un participant comme absent
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: attendee
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Statut mis à jour avec succès
+        '404':
+          description: Participant non trouvé
+
+  /attendees/{attendee}/comment:
+    post:
+      tags:
+        - Participants
+      summary: Ajouter un commentaire
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: attendee
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                comment:
+                  type: string
+      responses:
+        '200':
+          description: Commentaire ajouté avec succès
+        '404':
+          description: Participant non trouvé
+
+  /sub-prefectures:
+    get:
+      tags:
+        - Données de référence
+      summary: Liste des sous-préfectures
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Liste des sous-préfectures
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubPrefecture'
+
+  /local-committees:
+    get:
+      tags:
+        - Données de référence
+      summary: Liste des comités locaux
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Liste des comités locaux
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LocalCommittee'
+
+  /attendees/{attendee}/photo:
+    post:
+      tags:
+        - Participants
+      summary: Ajouter une photo de présence
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: attendee
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                photo:
+                  type: string
+                  format: binary
+                  description: Photo de la présence (format JPG ou PNG)
+      responses:
+        '200':
+          description: Photo ajoutée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendancePhoto'
+        '404':
+          description: Participant non trouvé
+        '422':
+          description: Format de photo invalide
+
+  /attendees/{attendee}/photo/download:
+    get:
+      tags:
+        - Participants
+      summary: Récupérer la photo de présence
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: attendee
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Photo de présence
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Photo non trouvée
+
+  /attendees/{attendee}/photo/delete:
+    delete:
+      tags:
+        - Participants
+      summary: Supprimer la photo de présence
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: attendee
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Photo supprimée avec succès
+        '404':
+          description: Photo non trouvée 

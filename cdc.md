@@ -35,3 +35,57 @@ Je clique sur le bouton "Modifier"
 Une fois la réunion planifiée, on peut l'organiser. On peut ajouter des participants, des documents, et des notes. Les participants sont les membres du comité local et les représentants des villages du comité local. On doit pouvoir reporter aussi une réunion. Un représentant peut se faire représenter par une autre personne. dans ce cas, il faudra modifier la réunion pour indiquer le nouveau représentant (nom, prenom, numéro de téléphone). Au deroulement aussi de la réunion, on ajoute le compte rendu les pièces jointes, on gère la liste de présence, et on peut ajouter des notes. Il est important d'avoir la liste des participants. Parce ce que cette liste sera utilisée par un autre module pour les paiements. 
 
 chaque participant à une réunion sera payé 15000 FCFA par réunion. Il est pr&vu 2 reunions par mois par comité local. Le nombre de réunion doit être paramétrable dans filament php.
+
+
+
+Workflow des réunions
+Planification de la réunion
+Une réunion est créée avec le statut "planned"
+Elle contient une date planifiée, un titre, un lieu, etc.
+Cycle de vie de la réunion
+Une réunion planifiée peut être :
+Reprogrammée (avec un motif) tant qu'elle n'est pas prévalidée/validée/annulée
+Annulée (change son statut en "cancelled")
+Considérée "en retard" (visuellement) si la date prévue est dépassée mais reste en statut "planned"
+Tenue et documentation de la réunion
+Quand un compte-rendu est créé/importé pour une réunion, elle passe au statut "completed"
+Processus de validation
+Prévalidation par le secrétaire
+Le secrétaire peut prévalider une réunion (statut "prevalidated")
+Une fois prévalidée, la réunion n'est plus modifiable sauf par le sous-préfet
+Validation finale par le sous-préfet
+Le sous-préfet peut valider définitivement une réunion prévalidée (statut "validated")
+Le sous-préfet peut également invalider une réunion prévalidée, la renvoyant au statut "planned"
+Dans les deux cas, des commentaires peuvent être ajoutés
+Restrictions de rôles
+Les sous-préfets ne peuvent pas créer/supprimer/modifier des réunions
+Les sous-préfets ne peuvent pas reprogrammer ou annuler des réunions
+Seuls les secrétaires peuvent prévalider
+Seuls les sous-préfets peuvent valider définitivement ou invalider
+Voici un schéma du workflow que vous pouvez utiliser pour la documentation:
+Apply to web.php
+└───────────────┘
+
+
+Relations entre les états:
+PLANNED → COMPLETED: Création d'un compte-rendu
+PLANNED → CANCELLED: Annulation manuelle
+PLANNED peut être reprogrammé (reste PLANNED)
+COMPLETED → PREVALIDATED: Prévalidation par secrétaire
+PREVALIDATED → VALIDATED: Validation par sous-préfet
+PREVALIDATED → PLANNED: Invalidation par sous-préfet (avec commentaires)
+Restrictions supplémentaires:
+Une réunion en état PLANNED peut être en retard (affichage visuel)
+Les réunions PREVALIDATED et VALIDATED ne peuvent plus être modifiées ou reprogrammées
+Les sous-préfets n'ont accès qu'aux actions de validation/invalidation
+Ce workflow permet un processus contrôlé de documentation et d'approbation des réunions, avec une séparation claire des responsabilités entre les secrétaires et les sous-préfets.
+
+┌───────────────┐        ┌───────────────┐        ┌───────────────┐
+│   PLANNED     │───────>│   COMPLETED   │───────>│  PREVALIDATED │
+└───────┬───────┘        └───────────────┘        └───────┬───────┘
+        │                                                  │
+        │                                                  │
+        ▼                                                  ▼
+┌───────────────┐                                  ┌───────────────┐
+│   CANCELLED   │                                  │   VALIDATED   │
+└───────────────┘                                  └───────────────┘

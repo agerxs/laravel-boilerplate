@@ -474,7 +474,7 @@
             <div class="px-6 py-4 space-y-6">
               <!-- Logique pour les représentants des villages -->
               <div class="mt-6">
-                <h3 class="text-lg font-medium text-gray-900">Villages disponibles</h3>
+                <h3 class="text-lg font-medium text-gray-900">Villages disponibles ({{ unaddedVillages.length }} )</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                   <div 
                     v-for="village in unaddedVillages" 
@@ -790,6 +790,7 @@ const villages = ref([]);
 watch(selectedRegion, (newRegionId) => {
   if (newRegionId) {
     const region = props.localities.find(r => r.id === newRegionId);
+    console.log(region);
     departments.value = region ? region.children || [] : [];
     selectedDepartment.value = null;
     subPrefectures.value = [];
@@ -816,6 +817,7 @@ watch(selectedDepartment, (newDepartmentId) => {
 watch(selectedSubPrefecture, (newSubPrefectureId) => {
   if (newSubPrefectureId) {
     form.locality_id = newSubPrefectureId;
+  
     fetchVillages();
   }
 });
@@ -843,6 +845,7 @@ const removeMember = (index: number) => {
 };
 
 const fetchVillages = () => {
+
   if (form.locality_id) {
     fetch(`/api/sub-prefectures/${form.locality_id}/villages`)
       .then(response => response.json())
@@ -1217,7 +1220,8 @@ const loadDraftData = () => {
                 } else {
                   form.locality_id = result.department.id;
                 }
-                
+                console.log(form.locality_id);
+                console.log("form.locality_id");
                 // Charger les villages si nécessaire
                 if (form.locality_id) {
                   fetchVillages();
@@ -1338,6 +1342,7 @@ const deleteDraft = () => {
 
 // Ajoutez cette fonction pour soumettre et publier le comité local
 const submitAndPublish = () => {
+  updateCommitteeName();
   // Vérifier que toutes les informations nécessaires sont présentes
   if (!validateForm()) {
     showToastMessage('Veuillez remplir tous les champs obligatoires avant de publier');
@@ -1431,29 +1436,35 @@ const submitAndPublish = () => {
 // Fonction pour valider le formulaire avant la soumission
 const validateForm = () => {
   // Vérifier les champs obligatoires
-  if (!form.name || !form.locality_id) {
+  console.log(form.name, form.locality_id);
+  if ( !form.locality_id) {
+    console.log("stop one");
     return false;
   }
   
   // Vérifier que le président et le secrétaire sont sélectionnés
   if (!permanentMembers.value.president.user_id || !permanentMembers.value.secretary.user_id) {
+    console.log("stop two");
     return false;
   }
   
   // Vérifier qu'au moins un village est ajouté
-  if (addedVillages.value.length === 0) {
-    return false;
-  }
+  //if (addedVillages.value.length === 0) {
+  //  console.log("stop three");
+  //  return false;
+  //}
   
   // Vérifier que les fichiers obligatoires sont présents
-  if (!form.decree_file) {
-    return false;
-  }
+  //if (!form.decree_file) {
+  //  console.log("stop four");
+  //  return false;
+  //}
   
   // Vérifier les informations de la réunion d'installation
-  if (!form.installation_date || !form.installation_location) {
-    return false;
-  }
+  //if (!form.installation_date || !form.installation_location) {
+  //  console.log("stop five");
+  //  return false;
+  //}
   
   return true;
 };

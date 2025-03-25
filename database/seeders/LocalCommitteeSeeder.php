@@ -17,12 +17,12 @@ class LocalCommitteeSeeder extends Seeder
     {
         Log::info('Début de la création des comités locaux');
         
-        $subPrefecturesData = json_decode(file_get_contents(resource_path('data/clean_json_colocs.json')), true);
+        $subPrefecturesData = json_decode(file_get_contents(resource_path('data/sous-pref_dates_harmonisees_v2.json')), true);
         
         foreach ($subPrefecturesData as $data) {
             // Trouver la sous-préfecture
             $locality = Locality::whereHas('type', function($query) {
-                $query->where('name', 'sub_prefecture');
+                $query->where('name', 'subprefecture');
             })
             ->where('name', trim($data['Sous-Préfecture']))
             ->first();
@@ -37,9 +37,18 @@ class LocalCommitteeSeeder extends Seeder
                 ->where('locality_id', $locality->id)
                 ->first();
 
+                $sousprefet = User::role('sous-prefet')
+                ->where('locality_id', $locality->id)
+                ->first();
+
             if (!$secretary) {
                 Log::warning("Pas de secrétaire trouvé pour la sous-préfecture : {$data['Sous-Préfecture']}");
-                continue;
+                //continue;
+            }
+
+            if (!$sousprefet) {
+                Log::warning("Pas de sous-prefet trouvé pour la sous-préfecture : {$data['Sous-Préfecture']}");
+               // continue;
             }
 
             try {
@@ -47,7 +56,7 @@ class LocalCommitteeSeeder extends Seeder
                 $committee = LocalCommittee::create([
                     'name' => "Comité Local de {$locality->name}",
                     'locality_id' => $locality->id,
-                    'president_id' => $secretary->id,
+                    'president_id' => $sousprefet ? $sousprefet->id : null,
                     'installation_date' => $this->parseDate($data['Date de planification de la tenue de la reunion_d\'installation du COLOC']),
                     'ano_validation_date' => $this->parseDate($data['Date de validation de l\'ANO']),
                     'fund_transmission_date' => $this->parseDate($data['Date de transmission des fonds au Sous-Préfet']),
@@ -58,7 +67,7 @@ class LocalCommitteeSeeder extends Seeder
                 ]);
 
                 // Créer les membres du comité
-                $this->createCommitteeMembers($committee, $secretary);
+                $this->createCommitteeMembers($committee, $secretary, $sousprefet);
 
                 $message = "Comité local créé pour {$data['Sous-Préfecture']} avec le président {$secretary->name}";
                 echo $message . "\n";
@@ -73,16 +82,28 @@ class LocalCommitteeSeeder extends Seeder
         Log::info('Fin de la création des comités locaux');
     }
 
-    private function createCommitteeMembers(LocalCommittee $committee, User $secretary)
+    private function createCommitteeMembers(LocalCommittee $committee, User|null $secretary, User|null $sousprefet)
     {
         // Ajouter le secrétaire comme président
+        if($secretary)
+        {
         LocalCommitteeMember::create([
             'local_committee_id' => $committee->id,
             'user_id' => $secretary->id,
+            'role' => 'secretary',
+            'status' => 'active'
+        ]);
+        }
+
+        if($sousprefet)
+        {   
+        LocalCommitteeMember::create([
+            'local_committee_id' => $committee->id,
+            'user_id' => $sousprefet->id,
             'role' => 'president',
             'status' => 'active'
         ]);
-
+        }
         
     }
 
