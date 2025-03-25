@@ -16,6 +16,7 @@ use App\Http\Controllers\VillageRepresentativesController;
 use App\Http\Controllers\PaymentRateController;
 use App\Http\Controllers\MeetingPaymentController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\AttendancePhotoController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -188,6 +189,16 @@ Route::middleware(['auth'])->group(function () {
         ->name('meetings.complete');
     Route::patch('/meetings/{meeting}/update-enrollments', [MeetingController::class, 'updateEnrollments'])
         ->name('meetings.update-enrollments');
+
+    // Routes pour les photos de présence
+    Route::post('/attendees/{attendee}/photo', [AttendancePhotoController::class, 'store'])
+        ->name('attendance-photos.store');
+    Route::get('/attendance-photos/{photo}', [AttendancePhotoController::class, 'show'])
+        ->name('attendance-photos.show');
+    Route::get('/attendance-photos/{photo}/thumbnail', [AttendancePhotoController::class, 'thumbnail'])
+        ->name('attendance-photos.thumbnail');
+    Route::delete('/attendance-photos/{photo}', [AttendancePhotoController::class, 'destroy'])
+        ->name('attendance-photos.destroy');
 });
 
 Route::get('/doc', [App\Http\Controllers\Api\DocumentationController::class, 'index'])->name('api.documentation');

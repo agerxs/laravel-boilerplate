@@ -76,6 +76,7 @@ class AttendanceController extends Controller
     {
         $request->validate([
             'arrival_time' => 'nullable|date',
+            'comments' => 'nullable|string'
         ]);
 
         $arrivalTime = $request->input('arrival_time') 
@@ -83,6 +84,10 @@ class AttendanceController extends Controller
             : now();
 
         $attendee->markAsPresent($arrivalTime);
+
+        if ($request->has('comments')) {
+            $attendee->update(['comments' => $request->input('comments')]);
+        }
 
         return response()->json([
             'message' => 'Participant marqué comme présent',
@@ -93,9 +98,17 @@ class AttendanceController extends Controller
     /**
      * Marquer un participant comme absent.
      */
-    public function markAbsent(MeetingAttendee $attendee)
+    public function markAbsent(Request $request, MeetingAttendee $attendee)
     {
+        $request->validate([
+            'comments' => 'nullable|string'
+        ]);
+
         $attendee->markAsAbsent();
+
+        if ($request->has('comments')) {
+            $attendee->update(['comments' => $request->input('comments')]);
+        }
 
         return response()->json([
             'message' => 'Participant marqué comme absent',

@@ -89,20 +89,16 @@
                   <MagnifyingGlassIcon class="h-5 w-5" />
                 </div>
               </div>
-              <div class="flex space-x-4">
-                <div>
-                  <p class="text-sm font-medium text-gray-500">Prévus: {{ attendees.length }}</p>
-                </div>
-                <div>
-                  <p class="text-sm font-medium text-green-500">
-                    Présents: {{ attendees.filter(a => a.attendance_status === 'present' || a.attendance_status === 'replaced').length }}
-                  </p>
-                </div>
-                <div>
-                  <p class="text-sm font-medium text-red-500">
-                    Absents: {{ attendees.filter(a => a.attendance_status === 'absent').length }}
-                  </p>
-                </div>
+              <div class="ml-4">
+                <select
+                  v-model="selectedVillage"
+                  class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                >
+                  <option value="">Tous les villages</option>
+                  <option v-for="village in villages" :key="village" :value="village">
+                    {{ village }}
+                  </option>
+                </select>
               </div>
             </div>
           </div>
@@ -227,6 +223,36 @@
                 </tr>
               </tbody>
             </table>
+          </div>
+        </div>
+
+        <!-- Statistiques de présence -->
+        <div class="mt-4 grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div class="bg-white p-4 rounded-lg shadow">
+            <div class="text-sm font-medium text-gray-500">Total</div>
+            <div class="mt-1 text-2xl font-semibold text-gray-900">{{ attendanceStats.total }}</div>
+          </div>
+          <div class="bg-white p-4 rounded-lg shadow">
+            <div class="text-sm font-medium text-gray-500">Présents</div>
+            <div class="mt-1 text-2xl font-semibold text-green-600">{{ attendanceStats.present }}</div>
+          </div>
+          <div class="bg-white p-4 rounded-lg shadow">
+            <div class="text-sm font-medium text-gray-500">Remplacés</div>
+            <div class="mt-1 text-2xl font-semibold text-yellow-600">{{ attendanceStats.replaced }}</div>
+          </div>
+          <div class="bg-white p-4 rounded-lg shadow">
+            <div class="text-sm font-medium text-gray-500">Absents</div>
+            <div class="mt-1 text-2xl font-semibold text-red-600">{{ attendanceStats.absent }}</div>
+          </div>
+          <div class="bg-white p-4 rounded-lg shadow">
+            <div class="text-sm font-medium text-gray-500">Taux de présence</div>
+            <div class="mt-1 text-2xl font-semibold" :class="{
+              'text-green-600': attendanceStats.presentPercentage >= 80,
+              'text-yellow-600': attendanceStats.presentPercentage >= 50 && attendanceStats.presentPercentage < 80,
+              'text-red-600': attendanceStats.presentPercentage < 50
+            }">
+              {{ attendanceStats.presentPercentage }}%
+            </div>
           </div>
         </div>
 
@@ -398,6 +424,7 @@ const props = defineProps({
 
 const toast = useToast()
 const search = ref('')
+const selectedVillage = ref('')
 const replacementModalOpen = ref(false)
 const commentModalOpen = ref(false)
 const finalizeModalOpen = ref(false)
@@ -415,18 +442,61 @@ const commentData = ref({
   text: ''
 })
 
-// Attendees filtrés par recherche
-const filteredAttendees = computed(() => {
-  if (!search.value) return localAttendees.value
-  
-  const searchTerm = search.value.toLowerCase()
-  return localAttendees.value.filter(attendee => {
-    return (
-      attendee.name.toLowerCase().includes(searchTerm) ||
-      (attendee.village?.name && attendee.village.name.toLowerCase().includes(searchTerm)) ||
-      (attendee.role && attendee.role.toLowerCase().includes(searchTerm))
-    )
+const arrivalTimeData = ref({
+  time: new Date().toISOString().slice(0, 16)
+})
+
+// Liste des villages uniques
+const villages = computed(() => {
+  const uniqueVillages = new Set()
+  props.attendees.forEach(attendee => {
+    if (attendee.village?.name) {
+      uniqueVillages.add(attendee.village.name)
+    }
   })
+  return Array.from(uniqueVillages).sort()
+})
+
+// Attendees filtrés par recherche et village
+const filteredAttendees = computed(() => {
+  let filtered = localAttendees.value
+  
+  if (search.value) {
+    const searchTerm = search.value.toLowerCase()
+    filtered = filtered.filter(attendee => {
+      return (
+        attendee.name.toLowerCase().includes(searchTerm) ||
+        (attendee.village?.name && attendee.village.name.toLowerCase().includes(searchTerm)) ||
+        (attendee.role && attendee.role.toLowerCase().includes(searchTerm))
+      )
+    })
+  }
+  
+  if (selectedVillage.value) {
+    filtered = filtered.filter(attendee => 
+      attendee.village?.name === selectedVillage.value
+    )
+  }
+  
+  return filtered
+})
+
+// Statistiques de présence
+const attendanceStats = computed(() => {
+  const total = filteredAttendees.value.length
+  const present = filteredAttendees.value.filter(a => a.attendance_status === 'present').length
+  const replaced = filteredAttendees.value.filter(a => a.attendance_status === 'replaced').length
+  const absent = filteredAttendees.value.filter(a => a.attendance_status === 'absent').length
+  const expected = filteredAttendees.value.filter(a => a.attendance_status === 'expected').length
+  
+  return {
+    total,
+    present,
+    replaced,
+    absent,
+    expected,
+    presentPercentage: total ? Math.round(((present + replaced) / total) * 100) : 0
+  }
 })
 
 // Formatter une date
@@ -455,7 +525,9 @@ const formatStatus = (status) => {
 // Marquer un participant comme présent
 const markPresent = async (attendee) => {
   try {
-    const response = await axios.post(route('attendees.present', attendee.id))
+    const response = await axios.post(route('attendees.present', attendee.id), {
+      arrival_time: arrivalTimeData.value.time
+    })
     updateAttendee(attendee.id, response.data.attendee)
     toast.success('Participant marqué comme présent')
   } catch (error) {
@@ -520,9 +592,7 @@ const saveReplacement = async () => {
 // Afficher le modal de commentaire
 const showCommentModal = (attendee) => {
   selectedAttendee.value = attendee
-  commentData.value = {
-    text: attendee.comments || ''
-  }
+  commentData.value.text = attendee.comments || ''
   commentModalOpen.value = true
 }
 

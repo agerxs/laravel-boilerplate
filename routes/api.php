@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\AttendeeController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\SubPrefectureController;
 use App\Http\Controllers\LocalCommitteeController;
+use App\Http\Controllers\Api\OfflineController;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
@@ -38,6 +39,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // Routes pour les données de référence
     Route::get('/sub-prefectures', [SubPrefectureController::class, 'index']);
     Route::get('/local-committees', [LocalCommitteeController::class, 'index']);
+
+    // Routes pour le mode hors ligne
+    Route::post('/offline/queue', [OfflineController::class, 'queueOperation']);
+    Route::post('/offline/photos', [OfflineController::class, 'queuePhoto']);
+    Route::post('/offline/sync', [OfflineController::class, 'sync']);
+    Route::get('/offline/status', [OfflineController::class, 'getSyncStatus']);
+    Route::post('/offline/conflicts/resolve', [OfflineController::class, 'resolveConflict']);
+    Route::get('/offline/data', [OfflineController::class, 'getLocalData']);
 });
 
 Route::get('/meetings/create', [MeetingController::class, 'create'])->name('meetings.create');

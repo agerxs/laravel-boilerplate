@@ -1,8 +1,8 @@
 openapi: 3.1.0
 info:
-  title: API Meeting-Lara
+  title: API Colocs
   version: 1.0.0
-  description: API pour l'application mobile Meeting-Lara
+  description: API pour l'application mobile Colocs
 
 servers:
   - url: http://localhost:8000/api
@@ -126,6 +126,16 @@ components:
         photo_url:
           type: string
           format: uri
+        thumbnail_url:
+          type: string
+          format: uri
+          description: URL de la version compressée de la photo
+        original_size:
+          type: integer
+          description: Taille originale de la photo en octets
+        compressed_size:
+          type: integer
+          description: Taille de la version compressée en octets
         taken_at:
           type: string
           format: date-time
@@ -456,7 +466,12 @@ paths:
                 photo:
                   type: string
                   format: binary
-                  description: Photo de la présence (format JPG ou PNG)
+                  description: |
+                    Photo de la présence (format JPG ou PNG)
+                    - Taille maximale : 10MB
+                    - Dimensions minimales : 800x600 pixels
+                    - Formats acceptés : JPG, PNG
+                    - La photo sera automatiquement compressée si elle dépasse 2MB
       responses:
         '200':
           description: Photo ajoutée avec succès
@@ -467,7 +482,13 @@ paths:
         '404':
           description: Participant non trouvé
         '422':
-          description: Format de photo invalide
+          description: |
+            Erreur de validation :
+            - Format de photo invalide
+            - Taille de fichier trop grande (>10MB)
+            - Dimensions insuffisantes (<800x600)
+        '413':
+          description: Fichier trop volumineux
 
   /attendees/{attendee}/photo/download:
     get:

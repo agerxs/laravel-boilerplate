@@ -1,10 +1,10 @@
 openapi: 3.0.0
 info:
-  title: API Meeting-Lara
-  description: API RESTful pour l'application Meeting-Lara
+  title: API Colocs
+  description: API RESTful pour l'application Colocs
   version: 1.0.0
   contact:
-    name: Support Meeting-Lara
+    name: Support Colocs
     email: support@meeting-lara.com
 
 servers:

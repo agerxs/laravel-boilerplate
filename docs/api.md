@@ -1,8 +1,8 @@
-# Documentation de l'API Meeting-Lara
+# Documentation de l'API Colocs
 
 ## Introduction
 
-Cette documentation décrit l'API RESTful de l'application Meeting-Lara. L'API utilise l'authentification par token (Sanctum) et renvoie les données au format JSON.
+Cette documentation décrit l'API RESTful de l'application Colocs. L'API utilise l'authentification par token (Sanctum) et renvoie les données au format JSON.
 
 ## Base URL
 

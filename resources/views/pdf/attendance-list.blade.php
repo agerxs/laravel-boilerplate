@@ -89,12 +89,14 @@
         <thead>
             <tr>
                 <th style="width: 5%;">N°</th>
-                <th style="width: 20%;">Nom</th>
-                <th style="width: 15%;">Village</th>
-                <th style="width: 15%;">Rôle</th>
-                <th style="width: 10%;">Statut</th>
-                <th style="width: 15%;">Remplaçant</th>
-                <th style="width: 20%;">Signature</th>
+                <th style="width: 15%;">Nom</th>
+                <th style="width: 12%;">Village</th>
+                <th style="width: 12%;">Rôle</th>
+                <th style="width: 8%;">Statut</th>
+                <th style="width: 12%;">Remplaçant</th>
+                <th style="width: 10%;">Heure d'arrivée</th>
+                <th style="width: 10%;">Commentaires</th>
+                <th style="width: 16%;">Signature</th>
             </tr>
         </thead>
         <tbody>
@@ -116,6 +118,8 @@
                         @endif
                     </td>
                     <td>{{ $attendee->replacement_name ?? '-' }}</td>
+                    <td>{{ $attendee->arrival_time ? $attendee->arrival_time->format('H:i') : '-' }}</td>
+                    <td>{{ $attendee->comments ?? '-' }}</td>
                     <td></td>
                 </tr>
             @endforeach
@@ -126,6 +130,7 @@
         <p><strong>Nombre de participants prévus :</strong> {{ $attendees->count() }}</p>
         <p><strong>Nombre de présents :</strong> {{ $attendees->where('attendance_status', 'present')->count() + $attendees->where('attendance_status', 'replaced')->count() }}</p>
         <p><strong>Nombre d'absents :</strong> {{ $attendees->where('attendance_status', 'absent')->count() }}</p>
+        <p><strong>Taux de présence :</strong> {{ round(($attendees->where('attendance_status', 'present')->count() + $attendees->where('attendance_status', 'replaced')->count()) / $attendees->count() * 100) }}%</p>
     </div>
 
     <div class="signature-area">
