@@ -1,0 +1,867 @@
+{
+    "info": {
+        "name": "API Meeting Lara",
+        "description": "API pour la gestion des réunions et des comités locaux",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Authentification",
+            "item": [
+                {
+                    "name": "Connexion",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/login",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "login"]
+                        },
+                        "description": "Authentifie un utilisateur et retourne un token"
+                    }
+                },
+                {
+                    "name": "Inscription",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Nom de l'utilisateur\",\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/register",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "register"]
+                        },
+                        "description": "Enregistre un nouvel utilisateur"
+                    }
+                },
+                {
+                    "name": "Déconnexion",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/logout",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "logout"]
+                        },
+                        "description": "Déconnecte l'utilisateur et invalide le token"
+                    }
+                },
+                {
+                    "name": "Profil utilisateur",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/user",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "user"]
+                        },
+                        "description": "Récupère les informations de l'utilisateur connecté"
+                    }
+                },
+                {
+                    "name": "Mettre à jour le profil",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Nouveau nom\",\n    \"email\": \"nouveau@example.com\",\n    \"current_password\": \"ancien_password\",\n    \"password\": \"nouveau_password\",\n    \"password_confirmation\": \"nouveau_password\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/user",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "user"]
+                        },
+                        "description": "Met à jour les informations de l'utilisateur connecté"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Localités",
+            "item": [
+                {
+                    "name": "Liste des localités",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/localities",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "localities"]
+                        },
+                        "description": "Récupère la liste de toutes les localités avec leurs relations"
+                    }
+                },
+                {
+                    "name": "Détails d'une localité",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/localities/{{locality_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "localities", "{{locality_id}}"]
+                        },
+                        "description": "Récupère les détails d'une localité spécifique avec ses relations"
+                    }
+                },
+                {
+                    "name": "Sous-localités",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/localities/{{locality_id}}/children",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "localities", "{{locality_id}}", "children"]
+                        },
+                        "description": "Récupère la liste des sous-localités d'une localité spécifique"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Types de localités",
+            "item": [
+                {
+                    "name": "Liste des types",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/locality-types",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "locality-types"]
+                        },
+                        "description": "Récupère la liste de tous les types de localités avec le nombre de localités par type"
+                    }
+                },
+                {
+                    "name": "Détails d'un type",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/locality-types/{{type_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "locality-types", "{{type_id}}"]
+                        },
+                        "description": "Récupère les détails d'un type de localité spécifique"
+                    }
+                },
+                {
+                    "name": "Localités d'un type",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/locality-types/{{type_id}}/localities",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "locality-types", "{{type_id}}", "localities"]
+                        },
+                        "description": "Récupère la liste des localités d'un type spécifique"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Comités locaux",
+            "item": [
+                {
+                    "name": "Liste des comités",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/local-committees",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "local-committees"]
+                        },
+                        "description": "Récupère la liste de tous les comités locaux"
+                    }
+                },
+                {
+                    "name": "Détails d'un comité",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/local-committees/{{committee_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "local-committees", "{{committee_id}}"]
+                        },
+                        "description": "Récupère les détails d'un comité local spécifique"
+                    }
+                },
+                {
+                    "name": "Créer un comité",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Nom du comité\",\n    \"description\": \"Description du comité\",\n    \"locality_id\": 1,\n    \"status\": \"active\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/local-committees",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "local-committees"]
+                        },
+                        "description": "Crée un nouveau comité local"
+                    }
+                },
+                {
+                    "name": "Mettre à jour un comité",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Nouveau nom\",\n    \"description\": \"Nouvelle description\",\n    \"locality_id\": 2,\n    \"status\": \"inactive\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/local-committees/{{committee_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "local-committees", "{{committee_id}}"]
+                        },
+                        "description": "Met à jour un comité local existant"
+                    }
+                },
+                {
+                    "name": "Supprimer un comité",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/local-committees/{{committee_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "local-committees", "{{committee_id}}"]
+                        },
+                        "description": "Supprime un comité local"
+                    }
+                },
+                {
+                    "name": "Réunions d'un comité",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/local-committees/{{committee_id}}/meetings",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "local-committees", "{{committee_id}}", "meetings"]
+                        },
+                        "description": "Récupère la liste des réunions d'un comité local"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Réunions",
+            "item": [
+                {
+                    "name": "Liste des réunions",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/meetings",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "meetings"]
+                        },
+                        "description": "Récupère la liste de toutes les réunions"
+                    }
+                },
+                {
+                    "name": "Détails d'une réunion",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/meetings/{{meeting_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "meetings", "{{meeting_id}}"]
+                        },
+                        "description": "Récupère les détails d'une réunion spécifique"
+                    }
+                },
+                {
+                    "name": "Créer une réunion",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"title\": \"Titre de la réunion\",\n    \"description\": \"Description de la réunion\",\n    \"scheduled_date\": \"2024-03-20 14:00:00\",\n    \"location\": \"Lieu de la réunion\",\n    \"locality_id\": 1\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/meetings",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "meetings"]
+                        },
+                        "description": "Crée une nouvelle réunion"
+                    }
+                },
+                {
+                    "name": "Mettre à jour une réunion",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"title\": \"Nouveau titre\",\n    \"description\": \"Nouvelle description\",\n    \"scheduled_date\": \"2024-03-21 15:00:00\",\n    \"location\": \"Nouveau lieu\",\n    \"locality_id\": 2\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/meetings/{{meeting_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "meetings", "{{meeting_id}}"]
+                        },
+                        "description": "Met à jour une réunion existante"
+                    }
+                },
+                {
+                    "name": "Supprimer une réunion",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/meetings/{{meeting_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "meetings", "{{meeting_id}}"]
+                        },
+                        "description": "Supprime une réunion"
+                    }
+                },
+                {
+                    "name": "Participants",
+                    "item": [
+                        {
+                            "name": "Liste des participants",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/meetings/{{meeting_id}}/participants",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "meetings", "{{meeting_id}}", "participants"]
+                                },
+                                "description": "Récupère la liste des participants d'une réunion spécifique"
+                            }
+                        },
+                        {
+                            "name": "Détails d'un participant",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/meetings/{{meeting_id}}/participants/{{participant_id}}",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "meetings", "{{meeting_id}}", "participants", "{{participant_id}}"]
+                                },
+                                "description": "Récupère les détails d'un participant spécifique d'une réunion"
+                            }
+                        },
+                        {
+                            "name": "Ajouter un participant",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"name\": \"Nom du participant\",\n    \"email\": \"email@example.com\",\n    \"phone\": \"+1234567890\",\n    \"role\": \"role\",\n    \"status\": \"invited\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/meetings/{{meeting_id}}/participants",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "meetings", "{{meeting_id}}", "participants"]
+                                },
+                                "description": "Ajoute un nouveau participant à une réunion"
+                            }
+                        },
+                        {
+                            "name": "Mettre à jour un participant",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"name\": \"Nouveau nom\",\n    \"email\": \"nouveau@example.com\",\n    \"phone\": \"+0987654321\",\n    \"role\": \"nouveau_role\",\n    \"status\": \"confirmed\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/meetings/{{meeting_id}}/participants/{{participant_id}}",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "meetings", "{{meeting_id}}", "participants", "{{participant_id}}"]
+                                },
+                                "description": "Met à jour les informations d'un participant d'une réunion"
+                            }
+                        },
+                        {
+                            "name": "Supprimer un participant",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/meetings/{{meeting_id}}/participants/{{participant_id}}",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "meetings", "{{meeting_id}}", "participants", "{{participant_id}}"]
+                                },
+                                "description": "Supprime un participant d'une réunion"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Présences",
+            "item": [
+                {
+                    "name": "Liste des présences",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/meetings/{{meeting_id}}/attendances",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "meetings", "{{meeting_id}}", "attendances"]
+                        },
+                        "description": "Récupère la liste des présences pour une réunion spécifique"
+                    }
+                },
+                {
+                    "name": "Marquer une présence",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"participant_id\": 1,\n    \"status\": \"present\",\n    \"arrival_time\": \"2024-03-20 14:00:00\",\n    \"departure_time\": \"2024-03-20 16:00:00\",\n    \"notes\": \"Notes sur la présence\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/meetings/{{meeting_id}}/attendances",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "meetings", "{{meeting_id}}", "attendances"]
+                        },
+                        "description": "Marque la présence d'un participant à une réunion"
+                    }
+                },
+                {
+                    "name": "Mettre à jour une présence",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"status\": \"absent\",\n    \"arrival_time\": \"2024-03-20 14:30:00\",\n    \"departure_time\": \"2024-03-20 15:30:00\",\n    \"notes\": \"Nouvelles notes sur la présence\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/meetings/{{meeting_id}}/attendances/{{attendance_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "meetings", "{{meeting_id}}", "attendances", "{{attendance_id}}"]
+                        },
+                        "description": "Met à jour les informations de présence d'un participant"
+                    }
+                },
+                {
+                    "name": "Supprimer une présence",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/meetings/{{meeting_id}}/attendances/{{attendance_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "meetings", "{{meeting_id}}", "attendances", "{{attendance_id}}"]
+                        },
+                        "description": "Supprime une présence"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Photos",
+            "item": [
+                {
+                    "name": "Liste des photos",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/meetings/{{meeting_id}}/photos",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "meetings", "{{meeting_id}}", "photos"]
+                        },
+                        "description": "Récupère la liste des photos d'une réunion"
+                    }
+                },
+                {
+                    "name": "Ajouter une photo",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "photo",
+                                    "type": "file",
+                                    "src": []
+                                },
+                                {
+                                    "key": "description",
+                                    "value": "Description de la photo",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/meetings/{{meeting_id}}/photos",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "meetings", "{{meeting_id}}", "photos"]
+                        },
+                        "description": "Ajoute une nouvelle photo à une réunion"
+                    }
+                },
+                {
+                    "name": "Détails d'une photo",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/meetings/{{meeting_id}}/photos/{{photo_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "meetings", "{{meeting_id}}", "photos", "{{photo_id}}"]
+                        },
+                        "description": "Récupère les détails d'une photo spécifique"
+                    }
+                },
+                {
+                    "name": "Mettre à jour une photo",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"description\": \"Nouvelle description de la photo\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/meetings/{{meeting_id}}/photos/{{photo_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "meetings", "{{meeting_id}}", "photos", "{{photo_id}}"]
+                        },
+                        "description": "Met à jour les informations d'une photo"
+                    }
+                },
+                {
+                    "name": "Supprimer une photo",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/meetings/{{meeting_id}}/photos/{{photo_id}}",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "meetings", "{{meeting_id}}", "photos", "{{photo_id}}"]
+                        },
+                        "description": "Supprime une photo"
+                    }
+                }
+            ]
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8000",
+            "type": "string"
+        },
+        {
+            "key": "locality_id",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "type_id",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "meeting_id",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "committee_id",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "participant_id",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "token",
+            "value": "votre_token_jwt",
+            "type": "string"
+        },
+        {
+            "key": "attendance_id",
+            "value": "1",
+            "type": "string"
+        },
+        {
+            "key": "photo_id",
+            "value": "1",
+            "type": "string"
+        }
+    ]
+} 

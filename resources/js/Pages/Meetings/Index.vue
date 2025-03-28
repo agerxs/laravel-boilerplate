@@ -111,6 +111,14 @@
                   >
                     <EyeIcon class="h-5 w-5" />
                   </Link>
+                  <Link
+                    :href="route('meeting-payments.lists.create', { meeting: meeting.id })"
+                    class="text-green-600 hover:text-green-900 action-button"
+                    title="Gérer les paiements"
+                    v-if="meeting.status === 'confirmed' && canManagePayments(meeting)"
+                  >
+                    <CurrencyDollarIcon class="h-5 w-5" />
+                  </Link>
                   <button
                     v-if="meeting.status === 'scheduled' && !isSubPrefect"
                     @click="cancelMeeting(meeting)"
@@ -153,6 +161,7 @@ import {
   EyeIcon,
   XCircleIcon,
   ClockIcon,
+  CurrencyDollarIcon,
 } from '@heroicons/vue/24/outline'
 import { useToast } from '@/Composables/useToast'
 import axios from 'axios'
@@ -299,6 +308,15 @@ const isSubPrefect = computed(() => {
     ['sous-prefet', 'Sous-prefet'].includes(role.name)
   ) || false
 })
+
+const canManagePayments = (meeting) => {
+  const meetingDate = new Date(meeting.scheduled_date);
+  const twoDaysBefore = new Date(meetingDate);
+  twoDaysBefore.setDate(twoDaysBefore.getDate() - 2);
+  const now = new Date();
+  
+  return now <= twoDaysBefore;
+}
 
 </script>
 

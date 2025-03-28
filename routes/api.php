@@ -8,6 +8,8 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\SubPrefectureController;
 use App\Http\Controllers\LocalCommitteeController;
 use App\Http\Controllers\Api\OfflineController;
+use App\Http\Controllers\Api\LocalityController;
+use App\Http\Controllers\Api\LocalityTypeController;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
@@ -55,3 +57,21 @@ Route::get('/meetings/{meeting}/edit', [MeetingController::class, 'edit'])->name
 Route::put('/meetings/{meeting}', [MeetingController::class, 'update'])->name('meetings.update');
 Route::put('/meetings/{meeting}/reschedule', [MeetingController::class, 'reschedule'])->name('meetings.reschedule');
 Route::get('/meetings/{meeting}/reschedule', [MeetingController::class, 'showRescheduleForm'])->name('meetings.reschedule.form');
+
+// Routes pour les localités
+Route::prefix('localities')->group(function () {
+    Route::get('/', [LocalityController::class, 'index']);
+    Route::get('/{locality}', [LocalityController::class, 'show']);
+    Route::put('/{locality}', [LocalityController::class, 'update']);
+    Route::get('/{locality}/children', [LocalityController::class, 'children']);
+});
+
+// Routes pour les types de localités
+Route::prefix('locality-types')->group(function () {
+    Route::get('/', [LocalityTypeController::class, 'index']);
+    Route::get('/{type}', [LocalityTypeController::class, 'show']);
+    Route::post('/', [LocalityTypeController::class, 'store']);
+    Route::put('/{type}', [LocalityTypeController::class, 'update']);
+    Route::delete('/{type}', [LocalityTypeController::class, 'destroy']);
+    Route::get('/{type}/localities', [LocalityTypeController::class, 'localities']);
+});

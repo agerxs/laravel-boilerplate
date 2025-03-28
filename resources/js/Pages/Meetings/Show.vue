@@ -21,7 +21,10 @@
             </span>
           </h2>
           <div class="flex flex-wrap gap-2">
-            
+            <MeetingValidationButtons 
+              :meeting="meeting"
+              @meeting-updated="handleMeetingUpdated"
+            />
             
             <!-- Button to manage attendance list -->
            
@@ -1081,6 +1084,7 @@ import { router, useForm, usePage } from '@inertiajs/vue3'
 import axios from 'axios'
 import { computed, onMounted, ref } from 'vue'
 import draggable from 'vuedraggable/src/vuedraggable'
+import MeetingValidationButtons from '@/Components/MeetingValidationButtons.vue'
 
 interface AgendaItem {
     id: number;
@@ -1885,11 +1889,14 @@ const emailRecipients = ref([''])
 const isSubPrefect = computed(() => {
   if (!props.user || !props.user.roles) return false
   // Un admin a aussi les droits d'un sous-préfet
-  return props.user.roles.some(role => ['sous-prefet', 'Sous-prefet', 'admin', 'Admin'].includes(role.name))
+  return props.user.roles.some(role => ['sous-prefet', 'Sous-prefet'].includes(role.name))
 })
 
 const isSecretary = computed(() => {
+  console.log("props.user");
+  console.log(props.user.roles);
   if (!props.user || !props.user.roles) return false
+  
   // Un admin a aussi les droits d'un secrétaire
   return props.user.roles.some(role => ['secretaire', 'Secrétaire', 'admin', 'Admin'].includes(role.name))
 })
@@ -2163,6 +2170,11 @@ const updateEnrollments = async () => {
 // Variables pour les représentants des villages
 
 // Autres variables pour les modals
+
+const handleMeetingUpdated = (updatedMeeting) => {
+  // Émettre un événement pour mettre à jour la réunion
+  router.reload()
+}
 </script>
 
 <style scoped>

@@ -320,8 +320,168 @@ POST /meetings/{meeting}/enrollments
 
 ## Données de référence
 
-### Liste des sous-préfectures
+### Liste des localités
+```http
+GET /api/localities
+```
 
+Récupère la liste de toutes les localités avec leurs relations (parent, enfants, type).
+
+#### Réponse
+```json
+[
+  {
+    "id": 1,
+    "name": "Nom de la localité",
+    "code": "CODE123",
+    "description": "Description de la localité",
+    "type_id": 1,
+    "parent_id": null,
+    "type": {
+      "id": 1,
+      "name": "Type de localité",
+      "description": "Description du type",
+      "level": 1,
+      "can_have_committee": true
+    },
+    "parent": null,
+    "children": []
+  }
+]
+```
+
+### Détails d'une localité
+```http
+GET /api/localities/{id}
+```
+
+Récupère les détails d'une localité spécifique avec ses relations.
+
+#### Paramètres
+- `id` (path) : ID de la localité
+
+#### Réponse
+```json
+{
+  "id": 1,
+  "name": "Nom de la localité",
+  "code": "CODE123",
+  "description": "Description de la localité",
+  "type_id": 1,
+  "parent_id": null,
+  "type": {
+    "id": 1,
+    "name": "Type de localité",
+    "description": "Description du type",
+    "level": 1,
+    "can_have_committee": true
+  },
+  "parent": null,
+  "children": []
+}
+```
+
+### Sous-localités
+```http
+GET /api/localities/{id}/children
+```
+
+Récupère la liste des sous-localités d'une localité spécifique.
+
+#### Paramètres
+- `id` (path) : ID de la localité parente
+
+#### Réponse
+```json
+[
+  {
+    "id": 2,
+    "name": "Sous-localité",
+    "code": "CODE456",
+    "description": "Description de la sous-localité",
+    "type_id": 2,
+    "parent_id": 1,
+    "type": {
+      "id": 2,
+      "name": "Type de sous-localité",
+      "description": "Description du type",
+      "level": 2,
+      "can_have_committee": false
+    }
+  }
+]
+```
+
+### Liste des types de localités
+```http
+GET /api/locality-types
+```
+
+Récupère la liste de tous les types de localités avec le nombre de localités par type.
+
+#### Réponse
+```json
+[
+  {
+    "id": 1,
+    "name": "Type de localité",
+    "description": "Description du type",
+    "level": 1,
+    "can_have_committee": true,
+    "localities_count": 5
+  }
+]
+```
+
+### Détails d'un type de localité
+```http
+GET /api/locality-types/{id}
+```
+
+Récupère les détails d'un type de localité spécifique.
+
+#### Paramètres
+- `id` (path) : ID du type de localité
+
+#### Réponse
+```json
+{
+  "id": 1,
+  "name": "Type de localité",
+  "description": "Description du type",
+  "level": 1,
+  "can_have_committee": true,
+  "localities_count": 5
+}
+```
+
+### Localités d'un type
+```http
+GET /api/locality-types/{id}/localities
+```
+
+Récupère la liste des localités d'un type spécifique.
+
+#### Paramètres
+- `id` (path) : ID du type de localité
+
+#### Réponse
+```json
+[
+  {
+    "id": 1,
+    "name": "Localité",
+    "code": "CODE123",
+    "description": "Description de la localité",
+    "type_id": 1,
+    "parent_id": null,
+    "parent": null,
+    "children": []
+  }
+]
+```
+
+### Liste des sous-préfectures
 ```http
 GET /sub-prefectures
 ```
@@ -343,7 +503,6 @@ GET /sub-prefectures
 ```
 
 ### Villages d'une sous-préfecture
-
 ```http
 GET /sub-prefectures/{subPrefectureId}/villages
 ```
@@ -365,7 +524,6 @@ GET /sub-prefectures/{subPrefectureId}/villages
 ```
 
 ### Liste des comités locaux
-
 ```http
 GET /local-committees
 ```
@@ -403,4 +561,169 @@ GET /local-committees
 2. Gérer les erreurs de validation (422) en affichant les messages appropriés
 3. Implémenter une gestion de la pagination pour les listes
 4. Mettre en cache les données de référence (sous-préfectures, villages, comités)
-5. Gérer la déconnexion en supprimant le token local 
+5. Gérer la déconnexion en supprimant le token local
+
+## Localités
+
+### Liste des localités
+```http
+GET /api/localities
+```
+
+Récupère la liste de toutes les localités avec leurs relations (parent, enfants, type).
+
+#### Réponse
+```json
+[
+  {
+    "id": 1,
+    "name": "Nom de la localité",
+    "code": "CODE123",
+    "description": "Description de la localité",
+    "type_id": 1,
+    "parent_id": null,
+    "type": {
+      "id": 1,
+      "name": "Type de localité",
+      "description": "Description du type",
+      "level": 1,
+      "can_have_committee": true
+    },
+    "parent": null,
+    "children": []
+  }
+]
+```
+
+### Détails d'une localité
+```http
+GET /api/localities/{id}
+```
+
+Récupère les détails d'une localité spécifique avec ses relations.
+
+#### Paramètres
+- `id` (path) : ID de la localité
+
+#### Réponse
+```json
+{
+  "id": 1,
+  "name": "Nom de la localité",
+  "code": "CODE123",
+  "description": "Description de la localité",
+  "type_id": 1,
+  "parent_id": null,
+  "type": {
+    "id": 1,
+    "name": "Type de localité",
+    "description": "Description du type",
+    "level": 1,
+    "can_have_committee": true
+  },
+  "parent": null,
+  "children": []
+}
+```
+
+### Sous-localités
+```http
+GET /api/localities/{id}/children
+```
+
+Récupère la liste des sous-localités d'une localité spécifique.
+
+#### Paramètres
+- `id` (path) : ID de la localité parente
+
+#### Réponse
+```json
+[
+  {
+    "id": 2,
+    "name": "Sous-localité",
+    "code": "CODE456",
+    "description": "Description de la sous-localité",
+    "type_id": 2,
+    "parent_id": 1,
+    "type": {
+      "id": 2,
+      "name": "Type de sous-localité",
+      "description": "Description du type",
+      "level": 2,
+      "can_have_committee": false
+    }
+  }
+]
+```
+
+## Types de localités
+
+### Liste des types
+```http
+GET /api/locality-types
+```
+
+Récupère la liste de tous les types de localités avec le nombre de localités par type.
+
+#### Réponse
+```json
+[
+  {
+    "id": 1,
+    "name": "Type de localité",
+    "description": "Description du type",
+    "level": 1,
+    "can_have_committee": true,
+    "localities_count": 5
+  }
+]
+```
+
+### Détails d'un type
+```http
+GET /api/locality-types/{id}
+```
+
+Récupère les détails d'un type de localité spécifique.
+
+#### Paramètres
+- `id` (path) : ID du type de localité
+
+#### Réponse
+```json
+{
+  "id": 1,
+  "name": "Type de localité",
+  "description": "Description du type",
+  "level": 1,
+  "can_have_committee": true,
+  "localities_count": 5
+}
+```
+
+### Localités d'un type
+```http
+GET /api/locality-types/{id}/localities
+```
+
+Récupère la liste des localités d'un type spécifique.
+
+#### Paramètres
+- `id` (path) : ID du type de localité
+
+#### Réponse
+```json
+[
+  {
+    "id": 1,
+    "name": "Localité",
+    "code": "CODE123",
+    "description": "Description de la localité",
+    "type_id": 1,
+    "parent_id": null,
+    "parent": null,
+    "children": []
+  }
+]
+``` 

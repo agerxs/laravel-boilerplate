@@ -17,19 +17,34 @@ use App\Http\Controllers\PaymentRateController;
 use App\Http\Controllers\MeetingPaymentController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AttendancePhotoController;
+use App\Http\Controllers\MeetingPaymentListController;
+use App\Http\Controllers\LocalityController;
 
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
+    ->middleware('auth')
+    ->middleware('verified')
+    ->middleware('dashboard.access')
     ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Routes pour les listes de paiement
+    Route::prefix('meeting-payments/lists')->name('meeting-payments.lists.')->group(function () {
+        Route::get('/', [MeetingPaymentListController::class, 'index'])->name('index');
+        Route::get('/create/{meeting}', [MeetingPaymentListController::class, 'create'])->name('create');
+        Route::post('/{meeting}', [MeetingPaymentListController::class, 'store'])->name('store');
+        Route::get('/{paymentList}', [MeetingPaymentListController::class, 'show'])->name('show');
+        Route::post('/{paymentList}/submit', [MeetingPaymentListController::class, 'submit'])->name('submit');
+        Route::post('/{paymentList}/validate', [MeetingPaymentListController::class, 'validate'])->name('validate');
+        Route::post('/{paymentList}/reject', [MeetingPaymentListController::class, 'reject'])->name('reject');
+    });
 });
 
 Route::middleware(['auth'])->group(function () {
@@ -199,6 +214,31 @@ Route::middleware(['auth'])->group(function () {
         ->name('attendance-photos.thumbnail');
     Route::delete('/attendance-photos/{photo}', [AttendancePhotoController::class, 'destroy'])
         ->name('attendance-photos.destroy');
+
+    // Routes pour les réunions
+    Route::prefix('meetings')->name('meetings.')->group(function () {
+        Route::get('/', [MeetingController::class, 'index'])->name('index');
+        Route::get('/create', [MeetingController::class, 'create'])->name('create');
+        Route::post('/', [MeetingController::class, 'store'])->name('store');
+        Route::get('/{meeting}', [MeetingController::class, 'show'])->name('show');
+        Route::post('/{meeting}/cancel', [MeetingController::class, 'cancel'])->name('cancel');
+        Route::post('/{meeting}/confirm', [MeetingController::class, 'confirm'])->name('confirm');
+        Route::post('/{meeting}/prevalidate', [MeetingController::class, 'prevalidate'])->name('prevalidate');
+        Route::post('/{meeting}/validate', [MeetingController::class, 'validate'])->name('validate');
+        // ... other meeting routes ...
+    });
+});
+
+Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
+    // ... existing routes ...
+
+    // Routes pour les localités
+    Route::get('/localities', [LocalityController::class, 'index'])->name('localities.index');
+    Route::get('/localities/{locality}', [LocalityController::class, 'show'])->name('localities.show');
+
+    // Documentation API
+    Route::get('/api-doc', [App\Http\Controllers\Api\DocumentationController::class, 'index'])
+        ->name('api.documentation');
 });
 
 Route::get('/doc', [App\Http\Controllers\Api\DocumentationController::class, 'index'])->name('api.documentation');

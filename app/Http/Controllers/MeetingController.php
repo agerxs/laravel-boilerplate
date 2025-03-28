@@ -99,7 +99,22 @@ class MeetingController extends Controller
 
     public function create()
     {
-        $localCommittees = LocalCommittee::all();
+        $user = auth()->user();
+        $query = LocalCommittee::query();
+
+        if ($user->hasRole(['prefet', 'Prefet'])) {
+            // Pour les préfets, montrer les comités de leur département et sous-préfectures
+            $query->whereHas('locality', function ($q) use ($user) {
+                $q->where('id', $user->locality_id)
+                  ->orWhere('parent_id', $user->locality_id);
+            });
+        } elseif ($user->hasRole(['sous-prefet', 'Sous-prefet', 'secretaire', 'Secrétaire'])) {
+            // Pour les sous-préfets et secrétaires, montrer uniquement les comités de leur localité
+            $query->where('locality_id', $user->locality_id);
+        }
+
+        $localCommittees = $query->get();
+        
         return Inertia::render('Meetings/Create', [
             'localCommittees' => $localCommittees,
         ]);
@@ -110,6 +125,9 @@ class MeetingController extends Controller
         // Charger la relation localCommittee avec sa localité et les villages associés
         // Charger également les relations prevalidator et validator
         $meeting->load(['localCommittee.locality', 'prevalidator', 'validator', 'minutes', 'attachments']);
+        
+        // Charger l'utilisateur avec ses rôles
+        $user = auth()->user()->load('roles');
         
         // Vérifier si le comité local existe
         if (!$meeting->localCommittee || !$meeting->localCommittee->locality) {
@@ -204,7 +222,7 @@ class MeetingController extends Controller
                 'target_enrollments' => $meeting->target_enrollments,
                 'actual_enrollments' => $meeting->actual_enrollments
             ],
-            'user' => auth()->user()
+            'user' => $user
         ]);
     }
 
@@ -542,6 +560,35 @@ class MeetingController extends Controller
                 'target_enrollments' => $meeting->target_enrollments,
                 'actual_enrollments' => $meeting->actual_enrollments,
             ]
+        ]);
+    }
+
+    public function confirm(Meeting $meeting)
+    {
+        // Vérifier si l'utilisateur est un secrétaire
+        if (!Auth::user()->hasRole(['secretaire', 'Secrétaire'])) {
+            return response()->json([
+                'message' => 'Vous n\'avez pas les droits pour confirmer cette réunion.'
+            ], 403);
+        }
+
+        // Vérifier si la réunion peut être confirmée
+        if ($meeting->status !== 'scheduled') {
+            return response()->json([
+                'message' => 'Cette réunion ne peut pas être confirmée.'
+            ], 400);
+        }
+
+        // Mettre à jour le statut
+        $meeting->update([
+            'status' => 'confirmed',
+            'confirmed_at' => now(),
+            'confirmed_by' => Auth::id(),
+        ]);
+
+        return response()->json([
+            'message' => 'Réunion confirmée avec succès.',
+            'meeting' => $meeting
         ]);
     }
 } 

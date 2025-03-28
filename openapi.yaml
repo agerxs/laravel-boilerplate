@@ -1,0 +1,172 @@
+openapi: 3.1.0
+info:
+  title: API Meeting Lara
+  version: 1.0.0
+  description: API pour la gestion des réunions et des comités locaux
+
+servers:
+  - url: http://localhost:8000/api
+    description: Serveur de développement
+
+components:
+  securitySchemes:
+    sanctum:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Locality:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        code:
+          type: string
+        description:
+          type: string
+        type_id:
+          type: integer
+        parent_id:
+          type: integer
+          nullable: true
+        type:
+          $ref: '#/components/schemas/LocalityType'
+        parent:
+          $ref: '#/components/schemas/Locality'
+          nullable: true
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/Locality'
+
+    LocalityType:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        level:
+          type: integer
+        can_have_committee:
+          type: boolean
+        localities_count:
+          type: integer
+
+paths:
+  /localities:
+    get:
+      summary: Liste des localités
+      description: Récupère la liste de toutes les localités avec leurs relations
+      responses:
+        '200':
+          description: Liste des localités
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Locality'
+
+  /localities/{id}:
+    get:
+      summary: Détails d'une localité
+      description: Récupère les détails d'une localité spécifique avec ses relations
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Détails de la localité
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Locality'
+        '404':
+          description: Localité non trouvée
+
+  /localities/{id}/children:
+    get:
+      summary: Sous-localités
+      description: Récupère la liste des sous-localités d'une localité spécifique
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Liste des sous-localités
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Locality'
+        '404':
+          description: Localité non trouvée
+
+  /locality-types:
+    get:
+      summary: Liste des types de localités
+      description: Récupère la liste de tous les types de localités avec le nombre de localités par type
+      responses:
+        '200':
+          description: Liste des types de localités
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LocalityType'
+
+  /locality-types/{id}:
+    get:
+      summary: Détails d'un type de localité
+      description: Récupère les détails d'un type de localité spécifique
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Détails du type de localité
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LocalityType'
+        '404':
+          description: Type de localité non trouvé
+
+  /locality-types/{id}/localities:
+    get:
+      summary: Localités d'un type
+      description: Récupère la liste des localités d'un type spécifique
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Liste des localités du type
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Locality'
+        '404':
+          description: Type de localité non trouvé 

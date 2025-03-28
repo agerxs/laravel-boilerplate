@@ -1,0 +1,366 @@
+{
+  "info": {
+    "name": "Meeting App API",
+    "description": "API pour l'application de gestion des réunions",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentification",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"user@example.com\",\n    \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "login"]
+            },
+            "description": "Authentification de l'utilisateur"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/logout",
+              "host": ["{{base_url}}"],
+              "path": ["api", "logout"]
+            },
+            "description": "Déconnexion de l'utilisateur"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Réunions",
+      "item": [
+        {
+          "name": "Liste des réunions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/meetings",
+              "host": ["{{base_url}}"],
+              "path": ["api", "meetings"]
+            },
+            "description": "Récupérer la liste des réunions"
+          }
+        },
+        {
+          "name": "Détails d'une réunion",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/meetings/{{meeting_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "meetings", "{{meeting_id}}"]
+            },
+            "description": "Récupérer les détails d'une réunion"
+          }
+        },
+        {
+          "name": "Créer une réunion",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Nouvelle réunion\",\n    \"date\": \"2024-03-25\",\n    \"location\": \"Salle A\",\n    \"description\": \"Description de la réunion\",\n    \"villages\": [1, 2, 3]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/meetings",
+              "host": ["{{base_url}}"],
+              "path": ["api", "meetings"]
+            },
+            "description": "Créer une nouvelle réunion"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Présences",
+      "item": [
+        {
+          "name": "Liste des présences",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/meetings/{{meeting_id}}/attendance",
+              "host": ["{{base_url}}"],
+              "path": ["api", "meetings", "{{meeting_id}}", "attendance"]
+            },
+            "description": "Récupérer la liste des présences pour une réunion"
+          }
+        },
+        {
+          "name": "Marquer présence",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"attendee_id\": 1,\n    \"status\": \"present\",\n    \"arrival_time\": \"14:30\",\n    \"comments\": \"Arrivé en retard\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/meetings/{{meeting_id}}/attendance/mark",
+              "host": ["{{base_url}}"],
+              "path": ["api", "meetings", "{{meeting_id}}", "attendance", "mark"]
+            },
+            "description": "Marquer la présence d'un participant"
+          }
+        },
+        {
+          "name": "Définir remplacement",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"attendee_id\": 1,\n    \"replacement_name\": \"John Doe\",\n    \"replacement_phone\": \"0123456789\",\n    \"replacement_role\": \"Représentant\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/meetings/{{meeting_id}}/attendance/replacement",
+              "host": ["{{base_url}}"],
+              "path": ["api", "meetings", "{{meeting_id}}", "attendance", "replacement"]
+            },
+            "description": "Définir un remplacement pour un participant"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Photos",
+      "item": [
+        {
+          "name": "Upload photo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "photo",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "attendee_id",
+                  "value": "1",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/meetings/{{meeting_id}}/attendance/photos",
+              "host": ["{{base_url}}"],
+              "path": ["api", "meetings", "{{meeting_id}}", "attendance", "photos"]
+            },
+            "description": "Uploader une photo de présence"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Mode hors ligne",
+      "item": [
+        {
+          "name": "Enregistrer opération",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"operation\": \"create\",\n    \"entity_type\": \"meeting\",\n    \"entity_id\": 1,\n    \"data\": {\n        \"title\": \"Nouvelle réunion\",\n        \"date\": \"2024-03-25\"\n    }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/offline/queue",
+              "host": ["{{base_url}}"],
+              "path": ["api", "offline", "queue"]
+            },
+            "description": "Enregistrer une opération pour la synchronisation hors ligne"
+          }
+        },
+        {
+          "name": "Synchroniser",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/offline/sync",
+              "host": ["{{base_url}}"],
+              "path": ["api", "offline", "sync"]
+            },
+            "description": "Synchroniser les données avec le serveur"
+          }
+        },
+        {
+          "name": "État de synchronisation",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/offline/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "offline", "status"]
+            },
+            "description": "Obtenir l'état de la synchronisation"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "your_auth_token_here",
+      "type": "string"
+    },
+    {
+      "key": "meeting_id",
+      "value": "1",
+      "type": "string"
+    }
+  ]
+} 

@@ -1,5 +1,15 @@
 <template>
   <div>
+    <!-- Bouton de confirmation (pour les secrétaires) -->
+    <button
+      v-if="canConfirm"
+      @click="confirmMeeting"
+      title="Confirmer cette réunion"
+      class="text-green-600 hover:text-green-900 action-button"
+    >
+      <CheckCircleIcon class="h-5 w-5" />
+    </button>
+    
     <!-- Bouton de prévalidation (pour les secrétaires) -->
     <button
       v-if="canPrevalidate"
@@ -64,7 +74,11 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { ClipboardIcon, ShieldCheckIcon } from '@heroicons/vue/24/outline'
+import { 
+  ClipboardIcon, 
+  ShieldCheckIcon,
+  CheckCircleIcon,
+} from '@heroicons/vue/24/outline'
 import { useToast } from '@/Composables/useToast'
 import axios from 'axios'
 import Modal from '@/Components/Modal.vue'
@@ -114,8 +128,10 @@ const userRoles = computed<Role[]>(() => {
 
 // Vérifier si l'utilisateur est un secrétaire
 const isSecretary = computed(() => {
+  console.log("userRoles.value");
+  console.log(userRoles.value);
   return userRoles.value.some((role: Role) => 
-    ['secretaire', 'Secrétaire'].includes(role.name)
+    ['secretaire', 'Secrétaire', 'admin', 'Admin'].includes(role.name)
   )
 })
 
@@ -126,12 +142,15 @@ const isSubPrefect = computed(() => {
   )
 })
 
+// Vérifier si la réunion peut être confirmée
+const canConfirm = computed(() => {
+  return isSecretary.value && props.meeting.status === 'scheduled'
+})
+
 // Vérifier si la réunion peut être prévalidée
 const canPrevalidate = computed(() => {
   return isSecretary.value &&
-         props.meeting.status !== 'prevalidated' &&
-         props.meeting.status !== 'validated' &&
-         props.meeting.status !== 'cancelled'
+         props.meeting.status === 'completed'
 })
 
 // Vérifier si la réunion peut être validée
@@ -139,6 +158,28 @@ const canValidate = computed(() => {
   return isSubPrefect.value &&
          props.meeting.status === 'prevalidated'
 })
+
+// Confirmer la réunion
+const confirmMeeting = async () => {
+  if (!confirm('Êtes-vous sûr de vouloir confirmer cette réunion ? Cela permettra de commencer la gestion des paiements.')) return
+  
+  try {
+    const response = await axios.post(
+      route('meetings.confirm', props.meeting.id)
+    )
+    
+    toast.success('Réunion confirmée avec succès')
+    emit('meeting-updated', response.data.meeting)
+    
+    // Recharger la page pour afficher les changements
+    window.location.reload()
+  } catch (error: any) {
+    toast.error(
+      error.response?.data?.message || 
+      'Une erreur est survenue lors de la confirmation'
+    )
+  }
+}
 
 // Prévalider la réunion
 const prevalidateMeeting = async () => {

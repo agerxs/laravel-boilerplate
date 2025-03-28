@@ -39,7 +39,7 @@ const navigation = [
     { name: 'Comités Locaux', href: route('local-committees.index'), icon: UserGroupIcon },
     { name: 'Agenda', href: route('calendar.index'), icon: CalendarIcon },
     { name: 'Plaintes & Réclamations', href: '#', icon: DocumentIcon },
-    { name: 'Paiement', href: '#', icon: DocumentIcon },
+    { name: 'Paiement', href: route('meeting-payments.lists.index'), icon: DocumentIcon },
 ];
 
 defineProps<{

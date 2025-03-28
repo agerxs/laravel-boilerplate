@@ -24,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'verified' => \App\Http\Middleware\EnsureEmailIsVerified::class,
             'check.locality' => \App\Http\Middleware\CheckLocalityAccess::class,
+            'dashboard.access' => \App\Http\Middleware\DashboardAccess::class,
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
         ]);
 
