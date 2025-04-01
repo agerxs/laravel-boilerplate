@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use App\Http\Utils\Constants;
+
 
 class AuthController extends Controller
 {
@@ -30,7 +32,7 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->firstOrFail();
         $token = $user->createToken('auth-token')->plainTextToken;
 
-        return response()->json([
+        return $this->format(Constants::JSON_STATUS_SUCCESS, 200, 'Connexion réussie', [
             'token' => $token,
             'user' => [
                 'id' => $user->id,

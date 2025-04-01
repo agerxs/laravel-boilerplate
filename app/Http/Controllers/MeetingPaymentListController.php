@@ -127,7 +127,7 @@ class MeetingPaymentListController extends Controller
         return redirect()->back()->with('success', 'Liste de paiement soumise pour validation.');
     }
 
-    public function validate(Request $request, MeetingPaymentList $paymentList)
+    public function validates(Request $request, MeetingPaymentList $paymentList)
     {
         if ($paymentList->status !== 'submitted') {
             return redirect()->back()->with('error', 'Cette liste ne peut pas être validée.');

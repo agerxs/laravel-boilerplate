@@ -19,6 +19,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AttendancePhotoController;
 use App\Http\Controllers\MeetingPaymentListController;
 use App\Http\Controllers\LocalityController;
+use App\Http\Controllers\RepresentativeController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -42,7 +43,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/{meeting}', [MeetingPaymentListController::class, 'store'])->name('store');
         Route::get('/{paymentList}', [MeetingPaymentListController::class, 'show'])->name('show');
         Route::post('/{paymentList}/submit', [MeetingPaymentListController::class, 'submit'])->name('submit');
-        Route::post('/{paymentList}/validate', [MeetingPaymentListController::class, 'validate'])->name('validate');
+        Route::post('/{paymentList}/validate', [MeetingPaymentListController::class, 'validates'])->name('validate');
         Route::post('/{paymentList}/reject', [MeetingPaymentListController::class, 'reject'])->name('reject');
     });
 });
@@ -86,7 +87,7 @@ Route::middleware(['auth'])->group(function () {
     // Nouvelles routes pour la validation des comptes-rendus
     Route::post('/minutes/{minutes}/request-validation', [MeetingMinutesController::class, 'requestValidation'])
         ->name('minutes.request-validation');
-    Route::post('/minutes/{minutes}/validate', [MeetingMinutesController::class, 'validate'])
+    Route::post('/minutes/{minutes}/validate', [MeetingMinutesController::class, 'validates'])
         ->name('minutes.validate')
         ->middleware('role:sous-prefet|Sous-prefet|admin|Admin'); // Sous-préfets et admins peuvent valider
 
@@ -224,9 +225,11 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{meeting}/cancel', [MeetingController::class, 'cancel'])->name('cancel');
         Route::post('/{meeting}/confirm', [MeetingController::class, 'confirm'])->name('confirm');
         Route::post('/{meeting}/prevalidate', [MeetingController::class, 'prevalidate'])->name('prevalidate');
-        Route::post('/{meeting}/validate', [MeetingController::class, 'validate'])->name('validate');
+        Route::post('/{meeting}/validate', [MeetingController::class, 'validates'])->name('validate');
         // ... other meeting routes ...
     });
+
+    Route::resource('representatives', RepresentativeController::class);
 });
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
@@ -239,6 +242,8 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     // Documentation API
     Route::get('/api-doc', [App\Http\Controllers\Api\DocumentationController::class, 'index'])
         ->name('api.documentation');
+
+    
 });
 
 Route::get('/doc', [App\Http\Controllers\Api\DocumentationController::class, 'index'])->name('api.documentation');

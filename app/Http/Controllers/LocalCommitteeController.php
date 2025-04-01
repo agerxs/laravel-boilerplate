@@ -336,11 +336,25 @@ class LocalCommitteeController extends Controller
     public function showVillageRepresentatives($committeeId)
     {
         $committee = LocalCommittee::with('members.user')->findOrFail($committeeId);
+        
+        // Récupérer les villages de la localité du comité
+        $villages = Locality::where('parent_id', $committee->locality_id)
+            ->where('locality_type_id', 6) // Type village
+            ->get();
+            
 
-        return Inertia::render('LocalCommittees/VillageRepresentatives', [
-            'committee' => $committee,
-            'permanentMembers' => $committee->members->whereIn('role', ['president', 'secretary']),
-        ]);
+        // Récupérer les représentants pour chaque village
+        $representativesByVillage = [];
+        foreach ($villages as $village) {
+            $representatives = Representative::where('locality_id', $village->id)
+              
+                ->get();
+            if ($representatives->isNotEmpty()) {
+                $representativesByVillage[$village->name] = $representatives;
+            }
+        }
+
+        return response()->json($representativesByVillage);
     }
 
     public function saveVillages(Request $request, $committeeId)

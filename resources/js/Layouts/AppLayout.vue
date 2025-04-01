@@ -6,7 +6,8 @@ import {
     HomeIcon,
     UserGroupIcon,
     UsersIcon,
-    XMarkIcon
+    XMarkIcon,
+    UserIcon
 } from '@heroicons/vue/24/outline';
 import { Link, usePage, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
@@ -37,6 +38,7 @@ const navigation = [
     { name: 'Tableau de bord', href: route('dashboard'), icon: HomeIcon },
     { name: 'Réunions', href: route('meetings.index'), icon: UsersIcon },
     { name: 'Comités Locaux', href: route('local-committees.index'), icon: UserGroupIcon },
+    { name: 'Représentants', href: route('representatives.index'), icon: UserIcon },
     { name: 'Agenda', href: route('calendar.index'), icon: CalendarIcon },
     { name: 'Plaintes & Réclamations', href: '#', icon: DocumentIcon },
     { name: 'Paiement', href: route('meeting-payments.lists.index'), icon: DocumentIcon },

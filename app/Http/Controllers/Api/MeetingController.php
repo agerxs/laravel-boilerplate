@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Meeting;
 use Illuminate\Http\Request;
+use App\Http\Utils\Constants;
 use Illuminate\Support\Facades\Auth;
 
 class MeetingController extends Controller
@@ -31,7 +32,7 @@ class MeetingController extends Controller
 
         $meetings = $query->paginate($request->per_page ?? 10);
 
-        return response()->json([
+        return $this->format(Constants::JSON_STATUS_SUCCESS, 200, 'Liste des réunions récupérée avec succès', [
             'meetings' => $meetings,
             'meta' => [
                 'current_page' => $meetings->currentPage(),
@@ -56,7 +57,7 @@ class MeetingController extends Controller
             'enrollmentRequests'
         ]);
 
-        return response()->json([
+        return $this->format(Constants::JSON_STATUS_SUCCESS, 200, 'Liste des réunions récupérée avec succès', [
             'meeting' => $meeting
         ]);
     }
@@ -95,7 +96,7 @@ class MeetingController extends Controller
             $attendee->update(['comments' => $request->comments]);
         }
 
-        return response()->json([
+        return $this->format(Constants::JSON_STATUS_SUCCESS, 200, 'Liste des réunions récupérée avec succès', [
             'message' => 'Présence mise à jour avec succès',
             'attendee' => $attendee
         ]);
@@ -122,8 +123,8 @@ class MeetingController extends Controller
             'completed_by' => Auth::id()
         ]);
 
-        return response()->json([
-            'message' => 'Liste de présence finalisée avec succès'
+        return $this->format(Constants::JSON_STATUS_SUCCESS, 200, 'Liste de présence finalisée avec succès', [
+           
         ]);
     }
 
@@ -142,8 +143,7 @@ class MeetingController extends Controller
             'actual_enrollments' => $request->actual_enrollments
         ]);
 
-        return response()->json([
-            'message' => 'Enrôlements mis à jour avec succès',
+        return $this->format(Constants::JSON_STATUS_SUCCESS, 200, 'Enrôlements mis à jour avec succès', [
             'meeting' => $meeting
         ]);
     }

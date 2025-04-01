@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Locality;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use App\Http\Utils\Constants;
+
 
 class LocalityController extends Controller
 {

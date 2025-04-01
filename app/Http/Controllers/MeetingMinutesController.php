@@ -88,7 +88,7 @@ class MeetingMinutesController extends Controller
     /**
      * Valider un compte-rendu (réservé aux sous-préfets)
      */
-    public function validate(Request $request, MeetingMinutes $minutes)
+    public function validates(Request $request, MeetingMinutes $minutes)
     {
         // Vérifier si l'utilisateur est un sous-préfet
         if (!Auth::user()->hasRole(['sous-prefet', 'Sous-prefet'])) {

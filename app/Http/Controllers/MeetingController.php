@@ -246,7 +246,6 @@ class MeetingController extends Controller
             'scheduled_date' => 'required|date',
             'scheduled_time' => 'required',
             'location' => 'required|string|max:255',
-            //'agenda' => 'nullable|string',
             'representatives' => 'nullable|array',
         ]);
         
@@ -259,27 +258,55 @@ class MeetingController extends Controller
         $meeting->local_committee_id = $validated['local_committee_id'];
         $meeting->scheduled_date = $scheduledDateTime;
         $meeting->location = $validated['location'];
-        //$meeting->agenda = $validated['agenda'];
         $meeting->status = 'scheduled';
         $meeting->save();
         
-        // Traiter les représentants
+        // Récupérer le comité local avec ses villages et représentants
+        $localCommittee = LocalCommittee::with(['locality.children.representatives'])->find($validated['local_committee_id']);
+        
+        // Pour chaque village du comité local
+        foreach ($localCommittee->locality->children as $village) {
+            // Pour chaque représentant du village
+            foreach ($village->representatives as $representative) {
+                // Créer un participant attendu pour la réunion
+                $meetingAttendee = new MeetingAttendee();
+                $meetingAttendee->meeting_id = $meeting->id;
+                $meetingAttendee->localite_id = $village->id;
+                $meetingAttendee->representative_id = $representative->id;
+                $meetingAttendee->name = $representative->first_name . ' ' . $representative->last_name;
+                $meetingAttendee->phone = $representative->phone;
+                $meetingAttendee->role = $representative->role;
+                $meetingAttendee->is_expected = true;
+                $meetingAttendee->attendance_status = 'expected';
+                $meetingAttendee->save();
+            }
+        }
+        
+        // Traiter les représentants additionnels si fournis
         if ($request->has('representatives')) {
             $representatives = $request->input('representatives');
             
             foreach ($representatives as $villageId => $villageReps) {
                 foreach ($villageReps as $rep) {
                     if (isset($rep['is_expected']) && $rep['is_expected']) {
-                        $meetingAttendee = new MeetingAttendee();
-                        $meetingAttendee->meeting_id = $meeting->id;
-                        $meetingAttendee->localite_id = $villageId;
-                        $meetingAttendee->representative_id = $rep['id'] ?? null;
-                        $meetingAttendee->name = $rep['name'];
-                        $meetingAttendee->phone = $rep['phone'] ?? '';
-                        $meetingAttendee->role = $rep['role'] ?? '';
-                        $meetingAttendee->is_expected = true;
-                        $meetingAttendee->attendance_status = 'expected';
-                        $meetingAttendee->save();
+                        // Vérifier si ce représentant n'est pas déjà ajouté
+                        $exists = MeetingAttendee::where('meeting_id', $meeting->id)
+                            ->where('localite_id', $villageId)
+                            ->where('representative_id', $rep['id'] ?? null)
+                            ->exists();
+                            
+                        if (!$exists) {
+                            $meetingAttendee = new MeetingAttendee();
+                            $meetingAttendee->meeting_id = $meeting->id;
+                            $meetingAttendee->localite_id = $villageId;
+                            $meetingAttendee->representative_id = $rep['id'] ?? null;
+                            $meetingAttendee->name = $rep['name'];
+                            $meetingAttendee->phone = $rep['phone'] ?? '';
+                            $meetingAttendee->role = $rep['role'] ?? '';
+                            $meetingAttendee->is_expected = true;
+                            $meetingAttendee->attendance_status = 'expected';
+                            $meetingAttendee->save();
+                        }
                     }
                 }
             }
@@ -466,7 +493,7 @@ class MeetingController extends Controller
     /**
      * Valider une réunion (réservé aux sous-préfets)
      */
-    public function validate(Meeting $meeting)
+    public function validates(Meeting $meeting)
     {
         // Permettre aux administrateurs ainsi qu'aux sous-préfets de valider
         if (!Auth::user()->hasRole('sous-prefet') && !Auth::user()->hasRole('admin')) {

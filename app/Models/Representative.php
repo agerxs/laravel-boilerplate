@@ -11,15 +11,20 @@ class Representative extends Model
     use HasFactory;
 
     protected $fillable = [
-        'locality_id',
-        'local_committee_id',
         'first_name',
         'last_name',
+        'village_id',
+        'locality_id',
+        'local_committee_id',
+        'role',
         'phone',
-        'role'
     ];
 
-    // Définir la relation inverse avec la localité
+    public function village(): BelongsTo
+    {
+        return $this->belongsTo(Village::class);
+    }
+
     public function locality(): BelongsTo
     {
         return $this->belongsTo(Locality::class);

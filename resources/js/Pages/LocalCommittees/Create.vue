@@ -438,122 +438,6 @@
             </div>
           </form>
         </div>
-
-        <div v-if="activeStep === 4" class="px-6 py-4">
-          <!-- Boutons d'action -->
-          <div class="flex justify-end space-x-3 mb-4">
-            <button
-              v-if="activeStep > 0"
-              type="button"
-              @click="previousStep"
-              class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium"
-            >
-              Précédent
-            </button>
-            <button
-              type="button"
-              @click="saveProgress"
-              class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-sm font-medium"
-            >
-              Sauvegarder
-            </button>
-            <button
-              type="button"
-              @click="submitAndPublish"
-              class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm font-medium flex items-center"
-            >
-              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-              Enregistrer et publier
-            </button>
-          </div>
-
-          <!-- Étape 5: Renseigner les représentants par village -->
-          <form @submit.prevent="submit">
-            <div class="px-6 py-4 space-y-6">
-              <!-- Logique pour les représentants des villages -->
-              <div class="mt-6">
-                <h3 class="text-lg font-medium text-gray-900">Villages disponibles ({{ unaddedVillages.length }} )</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                  <div 
-                    v-for="village in unaddedVillages" 
-                    :key="village.id"
-                    class="bg-gray-50 p-4 rounded-lg shadow-md cursor-pointer hover:bg-gray-100 transition"
-                    @click="openRepresentativeModal(village)"
-                  >
-                    <p class="text-sm text-gray-700">{{ village.name }}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div v-if="selectedVillage" class="bg-white p-6 rounded-lg shadow-md mb-6">
-                <h3 class="text-lg font-medium text-gray-900 mt-4">Représentants du village</h3>
-                <div class="space-y-4">
-                  <div v-for="(rep, index) in villageRepresentatives" :key="index" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    <h4 class="text-md font-semibold text-gray-800">{{ rep.role }}</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
-                      <div>
-                        <InputLabel :for="`representative-${index}-firstname`" value="Prénom" />
-                        <TextInput
-                          :id="`representative-${index}-firstname`"
-                          v-model="rep.first_name"
-                          type="text"
-                          class="mt-1 block w-full"
-                          required
-                        />
-                      </div>
-
-                      <div>
-                        <InputLabel :for="`representative-${index}-lastname`" value="Nom" />
-                        <TextInput
-                          :id="`representative-${index}-lastname`"
-                          v-model="rep.last_name"
-                          type="text"
-                          class="mt-1 block w-full"
-                          required
-                        />
-                      </div>
-
-                      <div>
-                        <InputLabel :for="`representative-${index}-phone`" value="Téléphone" />
-                        <TextInput
-                          :id="`representative-${index}-phone`"
-                          v-model="rep.phone"
-                          type="tel"
-                          class="mt-1 block w-full"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <button @click="addVillage" class="mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-medium transition duration-150 ease-in-out">
-                  <i class="fas fa-plus-circle mr-2"></i>Ajouter le village
-                </button>
-              </div>
-
-              <div class="mt-8">
-                <h3 class="text-lg font-medium text-gray-900">Villages ajoutés</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                  <div v-for="(village, index) in addedVillages" :key="village.id" class="bg-white p-4 rounded-lg shadow-md">
-                    <strong class="text-indigo-600">{{ village.name }}</strong>
-                    <ul class="list-inside mt-2">
-                      <li v-for="rep in village.representatives" :key="rep.first_name + rep.last_name" class="text-sm text-gray-700">
-                        {{ rep.first_name }} {{ rep.last_name }} - {{ rep.phone }} ({{ rep.role }})
-                      </li>
-                    </ul>
-                    <button @click="editVillageRepresentatives(village)" class="mt-2 text-blue-500 hover:text-blue-700 transition duration-150 ease-in-out">
-                      <i class="fas fa-edit mr-1"></i>Modifier
-                    </button>
-                    <button @click="removeVillage(index)" class="mt-2 text-red-500 hover:text-red-700 transition duration-150 ease-in-out">
-                      <i class="fas fa-trash-alt mr-1"></i>Supprimer
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
       </div>
     </div>
 
@@ -710,8 +594,22 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 import InputLabel from '@/Components/InputLabel.vue'
 import TextInput from '@/Components/TextInput.vue'
 import InputError from '@/Components/InputError.vue'
+import RepresentativesManager from '@/Components/RepresentativesManager.vue'
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import axios from 'axios'
+
+interface Village {
+  id: number;
+  name: string;
+  representatives?: Representative[];
+}
+
+interface Representative {
+  first_name: string;
+  last_name: string;
+  phone: string;
+  role: string;
+}
 
 interface User {
   id: number;
@@ -784,7 +682,7 @@ const selectedSubPrefecture = ref(null);
 // État pour la sélection en cascade
 const departments = ref([]);
 const subPrefectures = ref([]);
-const villages = ref([]);
+const villages = ref<Village[]>([]);
 
 // Fonction pour mettre à jour les départements lorsqu'une région est sélectionnée
 watch(selectedRegion, (newRegionId) => {
@@ -939,8 +837,7 @@ const steps = [
   { label: 'Sélection de la région' },
   { label: 'Ajouter un fichier joint' },
   { label: 'Membres permanents' },
-  { label: 'Réunion d\'installation' },
-  { label: 'Représentants par village' }
+  { label: 'Réunion d\'installation' }
 ];
 
 const nextStep = () => {
@@ -956,9 +853,9 @@ const previousStep = () => {
 };
 
 // Logique pour les représentants des villages
-const selectedVillage = ref(null);
+const selectedVillage = ref<Village | null>(null);
 const representativeRoles = ['Chef du village', 'Représentant des femmes', 'Représentant des jeunes'];
-const villageRepresentatives = ref(representativeRoles.map(role => ({
+const villageRepresentatives = ref<Representative[]>(representativeRoles.map(role => ({
   first_name: '',
   last_name: '',
   phone: '',
@@ -969,59 +866,17 @@ const unaddedVillages = computed(() => {
   return villages.value.filter(village => !addedVillages.value.some(added => added.id === village.id));
 });
 
-const selectVillage = (villageId) => {
+const selectVillage = (villageId: number) => {
   const village = villages.value.find(v => v.id === villageId);
   if (village) {
     openRepresentativeModal(village);
   }
 };
 
-const addVillage = () => {
-  if (selectedVillage.value) {
-    const village = villages.value.find(v => v.id === selectedVillage.value.id);
-    if (village) {
-      addedVillages.value.push({
-        ...village,
-        representatives: villageRepresentatives.value.map(rep => ({
-          ...rep
-        }))
-      });
-      // Réinitialiser les champs
-      selectedVillage.value = null;
-      villageRepresentatives.value = representativeRoles.map(role => ({
-        first_name: '',
-        last_name: '',
-        phone: '',
-        role: role
-      }));
-    }
-  }
-};
+const addedVillages = ref<Village[]>([]);
 
-const addedVillages = ref([]);
-
-const editVillage = (index: number) => {
-  editIndex.value = index;
-  editRepresentatives.value = JSON.parse(JSON.stringify(addedVillages.value[index].representatives));
-};
-
-const saveEdit = () => {
-  if (editIndex.value !== null) {
-    addedVillages.value[editIndex.value].representatives = JSON.parse(JSON.stringify(editRepresentatives.value));
-    editIndex.value = null;
-  }
-};
-
-const cancelEdit = () => {
-  editIndex.value = null;
-};
-
-const removeVillage = (index: number) => {
-  addedVillages.value.splice(index, 1);
-};
-
-const editIndex = ref(null);
-const editRepresentatives = ref([]);
+const editIndex = ref<number | null>(null);
+const editRepresentatives = ref<Representative[]>([]);
 
 const installationDate = ref('');
 const installationLocation = ref('');
