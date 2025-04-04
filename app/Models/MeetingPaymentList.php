@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,20 +10,21 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class MeetingPaymentList extends Model
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'meeting_id',
         'submitted_by',
         'validated_by',
+        'status',
+        'total_amount',
+        'rejection_reason',
         'submitted_at',
         'validated_at',
-        'status', // draft, submitted, validated, rejected
-        'rejection_reason',
-        'total_amount',
     ];
 
     protected $casts = [
+        'total_amount' => 'decimal:2',
         'submitted_at' => 'datetime',
         'validated_at' => 'datetime',
     ];

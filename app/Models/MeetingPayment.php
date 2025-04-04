@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MeetingPayment extends Model
 {
@@ -30,7 +31,7 @@ class MeetingPayment extends Model
     /**
      * Relation avec la réunion
      */
-    public function meeting()
+    public function meeting(): BelongsTo
     {
         return $this->belongsTo(Meeting::class);
     }
@@ -38,7 +39,7 @@ class MeetingPayment extends Model
     /**
      * Relation avec l'utilisateur
      */
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }

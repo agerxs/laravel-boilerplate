@@ -37,6 +37,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/attendees/{attendee}/present', [AttendeeController::class, 'markPresent']);
     Route::post('/attendees/{attendee}/absent', [AttendeeController::class, 'markAbsent']);
     Route::post('/attendees/{attendee}/comment', [AttendeeController::class, 'addComment']);
+    Route::post('meetings/attendees/{attendee}/confirm-presence-with-photo', [AttendeeController::class, 'confirmPresenceWithPhoto'])
+        ->name('meetings.attendees.confirm-presence-with-photo');
 
     // Routes pour les données de référence
     Route::get('/sub-prefectures', [SubPrefectureController::class, 'index']);

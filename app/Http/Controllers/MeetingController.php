@@ -20,6 +20,8 @@ use App\Mail\GuestMeetingInvitation;
 use App\Models\MeetingAttendee;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use App\Models\MeetingPaymentList;
+use App\Models\MeetingPaymentItem;
 
 class MeetingController extends Controller
 {
@@ -198,6 +200,8 @@ class MeetingController extends Controller
                 ];
             }
         }
+
+        
         
         return Inertia::render('Meetings/Show', [
             'meeting' => [
@@ -493,24 +497,52 @@ class MeetingController extends Controller
     /**
      * Valider une réunion (réservé aux sous-préfets)
      */
-    public function validates(Meeting $meeting)
+    public function validateMeeting(Meeting $meeting)
     {
-        // Permettre aux administrateurs ainsi qu'aux sous-préfets de valider
-        if (!Auth::user()->hasRole('sous-prefet') && !Auth::user()->hasRole('admin')) {
-            abort(403, 'Seuls les sous-préfets et les administrateurs peuvent valider les réunions');
+        // Vérifier si l'utilisateur est un sous-préfet ou admin
+        if (!Auth::user()->hasRole(['sous-prefet', 'Sous-prefet', 'admin', 'Admin'])) {
+            return response()->json([
+                'message' => 'Vous n\'avez pas les droits pour valider cette réunion.'
+            ], 403);
         }
 
+        // Vérifier si la réunion peut être validée
         if ($meeting->status !== 'prevalidated') {
-            return back()->with('error', 'Seules les réunions prévalidées peuvent être validées');
+            return response()->json([
+                'message' => 'Cette réunion ne peut pas être validée.'
+            ], 400);
         }
 
+        // Mettre à jour le statut
         $meeting->update([
             'status' => 'validated',
             'validated_at' => now(),
-            'validated_by' => Auth::id()
+            'validated_by' => Auth::id(),
         ]);
 
-        return back()->with('success', 'La réunion a été validée avec succès');
+        // Créer la liste de paiement pour les participants attendus
+        $paymentList = MeetingPaymentList::create([
+            'meeting_id' => $meeting->id,
+            'submitted_by' => Auth::id(),
+            'status' => 'draft',
+            'total_amount' => $meeting->attendees()->where('is_expected', true)->count() * 15000,
+        ]);
+
+        // Ajouter les éléments de paiement pour les participants attendus
+        foreach ($meeting->attendees()->where('is_expected', true)->get() as $attendee) {
+            MeetingPaymentItem::create([
+                'meeting_payment_list_id' => $paymentList->id,
+                'attendee_id' => $attendee->id,
+                'amount' => 15000,
+                'role' => $attendee->role,
+                'payment_status' => 'pending'
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Réunion validée avec succès et liste de paiement créée.',
+            'meeting' => $meeting
+        ]);
     }
 
     /**

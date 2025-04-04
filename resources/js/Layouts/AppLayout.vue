@@ -19,30 +19,59 @@ import Toast from '@/Components/Toast.vue';
 
 interface PageProps {
   auth?: {
-    user: {
-      name: string;
-      // Ajoutez d'autres propriétés si nécessaire
-    };
-  };
+    user?: {
+      id: number
+      name: string
+      email: string
+      roles: string[]
+      locality_id: number
+    }
+  }
   flash?: {
-    message?: string;
-  };
+    message?: string
+    type?: string
+  }
 }
 
-const page = usePage();
+interface NavigationItem {
+  name: string
+  href: string
+  icon: any
+}
+
+interface CustomUser {
+  id: number
+  name: string
+  email: string
+  roles: string[]
+  locality_id: number
+}
+
+const navigation: NavigationItem[] = [
+  { name: 'Tableau de bord', href: route('dashboard'), icon: HomeIcon },
+  { name: 'Comités Locaux', href: route('local-committees.index'), icon: UserGroupIcon },
+  { name: 'Réunions', href: route('meetings.index'), icon: UsersIcon },
+  { name: 'Représentants', href: route('representatives.index'), icon: UserIcon },
+  { name: 'Agenda', href: route('calendar.index'), icon: CalendarIcon },
+  { name: 'Plaintes & Réclamations', href: '#', icon: DocumentIcon },
+  { name: 'Gestion des Paiements', href: route('meeting-payments.lists.index'), icon: DocumentIcon },
+]
+
+const page = usePage()
 const showingNavigationDropdown = ref(false);
 
-const user = computed(() => page.props.auth?.user || { name: 'Invité' });
+const user = computed(() => page.props.auth?.user as CustomUser | undefined)
 
-const navigation = [
-    { name: 'Tableau de bord', href: route('dashboard'), icon: HomeIcon },
-    { name: 'Réunions', href: route('meetings.index'), icon: UsersIcon },
-    { name: 'Comités Locaux', href: route('local-committees.index'), icon: UserGroupIcon },
-    { name: 'Représentants', href: route('representatives.index'), icon: UserIcon },
-    { name: 'Agenda', href: route('calendar.index'), icon: CalendarIcon },
-    { name: 'Plaintes & Réclamations', href: '#', icon: DocumentIcon },
-    { name: 'Paiement', href: route('meeting-payments.lists.index'), icon: DocumentIcon },
-];
+const filteredNavigation = computed(() => {
+    return navigation.filter((item: NavigationItem) => {
+        if (item.name === 'Réunions') {
+            return !user.value?.roles?.includes('gestionnaire')
+        }
+        return true
+    })
+})
+
+const flash = computed(() => page.props.flash as { message?: string; type?: string } | undefined)
 
 defineProps<{
     title?: string;
@@ -53,10 +82,10 @@ const { toasts } = useToast();
 </script>
 
 <template>
-    <div v-if="page.props.flash && page.props.flash.message" class="mb-8">
+    <div v-if="flash && flash.message" class="mb-8">
         <div class="p-2 bg-green-500 items-center text-green-100 leading-none lg:rounded-full flex lg:inline-flex">
             <span class="flex rounded-full bg-green-200 uppercase px-2 py-1 text-xs font-bold mr-3 text-green-500">Success</span>
-            <span class="font-semibold mr-2 text-left flex-auto">{{ page.props.flash.message }}</span>
+            <span class="font-semibold mr-2 text-left flex-auto">{{ flash.message }}</span>
         </div>
     </div>
 
@@ -96,7 +125,7 @@ const { toasts } = useToast();
                 <!-- Navigation mobile -->
                 <nav class="flex-1 px-2 py-4 space-y-1 overflow-y-auto" role="navigation" aria-label="Navigation principale">
                     <Link
-                        v-for="item in navigation"
+                        v-for="item in filteredNavigation"
                         :key="item.name"
                         :href="item.href"
                         :class="[
@@ -126,7 +155,7 @@ const { toasts } = useToast();
                 <div class="flex-shrink-0 flex border-t border-gray-200 p-4">
                     <div class="flex items-center">
                         <div class="ml-3">
-                            <p class="text-sm font-medium text-gray-700">{{ user.name }}</p>
+                            <p class="text-sm font-medium text-gray-700">{{ user?.name }}</p>
                             <Link
                                 :href="route('logout')"
                                 method="post"
@@ -167,7 +196,7 @@ const { toasts } = useToast();
                     </div>
                     <nav class="mt-5 flex-1 px-2 space-y-1">
                         <Link
-                            v-for="item in navigation"
+                            v-for="item in filteredNavigation"
                             :key="item.name"
                             :href="item.href"
                             :class="[
@@ -194,8 +223,8 @@ const { toasts } = useToast();
                         <div class="flex items-center">
                             <div>
                                 <ResponsiveImage
-                                    :src="`https://ui-avatars.com/api/?name=${user.name}`"
-                                    :alt="user.name"
+                                    :src="`https://ui-avatars.com/api/?name=${user?.name || 'User'}`"
+                                    :alt="user?.name || 'User'"
                                     :width="36"
                                     :height="36"
                                     class="rounded-full"
@@ -203,7 +232,7 @@ const { toasts } = useToast();
                             </div>
                             <div class="ml-3">
                                 <p class="text-sm font-medium text-gray-700 group-hover:text-gray-900">
-                                    {{ user.name }}
+                                    {{ user?.name }}
                                 </p>
                                 <Link
                                     :href="route('profile.edit')"

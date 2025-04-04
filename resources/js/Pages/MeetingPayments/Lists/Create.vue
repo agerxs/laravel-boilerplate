@@ -2,97 +2,83 @@
   <Head title="Créer une liste de paiement" />
 
   <AppLayout title="Créer une liste de paiement">
+    <template #header>
+      <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        Créer une liste de paiement
+      </h2>
+    </template>
+
     <div class="py-12">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-          <div class="p-6">
-            <!-- En-tête de la réunion -->
+        <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
+          <form @submit.prevent="submit">
             <div class="mb-6">
-              <h2 class="text-xl font-semibold text-gray-900">{{ meeting.title }}</h2>
-              <p class="mt-1 text-sm text-gray-600">
-                {{ formatDate(meeting.scheduled_date) }} - {{ meeting.localCommittee?.name }}
+              <h3 class="text-lg font-medium text-gray-900">
+                Réunion : {{ meeting.title }}
+              </h3>
+              <p class="mt-1 text-sm text-gray-500">
+                Date : {{ formatDate(meeting.scheduled_date) }}
               </p>
             </div>
 
-            <form @submit.prevent="submit">
-              <!-- Liste des participants -->
-              <div class="mt-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Participants à payer</h3>
-                
-                <div class="overflow-x-auto">
-                  <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                      <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Nom
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Rôle
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Montant
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          À payer
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                      <tr v-for="attendee in meeting.attendees" :key="attendee.id">
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="text-sm font-medium text-gray-900">
-                            {{ attendee.name }}
-                          </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <div class="text-sm text-gray-900">
-                            {{ attendee.role }}
-                          </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <input
-                            type="number"
-                            v-model="form.attendees[attendee.id].amount"
-                            class="mt-1 block w-32 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                            :disabled="!form.attendees[attendee.id].selected"
-                          >
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                          <input
-                            type="checkbox"
-                            v-model="form.attendees[attendee.id].selected"
-                            class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                          >
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Nom
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Rôle
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Montant
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <tr v-for="(attendee, index) in meeting.attendees" :key="attendee.id">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="text-sm font-medium text-gray-900">
+                        {{ attendee.name }}
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="text-sm text-gray-900">
+                        {{ translateRole(attendee.role) }}
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="max-w-xs">
+                        <TextInput
+                          :value="15000"
+                          disabled
+                          type="number"
+                          class="mt-1 block w-full bg-gray-50"
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
 
-              <!-- Total et actions -->
-              <div class="mt-6 flex justify-between items-center">
-                <div class="text-lg font-medium">
-                  Total: {{ totalAmount }} FCFA
-                </div>
-                <div class="flex space-x-3">
-                  <Link
-                    :href="route('meetings.show', meeting.id)"
-                    class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                  >
-                    Annuler
-                  </Link>
-                  <button
-                    type="submit"
-                    class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    :disabled="processing"
-                  >
-                    Créer la liste
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
+            <div class="mt-6 flex justify-end space-x-4">
+              <Link
+                :href="route('meeting-payments.lists.index')"
+                class="px-4 py-2 bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200"
+              >
+                Annuler
+              </Link>
+              <button
+                type="submit"
+                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                :disabled="processing"
+              >
+                Créer la liste
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -102,58 +88,62 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import TextInput from '@/Components/TextInput.vue'
+import InputLabel from '@/Components/InputLabel.vue'
+import InputError from '@/Components/InputError.vue'
+import PrimaryButton from '@/Components/PrimaryButton.vue'
 import { ref, computed, onMounted } from 'vue'
+import { format } from 'date-fns'
+import { fr } from 'date-fns/locale'
 
 const props = defineProps({
   meeting: Object,
 })
 
+const processing = ref(false)
+
 const form = useForm({
   attendees: {}
 })
 
-const processing = ref(false)
+const attendeeAmounts = computed(() => {
+  const amounts = {}
+  props.meeting.attendees.forEach(attendee => {
+    amounts[attendee.id] = form.attendees[attendee.id]?.amount || 0
+  })
+  return amounts
+})
 
-// Initialiser le formulaire avec les participants
 onMounted(() => {
+  // Initialiser les montants pour chaque participant
   props.meeting.attendees.forEach(attendee => {
     form.attendees[attendee.id] = {
       id: attendee.id,
-      selected: false,
-      amount: 0,
-      role: attendee.role
+      amount: 15000,
+      role: attendee.role,
     }
   })
 })
 
-// Calculer le montant total
-const totalAmount = computed(() => {
-  return Object.values(form.attendees)
-    .filter(a => a.selected)
-    .reduce((sum, attendee) => sum + (parseFloat(attendee.amount) || 0), 0)
-})
+function formatDate(date) {
+  if (!date) return ''
+  return format(new Date(date), 'dd MMMM yyyy', { locale: fr })
+}
 
-const formatDate = (date) => {
-  return new Date(date).toLocaleDateString('fr-FR', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
+function translateRole(role) {
+  const translations = {
+    'prefet': 'Préfet',
+    'sous_prefet': 'Sous-préfet',
+    'secretaire': 'Secrétaire',
+    'representant': 'Représentant'
+  }
+  return translations[role] || role
 }
 
 const submit = () => {
   processing.value = true
   
-  // Filtrer les participants sélectionnés
-  const selectedAttendees = Object.values(form.attendees)
-    .filter(a => a.selected)
-    .map(({ id, amount, role }) => ({ id, amount, role }))
-
   form.post(route('meeting-payments.lists.store', props.meeting.id), {
-    data: {
-      attendees: selectedAttendees
-    },
     onSuccess: () => {
       processing.value = false
     },

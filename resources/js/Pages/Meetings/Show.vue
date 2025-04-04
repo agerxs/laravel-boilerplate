@@ -228,7 +228,7 @@
                         </span>
                       </p>
                       <p class="text-sm text-gray-500">
-                        {{ attendee.role || 'Pas de rôle défini' }} - {{ attendee.village?.name || 'Pas de village associé' }}
+                        {{ attendee.role || 'Pas de rôle défini' }}
                       </p>
                     </div>
                     <div>

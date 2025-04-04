@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Meeting;
 use App\Models\MeetingAttendee;
+use App\Models\MeetingPaymentList;
+use App\Models\MeetingPaymentItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -181,7 +183,7 @@ class AttendanceController extends Controller
         ]);
         
         return redirect()->route('meetings.show', $meeting->id)
-            ->with('success', 'La liste de présence a été finalisée et la réunion a été marquée comme terminée.');
+            ->with('success', 'La liste de présence a été finalisée.');
     }
 
     /**

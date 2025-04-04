@@ -16,17 +16,20 @@ class AttendeeController extends Controller
     public function index(Meeting $meeting)
     {
         $attendees = $meeting->attendees()
-            ->with('village')
+            ->with(['village', 'representative'])
             ->get()
             ->map(function ($attendee) {
+                // Récupérer le village soit depuis la relation directe, soit depuis le représentant
+                $village = $attendee->village ?? ($attendee->representative ? $attendee->representative->locality : null);
+                
                 return [
                     'id' => $attendee->id,
                     'name' => $attendee->name,
                     'phone' => $attendee->phone,
                     'role' => $attendee->role,
                     'village' => [
-                        'id' => $attendee->localite_id,
-                        'name' => $attendee->village ? $attendee->village->name : ($attendee->localite_id ? 'Village à identifier' : 'Pas de village associé')
+                        'id' => $village ? $village->id : null,
+                        'name' => $village ? $village->name : 'Village non trouvé'
                     ],
                     'is_expected' => $attendee->is_expected,
                     'is_present' => $attendee->is_present,
@@ -36,7 +39,10 @@ class AttendeeController extends Controller
                     'replacement_role' => $attendee->replacement_role,
                     'arrival_time' => $attendee->arrival_time,
                     'comments' => $attendee->comments,
-                    'payment_status' => $attendee->payment_status
+                    'payment_status' => $attendee->payment_status,
+                    'presence_photo' => $attendee->presence_photo,
+                    'presence_location' => $attendee->presence_location,
+                    'presence_timestamp' => $attendee->presence_timestamp
                 ];
             });
 
@@ -119,5 +125,47 @@ class AttendeeController extends Controller
             'message' => 'Commentaire ajouté avec succès',
             'attendee' => $attendee
         ]);
+    }
+
+    /**
+     * Confirmer la présence avec une photo
+     */
+    public function confirmPresenceWithPhoto(Request $request, MeetingAttendee $attendee)
+    {
+        $request->validate([
+            'photo' => 'required|image|max:10240', // Max 10MB
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'timestamp' => 'required|date'
+        ]);
+
+        try {
+            // Stocker la photo
+            $photoPath = $request->file('photo')->store('presence-photos', 'public');
+
+            // Enregistrer les informations de présence
+            $attendee->update([
+                'is_present' => true,
+                'attendance_status' => 'present',
+                'presence_photo' => $photoPath,
+                'presence_location' => [
+                    'latitude' => $request->latitude,
+                    'longitude' => $request->longitude
+                ],
+                'presence_timestamp' => $request->timestamp,
+                'arrival_time' => $request->timestamp
+            ]);
+
+            return response()->json([
+                'message' => 'Présence confirmée avec succès',
+                'attendee' => $attendee
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Erreur lors de la confirmation de présence',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 } 

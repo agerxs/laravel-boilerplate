@@ -11,6 +11,7 @@ use Althinect\FilamentSpatieRolesPermissions\Concerns\HasSuperAdmin;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -86,5 +87,25 @@ class User extends Authenticatable
     public function getPrimaryRole()
     {
         return $this->roles()->first();
+    }
+
+    public function submittedPaymentLists(): HasMany
+    {
+        return $this->hasMany(MeetingPaymentList::class, 'submitted_by');
+    }
+
+    public function validatedPaymentLists(): HasMany
+    {
+        return $this->hasMany(MeetingPaymentList::class, 'validated_by');
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(MeetingPayment::class);
+    }
+
+    public function meetingAttendances(): HasMany
+    {
+        return $this->hasMany(MeetingAttendee::class);
     }
 }

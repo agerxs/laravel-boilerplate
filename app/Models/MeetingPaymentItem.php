@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MeetingPaymentItem extends Model
 {
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'meeting_payment_list_id',
@@ -22,16 +23,17 @@ class MeetingPaymentItem extends Model
     ];
 
     protected $casts = [
+        'amount' => 'decimal:2',
         'payment_date' => 'datetime',
     ];
 
     public function paymentList(): BelongsTo
     {
-        return $this->belongsTo(MeetingPaymentList::class);
+        return $this->belongsTo(MeetingPaymentList::class, 'meeting_payment_list_id');
     }
 
     public function attendee(): BelongsTo
     {
-        return $this->belongsTo(MeetingAttendee::class);
+        return $this->belongsTo(MeetingAttendee::class, 'attendee_id');
     }
 } 

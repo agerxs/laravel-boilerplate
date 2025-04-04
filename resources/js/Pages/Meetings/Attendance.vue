@@ -137,8 +137,19 @@
                   'bg-yellow-50': attendee.attendance_status === 'replaced'
                 }">
                   <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm font-medium text-gray-900">{{ attendee.name }}</div>
-                    <div class="text-sm text-gray-500">{{ attendee.phone || 'Pas de téléphone' }}</div>
+                    <div class="flex items-center">
+                      <div v-if="attendee.presence_photo" class="mr-3">
+                        <img 
+                          :src="`/storage/${attendee.presence_photo}`" 
+                          class="h-10 w-10 rounded-full object-cover border-2 border-primary-500 cursor-pointer hover:opacity-80 transition-opacity"
+                          @click="showPhotoModal(attendee)"
+                        />
+                      </div>
+                      <div>
+                        <div class="text-sm font-medium text-gray-900">{{ attendee.name }}</div>
+                        <div class="text-sm text-gray-500">{{ attendee.phone || 'Pas de téléphone' }}</div>
+                      </div>
+                    </div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="text-sm text-gray-900">{{ attendee.village?.name || '-' }}</div>
@@ -217,6 +228,19 @@
                         :title="attendee.comments ? 'Modifier le commentaire' : 'Ajouter un commentaire'"
                       >
                         <ChatBubbleLeftIcon class="h-5 w-5" />
+                      </button>
+                      <button
+                        v-if="!meeting.is_completed"
+                        @click="showPhotoModal(attendee)"
+                        :class="[
+                          'p-1 rounded-full',
+                          attendee.presence_photo 
+                            ? 'bg-purple-100 text-purple-600' 
+                            : 'bg-gray-100 text-gray-600 hover:bg-purple-100 hover:text-purple-600'
+                        ]"
+                        :title="attendee.presence_photo ? 'Voir la photo' : 'Prendre une photo'"
+                      >
+                        <CameraIcon class="h-5 w-5" />
                       </button>
                     </div>
                   </td>
@@ -398,21 +422,57 @@
         </div>
       </div>
     </Modal>
+
+    <!-- Modal pour la prise de photo -->
+    <Modal :show="photoModalOpen" @close="closePhotoModal">
+      <div class="p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">
+          {{ selectedAttendee?.presence_photo ? 'Photo de présence' : 'Prendre une photo' }}
+        </h3>
+        
+        <div v-if="selectedAttendee?.presence_photo" class="mb-4">
+          <img 
+            :src="`/storage/${selectedAttendee.presence_photo}`" 
+            alt="Photo de présence" 
+            class="w-full rounded-lg shadow-lg"
+          />
+          <div class="mt-2 text-sm text-gray-600">
+            <p>Photo prise le {{ formatDate(selectedAttendee.presence_timestamp) }}</p>
+            <p>Localisation : {{ formatLocation(selectedAttendee.presence_location) }}</p>
+          </div>
+        </div>
+        <div v-else>
+          <PhotoCapture @photo-captured="handlePhotoCaptured" />
+        </div>
+        
+        <div class="mt-6 flex justify-end">
+          <button
+            type="button"
+            @click="closePhotoModal"
+            class="px-4 py-2 bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200"
+          >
+            Fermer
+          </button>
+        </div>
+      </div>
+    </Modal>
   </AppLayout>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { Link, router } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import Modal from '@/Components/Modal.vue'
+import PhotoCapture from '@/Components/PhotoCapture.vue'
 import { 
   MagnifyingGlassIcon, 
   CheckCircleIcon, 
   XCircleIcon, 
   ArrowPathIcon,
   ChatBubbleLeftIcon,
-  InformationCircleIcon
+  InformationCircleIcon,
+  CameraIcon
 } from '@heroicons/vue/24/outline'
 import axios from 'axios'
 import { useToast } from '@/Composables/useToast'
@@ -428,6 +488,7 @@ const selectedVillage = ref('')
 const replacementModalOpen = ref(false)
 const commentModalOpen = ref(false)
 const finalizeModalOpen = ref(false)
+const photoModalOpen = ref(false)
 const selectedAttendee = ref(null)
 const localAttendees = ref([...props.attendees])
 
@@ -638,7 +699,10 @@ const updateAttendee = (id, updatedAttendee) => {
       replacement_role: updatedAttendee.replacement_role,
       arrival_time: updatedAttendee.arrival_time,
       comments: updatedAttendee.comments,
-      payment_status: updatedAttendee.payment_status
+      payment_status: updatedAttendee.payment_status,
+      presence_photo: updatedAttendee.presence_photo,
+      presence_location: updatedAttendee.presence_location,
+      presence_timestamp: updatedAttendee.presence_timestamp
     }
   }
 }
@@ -665,5 +729,54 @@ const finalizeAttendance = async () => {
     toast.error(error.response?.data?.message || 'Erreur lors de la finalisation de la liste')
     closeFinalizeModal()
   }
+}
+
+const showPhotoModal = (attendee) => {
+  selectedAttendee.value = attendee
+  photoModalOpen.value = true
+}
+
+const closePhotoModal = () => {
+  photoModalOpen.value = false
+  selectedAttendee.value = null
+}
+
+const handlePhotoCaptured = async (photoData) => {
+  if (!selectedAttendee.value) return
+  
+  try {
+    const formData = new FormData()
+    formData.append('photo', photoData.photo)
+    formData.append('latitude', photoData.location.latitude)
+    formData.append('longitude', photoData.location.longitude)
+    formData.append('timestamp', photoData.timestamp)
+
+    const response = await axios.post(
+      route('meetings.attendees.confirm-presence-with-photo', selectedAttendee.value.id),
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }
+    )
+
+    // Mettre à jour l'attendee dans la liste
+    const index = localAttendees.value.findIndex(a => a.id === selectedAttendee.value.id)
+    if (index !== -1) {
+      localAttendees.value[index] = response.data.attendee
+    }
+
+    closePhotoModal()
+    toast.success('Photo de présence enregistrée avec succès')
+  } catch (error) {
+    console.error('Erreur lors de l\'enregistrement de la photo:', error)
+    toast.error('Erreur lors de l\'enregistrement de la photo')
+  }
+}
+
+const formatLocation = (location) => {
+  if (!location) return 'Non disponible'
+  return `${location.latitude.toFixed(6)}, ${location.longitude.toFixed(6)}`
 }
 </script> 

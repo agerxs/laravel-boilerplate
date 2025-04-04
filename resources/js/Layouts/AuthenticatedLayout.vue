@@ -6,6 +6,7 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
+import QuickLogin from '@/Components/QuickLogin.vue';
 
 const showingNavigationDropdown = ref(false);
 </script>
@@ -193,6 +194,9 @@ const showingNavigationDropdown = ref(false);
             <main>
                 <slot />
             </main>
+
+            <!-- Quick Login -->
+            <QuickLogin v-if="!$page.props.auth.user" />
         </div>
     </div>
 </template>

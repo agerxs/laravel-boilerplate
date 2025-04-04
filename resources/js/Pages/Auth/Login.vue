@@ -6,6 +6,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import QuickLogin from '@/Components/QuickLogin.vue';
 
 defineProps<{
     canResetPassword?: boolean;
@@ -43,6 +44,12 @@ const loginAsSousPrefet = () => {
 const loginAsSecretaire = () => {
     form.email = 'secretaire@test.com';
     form.password = 'password123';
+    submit();
+};
+
+const loginAsGestionnaire = () => {
+    form.email = 'gestionnaire@example.com';
+    form.password = 'password';
     submit();
 };
 </script>
@@ -148,6 +155,13 @@ const loginAsSecretaire = () => {
                 >
                     Secrétaire
                 </button>
+                <button
+                    type="button"
+                    @click="loginAsGestionnaire"
+                    class="flex w-full items-center justify-center rounded-md bg-purple-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600"
+                >
+                    Gestionnaire
+                </button>
             </div>
         </div>
 
@@ -177,6 +191,7 @@ const loginAsSecretaire = () => {
                 </form>
             </div>
         </div>
+
     </GuestLayout>
 </template>
 

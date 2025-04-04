@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class MeetingAttendee extends Model
 {
@@ -24,13 +26,18 @@ class MeetingAttendee extends Model
         'replacement_phone',
         'replacement_role',
         'arrival_time',
-        'payment_status'
+        'payment_status',
+        'presence_photo',
+        'presence_location',
+        'presence_timestamp'
     ];
 
     protected $casts = [
         'is_expected' => 'boolean',
         'is_present' => 'boolean',
         'arrival_time' => 'datetime',
+        'presence_timestamp' => 'datetime',
+        'presence_location' => 'array'
     ];
 
     /**
@@ -55,6 +62,14 @@ class MeetingAttendee extends Model
     public function representative()
     {
         return $this->belongsTo(Representative::class);
+    }
+
+    /**
+     * Relation avec l'utilisateur
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     /**
@@ -116,5 +131,10 @@ class MeetingAttendee extends Model
         $this->save();
         
         return $this;
+    }
+
+    public function paymentItems(): HasMany
+    {
+        return $this->hasMany(MeetingPaymentItem::class, 'attendee_id');
     }
 } 

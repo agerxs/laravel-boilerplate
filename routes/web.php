@@ -45,6 +45,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/{paymentList}/submit', [MeetingPaymentListController::class, 'submit'])->name('submit');
         Route::post('/{paymentList}/validate', [MeetingPaymentListController::class, 'validates'])->name('validate');
         Route::post('/{paymentList}/reject', [MeetingPaymentListController::class, 'reject'])->name('reject');
+        Route::post('/validate-all', [MeetingPaymentListController::class, 'validateAll'])->name('validate-all');
+        Route::post('/items/{item}/validate', [MeetingPaymentListController::class, 'validateItem'])->name('validate-item');
     });
 });
 
@@ -143,7 +145,7 @@ Route::middleware(['auth'])->group(function () {
         ->name('meetings.prevalidate')
         ->middleware('role:secretaire|Secrétaire|admin|Admin'); // Secrétaires et admins peuvent prévalider
         
-    Route::post('/meetings/{meeting}/validate', [MeetingController::class, 'validate'])
+    Route::post('/meetings/{meeting}/validate', [MeetingController::class, 'validateMeeting'])
         ->name('meetings.validate')
         ->middleware('role:sous-prefet|Sous-prefet|admin|Admin'); // Sous-préfets et admins peuvent valider
         
@@ -225,7 +227,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/{meeting}/cancel', [MeetingController::class, 'cancel'])->name('cancel');
         Route::post('/{meeting}/confirm', [MeetingController::class, 'confirm'])->name('confirm');
         Route::post('/{meeting}/prevalidate', [MeetingController::class, 'prevalidate'])->name('prevalidate');
-        Route::post('/{meeting}/validate', [MeetingController::class, 'validates'])->name('validate');
+        Route::post('/{meeting}/validate', [MeetingController::class, 'validateMeeting'])->name('validate');
         // ... other meeting routes ...
     });
 
@@ -242,10 +244,6 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     // Documentation API
     Route::get('/api-doc', [App\Http\Controllers\Api\DocumentationController::class, 'index'])
         ->name('api.documentation');
-
-    
 });
-
-Route::get('/doc', [App\Http\Controllers\Api\DocumentationController::class, 'index'])->name('api.documentation');
 
 require __DIR__.'/auth.php';

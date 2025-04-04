@@ -47,10 +47,9 @@ class LocalCommittee extends Model
         return $this->hasMany(LocalCommitteeMember::class);
     }
 
-    public function meetings(): BelongsToMany
+    public function meetings(): HasMany
     {
-        return $this->belongsToMany(Meeting::class)
-            ->withTimestamps();
+        return $this->hasMany(Meeting::class);
     }
 
     public function representatives(): HasMany

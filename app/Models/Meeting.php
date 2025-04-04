@@ -92,7 +92,12 @@ class Meeting extends Model
         return $this->hasMany(EnrollmentRequest::class);
     }
 
-    public function payments()
+    public function paymentList(): HasOne
+    {
+        return $this->hasOne(MeetingPaymentList::class);
+    }
+
+    public function payments(): HasMany
     {
         return $this->hasMany(MeetingPayment::class);
     }

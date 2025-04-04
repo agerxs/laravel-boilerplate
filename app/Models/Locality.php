@@ -35,4 +35,9 @@ class Locality extends Model
     {
         return $this->hasMany(Representative::class, 'locality_id');
     }
+
+    public function localCommittees(): HasMany
+    {
+        return $this->hasMany(LocalCommittee::class);
+    }
 }
