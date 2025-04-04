@@ -156,7 +156,7 @@ const canPrevalidate = computed(() => {
 // Vérifier si la réunion peut être validée
 const canValidate = computed(() => {
   return isSubPrefect.value &&
-         props.meeting.status === 'prevalidated'
+         props.meeting.status === 'completed'
 })
 
 // Confirmer la réunion

@@ -12,21 +12,28 @@ class MeetingPaymentList extends Model
 {
     use HasFactory, SoftDeletes;
 
+    // Montants fixes
+    const SUB_PREFET_AMOUNT = 50000;
+    const SECRETARY_AMOUNT = 25000;
+    const PARTICIPANT_AMOUNT = 15000;
+
+    // Nombre de réunions requises pour le paiement
+    const MEETINGS_REQUIRED_FOR_PAYMENT = 2;
+
     protected $fillable = [
         'meeting_id',
         'submitted_by',
         'validated_by',
         'status',
         'total_amount',
-        'rejection_reason',
         'submitted_at',
         'validated_at',
+        'rejection_reason'
     ];
 
     protected $casts = [
-        'total_amount' => 'decimal:2',
         'submitted_at' => 'datetime',
-        'validated_at' => 'datetime',
+        'validated_at' => 'datetime'
     ];
 
     public function meeting(): BelongsTo

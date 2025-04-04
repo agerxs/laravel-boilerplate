@@ -120,7 +120,7 @@
                     <CurrencyDollarIcon class="h-5 w-5" />
                   </Link>
                   <button
-                    v-if="meeting.status === 'scheduled' && !isSubPrefect"
+                    v-if="(meeting.status === 'scheduled' || meeting.status === 'planned') && isSecretary && !isSubPrefect"
                     @click="cancelMeeting(meeting)"
                     class="text-red-600 hover:text-red-900 action-button"
                     title="Annuler la réunion"
@@ -128,7 +128,7 @@
                     <XCircleIcon class="h-5 w-5" />
                   </button>
                   <Link
-                    v-if="!isSubPrefect && meeting.status !== 'prevalidated' && meeting.status !== 'validated' && meeting.status !== 'cancelled' && meeting.status !== 'completed'"
+                    v-if="(meeting.status === 'scheduled' || meeting.status === 'planned') && isSecretary && !isSubPrefect"
                     :href="route('meetings.reschedule.form', meeting.id)"
                     class="text-yellow-600 hover:text-yellow-900 action-button"
                     title="Reporter la réunion"
@@ -317,6 +317,13 @@ const canManagePayments = (meeting) => {
   
   return now <= twoDaysBefore;
 }
+
+// Vérifier si l'utilisateur est un secrétaire
+const isSecretary = computed(() => {
+  return user.value?.roles?.some(role => 
+    ['secrétaire', 'Secrétaire'].includes(role.name)
+  ) || false
+})
 
 </script>
 

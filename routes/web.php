@@ -40,17 +40,18 @@ Route::middleware('auth')->group(function () {
     Route::prefix('meeting-payments/lists')->name('meeting-payments.lists.')->group(function () {
         Route::get('/', [MeetingPaymentListController::class, 'index'])->name('index');
         Route::get('/create/{meeting}', [MeetingPaymentListController::class, 'create'])->name('create');
+        Route::get('/export', [MeetingPaymentListController::class, 'exportPaymentLists'])->name('export');
+        Route::post('/validate-all', [MeetingPaymentListController::class, 'validateAll'])->name('validate-all');
+        Route::post('/items/{item}/validate', [MeetingPaymentListController::class, 'validateItem'])->name('validate-item');
         Route::post('/{meeting}', [MeetingPaymentListController::class, 'store'])->name('store');
         Route::get('/{paymentList}', [MeetingPaymentListController::class, 'show'])->name('show');
         Route::post('/{paymentList}/submit', [MeetingPaymentListController::class, 'submit'])->name('submit');
         Route::post('/{paymentList}/validate', [MeetingPaymentListController::class, 'validates'])->name('validate');
         Route::post('/{paymentList}/reject', [MeetingPaymentListController::class, 'reject'])->name('reject');
-        Route::post('/validate-all', [MeetingPaymentListController::class, 'validateAll'])->name('validate-all');
-        Route::post('/items/{item}/validate', [MeetingPaymentListController::class, 'validateItem'])->name('validate-item');
     });
 });
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('meetings', MeetingController::class);
     Route::get('/meetings/{meeting}', [MeetingController::class, 'show'])
         ->name('meetings.show')
@@ -206,6 +207,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/meetings/{meeting}/complete', [MeetingController::class, 'complete'])
         ->name('meetings.complete');
     Route::patch('/meetings/{meeting}/update-enrollments', [MeetingController::class, 'updateEnrollments'])
+        ->middleware(['auth', 'web'])
         ->name('meetings.update-enrollments');
 
     // Routes pour les photos de présence

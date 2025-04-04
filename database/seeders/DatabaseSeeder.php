@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             SubPrefectSeeder::class,
             LocalCommitteeSeeder::class,
             MeetingSeeder::class,
+            RoleSeeder::class,
         ]);
     }
 }

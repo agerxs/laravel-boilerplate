@@ -1,0 +1,11 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# Your rule content
+
+- Respectes les principes de développement SOLID et DRY
+- Les fonctionnalités doivent être développées en utilisant le TDD
+- Dans les tableaux, pour les actions, toujours mettre des icones plutot que du texte

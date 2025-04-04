@@ -7,17 +7,8 @@
         <div class="flex justify-between items-center">
           <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ meeting.title }}
-            <span
-              :class="{
-                'bg-yellow-100 text-yellow-800': meeting.status === 'planned' || meeting.status === 'scheduled',
-                'bg-green-100 text-green-800': meeting.status === 'completed',
-                'bg-red-100 text-red-800': meeting.status === 'cancelled',
-                'bg-blue-100 text-blue-800': meeting.status === 'prevalidated',
-                'bg-violet-100 text-violet-800': meeting.status === 'validated'
-              }"
-              class="px-3 py-1 rounded-full text-sm font-medium"
-            >
-              {{ formatStatus(meeting.status) }}
+            <span :class="[getStatusClass(meeting.status), 'px-3 py-1 rounded-full text-sm font-medium']">
+              {{ getStatusText(meeting.status, 'meeting') }}
             </span>
           </h2>
           <div class="flex flex-wrap gap-2">
@@ -31,23 +22,15 @@
             
             <!-- Autres boutons d'action -->
             <button
-              v-if="(meeting.status === 'planned' || meeting.status === 'scheduled') && isSecretary"
+              v-if="(meeting.status === 'planned' || meeting.status === 'scheduled') && isSecretary && !isSubPrefect"
               @click="cancelMeeting(meeting.id)"
               class="inline-flex items-center px-4 py-2 bg-white border border-red-300 text-red-700 rounded-md text-sm font-medium hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
             >
               Annuler
             </button>
-            <!-- Bouton pour prévalider -->
-            <button
-              v-if="(isSecretary || isAdmin) && meeting.status !== 'prevalidated' && meeting.status !== 'validated' && meeting.status !== 'cancelled'"
-              @click="prevalidateMeeting"
-              class="inline-flex items-center px-4 py-2 bg-white border border-blue-300 text-blue-700 rounded-md text-sm font-medium hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Prévalider
-            </button>
             <!-- Bouton pour valider -->
             <button
-              v-if="(isSubPrefect || isAdmin) && meeting.status === 'prevalidated'"
+              v-if="(isSubPrefect || isAdmin) && meeting.status === 'completed'"
               @click="showValidationModal = true"
               class="inline-flex items-center px-4 py-2 bg-white border border-violet-300 text-violet-700 rounded-md text-sm font-medium hover:bg-violet-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500"
             >
@@ -55,7 +38,7 @@
             </button>
             <!-- Bouton pour invalider -->
             <button
-              v-if="(isSubPrefect || isAdmin) && meeting.status === 'prevalidated'"
+              v-if="(isSubPrefect || isAdmin) && meeting.status === 'validated' && meeting.status !== 'cancelled'"
               @click="showInvalidationModal = true"
               class="inline-flex items-center px-4 py-2 bg-white border border-red-300 text-red-700 rounded-md text-sm font-medium hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
             >
@@ -64,7 +47,7 @@
             
             <!-- Reschedule button -->
             <Link
-              v-if="(meeting.status === 'scheduled' || meeting.status === 'planned') && isSecretary"
+              v-if="(meeting.status === 'scheduled' || meeting.status === 'planned') && isSecretary && !isSubPrefect"
               :href="route('meetings.reschedule', meeting.id)"
               class="inline-flex items-center px-4 py-2 bg-white border border-blue-300 text-blue-700 rounded-md text-sm font-medium hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
@@ -86,17 +69,12 @@
       <!-- Contenu principal existant -->
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
         <!-- Informations sur la validation -->
-        <div v-if="meeting.status == 'prevalidated' || meeting.status == 'validated'" class="bg-white shadow sm:rounded-lg">
+        <div v-if="meeting.status === 'validated'" class="bg-white shadow sm:rounded-lg">
           <div class="px-4 py-5 sm:p-6"> 
             <h3 class="text-lg font-medium text-gray-900">Informations de validation</h3>
             <div class="mt-4 space-y-2">
-              <p v-if="meeting.status == 'prevalidated'" class="text-sm text-gray-600">
-                <span class="font-medium">Prévalidée le :</span>
-                {{ formatDateTime(meeting.prevalidated_at) }}
-                <span v-if="meeting.prevalidator"> par {{ meeting.prevalidator.name }}</span>
-              </p>
-              <p v-if="meeting.status == 'validated'" class="text-sm text-gray-600">
-                <span class="font-medium">Validée définitivement le :</span>
+              <p class="text-sm text-gray-600">
+                <span class="font-medium">Validée le :</span>
                 {{ formatDateTime(meeting.validated_at) }}
                 <span v-if="meeting.validator"> par {{ meeting.validator.name }}</span>
               </p>
@@ -233,16 +211,12 @@
                     </div>
                     <div>
                       <span
-                        :class="{
-                          'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full': true,
-                          'bg-green-100 text-green-800': attendee.is_present || attendee.attendance_status === 'present' || attendee.attendance_status === 'replaced',
-                          'bg-red-100 text-red-800': !attendee.is_present || attendee.attendance_status === 'absent',
-                          'bg-gray-100 text-gray-800': !attendee.attendance_status || attendee.attendance_status === 'expected'
-                        }"
+                        :class="[
+                          'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full',
+                          getStatusClass(attendee.attendance_status || 'expected')
+                        ]"
                       >
-                        {{ attendee.attendance_status === 'replaced' ? 'Remplacé' : 
-                           (attendee.is_present || attendee.attendance_status === 'present') ? 'Présent' : 
-                           (attendee.attendance_status === 'absent') ? 'Absent' : 'En attente' }}
+                        {{ getStatusText(attendee.attendance_status || 'expected', 'attendance') }}
                       </span>
                     </div>
                   </div>
@@ -358,10 +332,9 @@
                     </div>
                     <div class="flex-shrink-0">
                       <span 
-                        :class="getAttendanceClass(rep)"
-                        class="px-2 py-1 text-xs rounded-full"
+                        :class="[getStatusClass(rep.attendance_status || 'expected'), 'px-2 py-1 text-xs rounded-full']"
                       >
-                        {{ getAttendanceStatus(rep) }}
+                        {{ getStatusText(rep.attendance_status || 'expected', 'attendance') }}
                       </span>
                     </div>
                   </li>
@@ -1085,6 +1058,9 @@ import axios from 'axios'
 import { computed, onMounted, ref } from 'vue'
 import draggable from 'vuedraggable/src/vuedraggable'
 import MeetingValidationButtons from '@/Components/MeetingValidationButtons.vue'
+import { getStatusText, getStatusClass, translateRole } from '@/Utils/translations'
+import { format } from 'date-fns'
+import { fr } from 'date-fns/locale'
 
 interface AgendaItem {
     id: number;
@@ -1575,29 +1551,12 @@ onMounted(() => {
 // Récupérer l'utilisateur depuis Inertia
 const user = computed(() => usePage().props.auth.user)
 
-function formatStatus(status: 'planned' | 'completed' | 'cancelled'): string {
-  const statusMap = {
-    'planned': 'Planifiée',
-    'completed': 'Terminée',
-    'cancelled': 'Annulée',
-    'prevalidated': 'Prévalidée',
-    'validated': 'Validée'
-  };
-  return statusMap[status] || status;
+const formatStatus = (status) => {
+  return getStatusText(status, 'meeting')
 }
 
-function formatRole(role: string): string {
-  const roles = {
-    'president': 'Président',
-    'secretary': 'Secrétaire',
-    'sous-prefet': 'Sous-préfet',
-    'secretaire': 'Secrétaire',
-    'member': 'Membre',
-    'Chef de village': 'Chef de village',
-    'Représentant des femmes': 'Représentant des femmes',
-    'Représentant des jeunes': 'Représentant des jeunes'
-  };
-  return roles[role] || role;
+const formatRole = (role) => {
+  return translateRole(role)
 }
 
 const cancelMeeting = async (id: number) => {
@@ -1787,22 +1746,21 @@ const getAttendanceClass = (rep) => {
 }
 
 const getAttendanceStatus = (rep) => {
-  // Vérifier si le représentant est dans la liste des participants
   const villageId = rep.locality_id || rep.localite_id
   const repName = rep.name || `${rep.first_name} ${rep.last_name}`
   
-  if (!meetingRepresentatives.value[villageId]) return 'Non invité'
+  if (!meetingRepresentatives.value[villageId]) return getStatusText('expected', 'attendance')
   
   const attendee = meetingRepresentatives.value[villageId].find(
     r => r.representative_id === rep.id || r.name === repName
   )
   
-  if (!attendee) return 'Non invité'
+  if (!attendee) return getStatusText('expected', 'attendance')
   
   if (props.meeting.status === 'completed') {
-    return attendee.is_present ? 'Présent' : 'Absent'
+    return attendee.is_present ? getStatusText('present', 'attendance') : getStatusText('absent', 'attendance')
   } else {
-    return attendee.is_expected ? 'Invité' : 'Non invité'
+    return attendee.is_expected ? getStatusText('expected', 'attendance') : getStatusText('expected', 'attendance')
   }
 }
 
@@ -2144,9 +2102,8 @@ const validateEnrollments = () => {
 
 // Fonction pour mettre à jour les enrôlements
 const updateEnrollments = async () => {
+  enrollmentsLoading.value = true
   try {
-    enrollmentsLoading.value = true
-    
     const response = await axios.patch(route('meetings.update-enrollments', props.meeting.id), {
       target_enrollments: enrollmentsForm.value.target_enrollments,
       actual_enrollments: enrollmentsForm.value.actual_enrollments
@@ -2158,7 +2115,11 @@ const updateEnrollments = async () => {
     
     toast.success('Enrôlements mis à jour avec succès')
   } catch (error) {
-    toast.error('Erreur lors de la mise à jour des enrôlements')
+    if (error.response?.status === 403) {
+      toast.error('Vous n\'êtes pas autorisé à modifier les enrôlements')
+    } else {
+      toast.error('Erreur lors de la mise à jour des enrôlements')
+    }
     console.error(error)
   } finally {
     enrollmentsLoading.value = false

@@ -10,44 +10,53 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Models\MeetingAttendee;
+use App\Models\LocalCommittee;
 
 class MeetingPaymentListController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::user();
         $query = MeetingPaymentList::query()
-            ->with([
-                'meeting.localCommittee',
-                'submitter',
-                'validator',
-                'paymentItems.attendee'
-            ]);
+            ->with(['meeting.localCommittee', 'submitter', 'paymentItems.attendee'])
+            ->orderBy('created_at', 'desc');
 
-        // Filtrer selon le rôle
-        if ($user->hasRole(['secretaire', 'Secrétaire', 'gestionnaire', 'Gestionnaire'])) {
-            $query->whereHas('meeting.localCommittee', function($q) use ($user) {
-                $q->where('locality_id', $user->locality_id);
-            });
-        } elseif ($user->hasRole(['sous-prefet', 'Sous-prefet'])) {
-            $query->whereHas('meeting.localCommittee', function($q) use ($user) {
-                $q->where('locality_id', $user->locality_id);
+        // Filtre par comité local
+        if ($request->filled('local_committee_id')) {
+            $query->whereHas('meeting.localCommittee', function ($q) use ($request) {
+                $q->where('id', $request->local_committee_id);
             });
         }
 
-        $paymentLists = $query->latest()->paginate(10);
+        // Filtre par réunion
+        if ($request->filled('meeting_id')) {
+            $query->where('meeting_id', $request->meeting_id);
+        }
 
-        // Récupérer uniquement les réunions qui ont des listes de paiement
-        $meetings = Meeting::whereHas('paymentList')
-            ->whereHas('localCommittee', function($q) use ($user) {
-                $q->where('locality_id', $user->locality_id);
-            })
-            ->get();
+        // Filtre par statut
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Filtre par rôle (pour les paiements par type de participant)
+        if ($request->filled('role')) {
+            $query->whereHas('paymentItems', function ($q) use ($request) {
+                $q->where('role', $request->role);
+            });
+        }
+
+        $paymentLists = $query->paginate(10)
+            ->through(function ($list) {
+                $list->total_amount = $list->paymentItems->sum('amount');
+                return $list;
+            });
 
         return Inertia::render('MeetingPayments/Lists/Index', [
             'paymentLists' => $paymentLists,
-            'meetings' => $meetings,
-            'canValidate' => $user->hasRole(['gestionnaire', 'Gestionnaire'])
+            'meetings' => Meeting::orderBy('scheduled_date', 'desc')->get(),
+            'localCommittees' => LocalCommittee::orderBy('name')->get(),
+            'canValidate' => $user->hasRole(['gestionnaire', 'Gestionnaire']),
+            'filters' => $request->only(['local_committee_id', 'meeting_id', 'status', 'role'])
         ]);
     }
 
@@ -90,7 +99,7 @@ class MeetingPaymentListController extends Controller
         $paymentList = MeetingPaymentList::create([
             'meeting_id' => $meeting->id,
             'submitted_by' => Auth::id(),
-            'status' => 'draft',
+            'status' => 'submitted',
             'total_amount' => collect($validated['attendees'])->sum('amount'),
         ]);
 
@@ -132,6 +141,11 @@ class MeetingPaymentListController extends Controller
             return redirect()->back()->with('error', 'Cette liste ne peut pas être soumise.');
         }
 
+        // Vérifier si l'utilisateur est un secrétaire
+        if (!Auth::user()->hasRole(['secretaire', 'Secretaire'])) {
+            return redirect()->back()->with('error', 'Seul un secrétaire peut soumettre une liste de paiement.');
+        }
+
         $paymentList->update([
             'status' => 'submitted',
             'submitted_at' => now(),
@@ -142,17 +156,19 @@ class MeetingPaymentListController extends Controller
         return redirect()->back()->with('success', 'Liste de paiement soumise pour validation.');
     }
 
-    public function validates(MeetingPaymentList $list)
+    public function validates(MeetingPaymentList $paymentList)
     {
-        if ($list->status !== 'submitted') {
+      info($paymentList);
+        if ($paymentList->status !== 'submitted') {
             return redirect()->back()->with('error', 'Cette liste ne peut pas être validée.');
         }
+        info('cafdd');
 
-        if (!Auth::user()->hasRole(['sous-prefet', 'Sous-prefet'])) {
-            return redirect()->back()->with('error', 'Vous n\'avez pas les droits pour valider cette liste.');
+        if (!Auth::user()->hasRole(['gestionnaire', 'Gestionnaire'])) {
+            return redirect()->back()->with('error', 'Seul un gestionnaire peut valider cette liste.');
         }
-
-        $list->update([
+        info('sksjkdj');
+        $paymentList->update([
             'status' => 'validated',
             'validated_at' => now(),
             'validated_by' => Auth::id(),
@@ -209,7 +225,7 @@ class MeetingPaymentListController extends Controller
         ]);
 
         // Vérifier si tous les paiements de la liste sont validés
-        $allValidated = $item->paymentList->items()
+        $allValidated = $item->paymentList->paymentItems()
             ->where('payment_status', '!=', 'validated')
             ->count() === 0;
 
@@ -258,7 +274,7 @@ class MeetingPaymentListController extends Controller
             $validatedCount++;
 
             // Vérifier si tous les paiements de la liste sont validés
-            $allValidated = $item->paymentList->items()
+            $allValidated = $item->paymentList->paymentItems()
                 ->where('payment_status', '!=', 'validated')
                 ->count() === 0;
 
@@ -316,5 +332,102 @@ class MeetingPaymentListController extends Controller
 
         return redirect()->route('meeting-payments.lists.show', $paymentList->id)
             ->with('success', 'Liste de paiement mise à jour avec succès.');
+    }
+
+    public function exportPaymentLists(Request $request)
+    {
+        $user = Auth::user();
+        
+        if (!$user->hasRole(['gestionnaire', 'Gestionnaire'])) {
+            return response()->json(['message' => 'Accès non autorisé'], 403);
+        }
+
+        $query = MeetingPaymentList::query()
+            ->with([
+                'meeting.localCommittee',
+                'paymentItems.attendee',
+                'submitter',
+                'validator'
+            ])
+            ->where('status', 'validated');
+
+        // Filtrage par comité local
+        if ($request->has('local_committee_id')) {
+            $query->whereHas('meeting.localCommittee', function($q) use ($request) {
+                $q->where('id', $request->local_committee_id);
+            });
+        }
+
+        // Filtrage par réunion
+        if ($request->has('meeting_id')) {
+            $query->where('meeting_id', $request->meeting_id);
+        }
+
+        $paymentLists = $query->get();
+
+        // Préparation des données pour l'export
+        $exportData = $paymentLists->map(function($list) {
+            return [
+                'Réunion' => $list->meeting->title,
+                'Date' => $list->meeting->scheduled_date->format('d/m/Y'),
+                'Comité Local' => $list->meeting->localCommittee->name,
+                'Participants' => $list->paymentItems->map(function($item) use ($list) {
+                    return [
+                        'Nom' => $item->attendee->name,
+                        'Rôle' => $this->translateRole($item->role),
+                        'Montant' => $this->calculateAmount($item->role, $list->meeting),
+                        'Statut' => $item->payment_status
+                    ];
+                })
+            ];
+        });
+
+        return response()->json([
+            'data' => $exportData,
+            'total_amount' => $paymentLists->sum('total_amount')
+        ]);
+    }
+
+    private function calculateAmount($role, $meeting)
+    {
+        switch ($role) {
+            case 'sous_prefet':
+                return MeetingPaymentList::SUB_PREFET_AMOUNT;
+            case 'secretaire':
+                return MeetingPaymentList::SECRETARY_AMOUNT;
+            case 'participant':
+                return MeetingPaymentList::PARTICIPANT_AMOUNT;
+            default:
+                return 0;
+        }
+    }
+
+    private function translateRole($role)
+    {
+        $translations = [
+            'sous_prefet' => 'Sous-préfet',
+            'secretaire' => 'Secrétaire',
+            'participant' => 'Participant'
+        ];
+        return $translations[$role] ?? $role;
+    }
+
+    public function validatePaymentList(MeetingPaymentList $paymentList)
+    {
+        if ($paymentList->status !== 'submitted') {
+            return redirect()->back()->with('error', 'Cette liste ne peut pas être validée.');
+        }
+
+        if (!Auth::user()->hasRole(['gestionnaire', 'Gestionnaire'])) {
+            return redirect()->back()->with('error', 'Seul un gestionnaire peut valider cette liste.');
+        }
+
+        $paymentList->update([
+            'status' => 'validated',
+            'validated_at' => now(),
+            'validated_by' => Auth::id(),
+        ]);
+
+        return redirect()->back()->with('success', 'Liste de paiement validée.');
     }
 } 

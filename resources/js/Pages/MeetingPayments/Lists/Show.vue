@@ -101,41 +101,32 @@
               Retour
             </Link>
 
-            <!-- Boutons selon le statut -->
-            <template v-if="paymentList.status === 'draft'">
+            <!-- Boutons pour le gestionnaire -->
+            <template v-if="userHasRole('gestionnaire')">
+              <template v-if="paymentList.status === 'submitted'">
+                <button
+                  @click="showRejectModal = true"
+                  class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                  :disabled="processing"
+                >
+                  Rejeter
+                </button>
+                <button
+                  @click="validateList"
+                  class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                  :disabled="processing"
+                >
+                  Valider
+                </button>
+              </template>
               <button
-                @click="submitList"
-                class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                :disabled="processing"
-              >
-                Soumettre pour validation
-              </button>
-            </template>
-
-            <template v-if="paymentList.status === 'submitted' && canValidate">
-              <button
-                @click="showRejectModal = true"
-                class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-                :disabled="processing"
-              >
-                Rejeter
-              </button>
-              <button
-                @click="validateList"
+                v-if="paymentList.status === 'validated'"
+                @click="validateAll"
                 class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-                :disabled="processing"
               >
-                Valider
+                Valider tous les paiements
               </button>
             </template>
-
-            <button
-              v-if="canValidate && paymentList.status === 'submitted'"
-              @click="validateAll"
-              class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
-            >
-              Valider tous les paiements
-            </button>
           </div>
         </div>
       </div>
@@ -198,6 +189,7 @@ import { fr } from 'date-fns/locale';
 const props = defineProps({
   paymentList: Object,
   canValidate: Boolean,
+  user: Object,
 });
 
 const processing = ref(false);
@@ -317,4 +309,8 @@ function validateAll() {
     });
   }
 }
+
+const userHasRole = (role) => {
+  return props.user.roles.some(r => r.name.toLowerCase() === role.toLowerCase());
+};
 </script> 

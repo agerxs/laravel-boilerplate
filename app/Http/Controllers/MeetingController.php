@@ -250,6 +250,9 @@ class MeetingController extends Controller
             'scheduled_date' => 'required|date',
             'scheduled_time' => 'required',
             'location' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            //'target_enrollments' => 'required|integer|min:0',
+            //'actual_enrollments' => 'required|integer|min:0|lte:target_enrollments',
             'representatives' => 'nullable|array',
         ]);
         
@@ -262,6 +265,9 @@ class MeetingController extends Controller
         $meeting->local_committee_id = $validated['local_committee_id'];
         $meeting->scheduled_date = $scheduledDateTime;
         $meeting->location = $validated['location'];
+       // $meeting->description = $validated['description'] ?? null;
+        //$meeting->target_enrollments = $validated['target_enrollments'];
+        //$meeting->actual_enrollments = $validated['actual_enrollments'];
         $meeting->status = 'scheduled';
         $meeting->save();
         
@@ -269,55 +275,21 @@ class MeetingController extends Controller
         $localCommittee = LocalCommittee::with(['locality.children.representatives'])->find($validated['local_committee_id']);
         
         // Pour chaque village du comité local
-        foreach ($localCommittee->locality->children as $village) {
-            // Pour chaque représentant du village
-            foreach ($village->representatives as $representative) {
-                // Créer un participant attendu pour la réunion
-                $meetingAttendee = new MeetingAttendee();
-                $meetingAttendee->meeting_id = $meeting->id;
-                $meetingAttendee->localite_id = $village->id;
-                $meetingAttendee->representative_id = $representative->id;
-                $meetingAttendee->name = $representative->first_name . ' ' . $representative->last_name;
-                $meetingAttendee->phone = $representative->phone;
-                $meetingAttendee->role = $representative->role;
-                $meetingAttendee->is_expected = true;
-                $meetingAttendee->attendance_status = 'expected';
-                $meetingAttendee->save();
-            }
-        }
-        
-        // Traiter les représentants additionnels si fournis
-        if ($request->has('representatives')) {
-            $representatives = $request->input('representatives');
-            
-            foreach ($representatives as $villageId => $villageReps) {
-                foreach ($villageReps as $rep) {
-                    if (isset($rep['is_expected']) && $rep['is_expected']) {
-                        // Vérifier si ce représentant n'est pas déjà ajouté
-                        $exists = MeetingAttendee::where('meeting_id', $meeting->id)
-                            ->where('localite_id', $villageId)
-                            ->where('representative_id', $rep['id'] ?? null)
-                            ->exists();
-                            
-                        if (!$exists) {
-                            $meetingAttendee = new MeetingAttendee();
-                            $meetingAttendee->meeting_id = $meeting->id;
-                            $meetingAttendee->localite_id = $villageId;
-                            $meetingAttendee->representative_id = $rep['id'] ?? null;
-                            $meetingAttendee->name = $rep['name'];
-                            $meetingAttendee->phone = $rep['phone'] ?? '';
-                            $meetingAttendee->role = $rep['role'] ?? '';
-                            $meetingAttendee->is_expected = true;
-                            $meetingAttendee->attendance_status = 'expected';
-                            $meetingAttendee->save();
-                        }
-                    }
+        if ($localCommittee->locality) {
+            foreach ($localCommittee->locality->children as $village) {
+                foreach ($village->representatives as $representative) {
+                    $meeting->attendees()->create([
+                        'representative_id' => $representative->id,
+                        'name' => $representative->first_name . ' ' . $representative->last_name,
+                        'role' => $representative->role,
+                        'phone' => $representative->phone,
+                        'localite_id' => $village->id
+                    ]);
                 }
             }
         }
-        
-        return redirect()->route('meetings.show', $meeting->id)
-            ->with('success', 'Réunion planifiée avec succès');
+
+        return redirect()->route('meetings.index')->with('success', 'Réunion créée avec succès');
     }
 
     public function update(Request $request, Meeting $meeting)
@@ -507,9 +479,9 @@ class MeetingController extends Controller
         }
 
         // Vérifier si la réunion peut être validée
-        if ($meeting->status !== 'prevalidated') {
+        if ($meeting->status !== 'completed') {
             return response()->json([
-                'message' => 'Cette réunion ne peut pas être validée.'
+                'message' => 'Cette réunion ne peut pas être validée car elle n\'est pas marquée comme terminée.'
             ], 400);
         }
 
@@ -520,27 +492,62 @@ class MeetingController extends Controller
             'validated_by' => Auth::id(),
         ]);
 
-        // Créer la liste de paiement pour les participants attendus
-        $paymentList = MeetingPaymentList::create([
-            'meeting_id' => $meeting->id,
-            'submitted_by' => Auth::id(),
-            'status' => 'draft',
-            'total_amount' => $meeting->attendees()->where('is_expected', true)->count() * 15000,
-        ]);
-
-        // Ajouter les éléments de paiement pour les participants attendus
-        foreach ($meeting->attendees()->where('is_expected', true)->get() as $attendee) {
-            MeetingPaymentItem::create([
-                'meeting_payment_list_id' => $paymentList->id,
-                'attendee_id' => $attendee->id,
-                'amount' => 15000,
-                'role' => $attendee->role,
-                'payment_status' => 'pending'
+        // Créer une liste de paiement si elle n'existe pas
+        if (!$meeting->paymentList()->exists()) {
+            $paymentList = MeetingPaymentList::create([
+                'meeting_id' => $meeting->id,
+                'submitted_at' => now(),
+                'status' => 'submitted',
+                'submitted_by' => Auth::id(),
+                'total_amount' => 0,
             ]);
+
+            // Créer les éléments de paiement pour chaque participant présent
+            foreach ($meeting->attendees()->where('is_present', true)->get() as $attendee) {
+                info($attendee);
+                $amount = 0;
+                switch ($attendee->role) {
+                    case 'sous-prefet':
+                        $amount = MeetingPaymentList::SUB_PREFET_AMOUNT;
+                        break;
+                    case 'secretaire':
+                        $amount = MeetingPaymentList::SECRETARY_AMOUNT;
+                        break;
+                    default :
+                        $amount = MeetingPaymentList::PARTICIPANT_AMOUNT;
+                        break;
+                }
+
+                if ($amount > 0) {
+                    MeetingPaymentItem::create([
+                        'meeting_payment_list_id' => $paymentList->id,
+                        'attendee_id' => $attendee->id,
+                        'amount' => $amount,
+                        'role' => $attendee->role,
+                        'payment_status' => 'pending'
+                    ]);
+                }
+            }
+
+            // Mettre à jour le montant total
+            $paymentList->update([
+                'total_amount' => $paymentList->paymentItems->sum('amount')
+            ]);
+        }
+        // Soumettre la liste de paiement si elle existe
+        else {
+            $paymentList = $meeting->paymentList;
+            if ($paymentList->status === 'draft') {
+                $paymentList->update([
+                    'status' => 'submitted',
+                    'submitted_at' => now(),
+                    'submitted_by' => Auth::id(),
+                ]);
+            }
         }
 
         return response()->json([
-            'message' => 'Réunion validée avec succès et liste de paiement créée.',
+            'message' => 'Réunion validée avec succès et liste de paiement générée.',
             'meeting' => $meeting
         ]);
     }
@@ -600,10 +607,9 @@ class MeetingController extends Controller
             'actual_enrollments' => 'required|integer|min:0|lte:target_enrollments',
         ]);
         
-        // Vérifier si l'utilisateur a le droit de modifier la réunion
-            // Les utilisateurs avec le rôle admin sont autorisés, ainsi que ceux qui passent la vérification de Gate
-        if (!Gate::allows('update', $meeting) && !auth()->user()->hasRole('admin')) {
-            return response()->json(['error' => 'Vous n\'êtes pas autorisé à modifier cette réunion.'], 403);
+        // Vérifier si l'utilisateur a le droit de modifier les enrôlements
+        if (!Gate::allows('updateEnrollments', $meeting)) {
+            return response()->json(['error' => 'Vous n\'êtes pas autorisé à modifier les enrôlements de cette réunion.'], 403);
         }
         
         // Mettre à jour les champs d'enrôlement

@@ -9,6 +9,7 @@
 
 <script setup>
 import { computed } from 'vue';
+import { getStatusText, getStatusClass } from '@/Utils/translations';
 
 const props = defineProps({
   status: {
@@ -20,27 +21,6 @@ const props = defineProps({
     default: null
   }
 });
-
-const statusClasses = {
-  scheduled: 'bg-yellow-100 text-yellow-800',
-  planned: 'bg-yellow-100 text-yellow-800',
-  completed: 'bg-green-100 text-green-800',
-  cancelled: 'bg-red-100 text-red-800',
-  prevalidated: 'bg-blue-100 text-blue-800',
-  validated: 'bg-violet-100 text-violet-800',
-  late: 'bg-orange-100 text-orange-800',
-  default: 'bg-gray-100 text-gray-800'
-};
-
-const statusLabels = {
-  scheduled: 'Planifiée',
-  planned: 'Planifiée',
-  completed: 'Terminée',
-  cancelled: 'Annulée',
-  prevalidated: 'Prévalidée',
-  validated: 'Validée',
-  late: 'En retard'
-};
 
 // Vérifie si la réunion est en retard (planifiée et date dépassée)
 const isLate = computed(() => {
@@ -56,16 +36,16 @@ const isLate = computed(() => {
 // Classe CSS calculée en fonction du statut et si la réunion est en retard
 const computedClass = computed(() => {
   if (isLate.value) {
-    return statusClasses.late;
+    return getStatusClass('late');
   }
-  return statusClasses[props.status] || statusClasses.default;
+  return getStatusClass(props.status);
 });
 
 // Label calculé en fonction du statut et si la réunion est en retard
 const computedLabel = computed(() => {
   if (isLate.value) {
-    return statusLabels.late;
+    return getStatusText('late');
   }
-  return statusLabels[props.status] || props.status;
+  return getStatusText(props.status);
 });
 </script>

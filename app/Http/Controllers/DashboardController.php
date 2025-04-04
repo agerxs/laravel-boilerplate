@@ -9,6 +9,7 @@ use App\Models\LocalCommittee;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\MeetingPaymentList;
 
 class DashboardController extends Controller
 {
@@ -82,12 +83,66 @@ class DashboardController extends Controller
             ->pluck('count', 'status')
             ->toArray();
 
+        if ($user->hasRole(['gestionnaire', 'Gestionnaire'])) {
+            // Statistiques des paiements
+            $stats['total_payments'] = MeetingPaymentList::where('status', 'validated')->sum('total_amount');
+            $stats['pending_payments'] = MeetingPaymentList::where('status', 'submitted')->count();
+            $stats['draft_payments'] = MeetingPaymentList::where('status', 'draft')->count();
+            $stats['validated_payments'] = MeetingPaymentList::where('status', 'validated')->count();
+            
+            // Statistiques par rôle
+            $stats['sub_prefet_payments'] = MeetingPaymentList::whereHas('paymentItems', function($query) {
+                $query->where('role', 'sous_prefet')
+                      ->where('payment_status', 'validated');
+            })->sum('total_amount');
+            
+            $stats['secretary_payments'] = MeetingPaymentList::whereHas('paymentItems', function($query) {
+                $query->where('role', 'secretaire')
+                      ->where('payment_status', 'validated');
+            })->sum('total_amount');
+            
+            $stats['participant_payments'] = MeetingPaymentList::whereHas('paymentItems', function($query) {
+                $query->where('role', 'participant')
+                      ->where('payment_status', 'validated');
+            })->sum('total_amount');
+
+            // Réunions avec paiements en attente
+            $stats['meetings_with_pending_payments'] = Meeting::whereHas('paymentList', function($query) {
+                $query->where('status', 'submitted');
+            })->count();
+
+            // Comités locaux avec paiements en attente
+            $stats['committees_with_pending_payments'] = LocalCommittee::whereHas('meetings.paymentList', function($query) {
+                $query->where('status', 'submitted');
+            })->count();
+
+            // Dernières listes de paiement en attente
+            $stats['pending_payment_lists'] = MeetingPaymentList::with(['meeting.localCommittee', 'submitter'])
+                ->where('status', 'submitted')
+                ->orderBy('submitted_at', 'desc')
+                ->take(5)
+                ->get();
+            
+            // Dernières listes de paiement en brouillon
+            $stats['draft_payment_lists'] = MeetingPaymentList::with(['meeting.localCommittee', 'submitter'])
+                ->where('status', 'draft')
+                ->orderBy('created_at', 'desc')
+                ->take(5)
+                ->get();
+        }
 
         return Inertia::render('Dashboard/Index', [
             'stats' => $stats,
             'upcomingMeetings' => $upcomingMeetings,
             'meetingsByMonth' => $meetingsByMonth,
             'meetingsByStatus' => $meetingsByStatus,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'roles' => $user->roles->pluck('name')->toArray(),
+                'locality_id' => $user->locality_id
+            ]
         ]);
     }
 } 
