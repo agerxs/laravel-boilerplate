@@ -502,6 +502,55 @@ class MeetingController extends Controller
                 'total_amount' => 0,
             ]);
 
+            // Récupérer le comité local avec sa localité
+            $localCommittee = LocalCommittee::with('locality')->find($meeting->local_committee_id);
+            
+            // Compter le nombre de réunions validées pour cette localité
+            $validatedMeetingsCount = Meeting::whereHas('localCommittee', function($query) use ($localCommittee) {
+                $query->where('locality_id', $localCommittee->locality_id);
+            })
+            ->where('status', 'validated')
+            ->count();
+
+            // Vérifier si c'est la 2ème réunion validée
+            $isSecondValidatedMeeting = ($validatedMeetingsCount % 2) === 0;
+            
+            // Ajouter le sous-préfet s'il existe et si c'est la 2ème réunion validée
+            if ($isSecondValidatedMeeting) {
+                $sousPrefet = User::role(['sous-prefet', 'Sous-prefet'])
+                    ->where('locality_id', $localCommittee->locality_id)
+                    ->first();
+                
+                if ($sousPrefet) {
+                    MeetingPaymentItem::create([
+                        'meeting_payment_list_id' => $paymentList->id,
+                        'attendee_id' => null,
+                        'amount' => MeetingPaymentList::SUB_PREFET_AMOUNT,
+                        'role' => 'sous-prefet',
+                        'payment_status' => 'pending',
+                        'name' => $sousPrefet->name,
+                        'phone' => $sousPrefet->phone
+                    ]);
+                }
+
+                // Ajouter le secrétaire s'il existe
+                $secretaire = User::role(['secretaire', 'Secrétaire'])
+                    ->where('locality_id', $localCommittee->locality_id)
+                    ->first();
+                
+                if ($secretaire) {
+                    MeetingPaymentItem::create([
+                        'meeting_payment_list_id' => $paymentList->id,
+                        'attendee_id' => null,
+                        'amount' => MeetingPaymentList::SECRETARY_AMOUNT,
+                        'role' => 'secretaire',
+                        'payment_status' => 'pending',
+                        'name' => $secretaire->name,
+                        'phone' => $secretaire->phone
+                    ]);
+                }
+            }
+
             // Créer les éléments de paiement pour chaque participant présent
             foreach ($meeting->attendees()->where('is_present', true)->get() as $attendee) {
                 info($attendee);
@@ -524,7 +573,9 @@ class MeetingController extends Controller
                         'attendee_id' => $attendee->id,
                         'amount' => $amount,
                         'role' => $attendee->role,
-                        'payment_status' => 'pending'
+                        'payment_status' => 'pending',
+                        'name' => $attendee->name,
+                        'phone' => $attendee->phone
                     ]);
                 }
             }

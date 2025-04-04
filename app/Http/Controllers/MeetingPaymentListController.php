@@ -350,18 +350,18 @@ class MeetingPaymentListController extends Controller
                 'validator'
             ])
             ->where('status', 'validated');
-
+        
         // Filtrage par comité local
-        if ($request->has('local_committee_id')) {
+        if ($request->has('local_committee_id') && $request->local_committee_id !== null) {
             $query->whereHas('meeting.localCommittee', function($q) use ($request) {
                 $q->where('id', $request->local_committee_id);
             });
         }
-
         // Filtrage par réunion
-        if ($request->has('meeting_id')) {
+        if ($request->has('meeting_id') && $request->meeting_id !== null) {
             $query->where('meeting_id', $request->meeting_id);
         }
+        
 
         $paymentLists = $query->get();
 
@@ -398,7 +398,7 @@ class MeetingPaymentListController extends Controller
             case 'participant':
                 return MeetingPaymentList::PARTICIPANT_AMOUNT;
             default:
-                return 0;
+                return MeetingPaymentList::PARTICIPANT_AMOUNT;
         }
     }
 

@@ -25,7 +25,7 @@ return new class extends Migration
         Schema::create('meeting_payment_items', function (Blueprint $table) {
             $table->id();
             $table->foreignId('meeting_payment_list_id')->constrained()->onDelete('cascade');
-            $table->foreignId('attendee_id')->constrained('meeting_attendees');
+            $table->foreignId('attendee_id')->nullable()->constrained('meeting_attendees');
             $table->decimal('amount', 10, 2);
             $table->string('role');
             $table->string('payment_status')->default('pending');

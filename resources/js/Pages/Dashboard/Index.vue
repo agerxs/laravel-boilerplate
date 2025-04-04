@@ -29,6 +29,7 @@
               >
                 <h3 class="text-sm font-medium text-gray-500">Paiements en attente</h3>
                 <p class="mt-2 text-3xl font-bold text-yellow-600">{{ stats.pending_payments }}</p>
+                <p class="mt-2 text-xs text-gray-500">Montant total : {{ formatCurrency(stats.pending_payments_amount) }}</p>
                 <p class="mt-2 text-xs text-gray-500">Cliquez pour voir la liste</p>
               </Link>
 
@@ -270,6 +271,7 @@ const props = defineProps<{
     secretary_payments: number
     participant_payments: number
     recent_payment_lists: any[]
+    pending_payments_amount: number
   }
   upcomingMeetings: Meeting[]
   meetingsByMonth: Record<string, number>

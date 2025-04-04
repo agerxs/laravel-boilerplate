@@ -87,20 +87,33 @@ class DashboardController extends Controller
             // Statistiques des paiements
             $stats['total_payments'] = MeetingPaymentList::where('status', 'validated')->sum('total_amount');
             $stats['pending_payments'] = MeetingPaymentList::where('status', 'submitted')->count();
+            $stats['pending_payments_amount'] = MeetingPaymentList::where('status', 'submitted')->sum('total_amount');
             $stats['draft_payments'] = MeetingPaymentList::where('status', 'draft')->count();
             $stats['validated_payments'] = MeetingPaymentList::where('status', 'validated')->count();
             
-            // Statistiques par rôle
+            // Statistiques des paiements des sous-préfets
             $stats['sub_prefet_payments'] = MeetingPaymentList::whereHas('paymentItems', function($query) {
-                $query->where('role', 'sous_prefet')
+                $query->where('role', 'sous-prefet')
                       ->where('payment_status', 'validated');
             })->sum('total_amount');
             
+            $stats['sub_prefet_pending'] = MeetingPaymentList::whereHas('paymentItems', function($query) {
+                $query->where('role', 'sous-prefet')
+                      ->where('payment_status', 'pending');
+            })->count();
+            
+            // Statistiques des paiements des secrétaires
             $stats['secretary_payments'] = MeetingPaymentList::whereHas('paymentItems', function($query) {
                 $query->where('role', 'secretaire')
                       ->where('payment_status', 'validated');
             })->sum('total_amount');
             
+            $stats['secretary_pending'] = MeetingPaymentList::whereHas('paymentItems', function($query) {
+                $query->where('role', 'secretaire')
+                      ->where('payment_status', 'pending');
+            })->count();
+
+            // Statistiques par rôle
             $stats['participant_payments'] = MeetingPaymentList::whereHas('paymentItems', function($query) {
                 $query->where('role', 'participant')
                       ->where('payment_status', 'validated');

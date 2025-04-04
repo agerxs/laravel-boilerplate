@@ -60,6 +60,7 @@ const getStatusText = (status) => {
                     <div class="p-6 bg-white rounded-lg shadow">
                         <h3 class="text-lg font-medium text-gray-900">Paiements en attente</h3>
                         <p class="mt-2 text-3xl font-bold text-yellow-600">{{ stats.pending_payments }}</p>
+                        <p class="mt-2 text-sm text-gray-500">Montant total : {{ formatAmount(stats.pending_payments_amount) }}</p>
                     </div>
                     <div class="p-6 bg-white rounded-lg shadow">
                         <h3 class="text-lg font-medium text-gray-900">Brouillons</h3>
@@ -68,6 +69,39 @@ const getStatusText = (status) => {
                     <div class="p-6 bg-white rounded-lg shadow">
                         <h3 class="text-lg font-medium text-gray-900">Paiements validés</h3>
                         <p class="mt-2 text-3xl font-bold text-green-600">{{ stats.validated_payments }}</p>
+                    </div>
+                </div>
+
+                <!-- Statistiques des sous-préfets et secrétaires -->
+                <div class="grid grid-cols-1 gap-6 mb-6 sm:grid-cols-2">
+                    <!-- Sous-préfets -->
+                    <div class="p-6 bg-white rounded-lg shadow">
+                        <h3 class="text-lg font-medium text-gray-900">Paiements des sous-préfets</h3>
+                        <div class="mt-4 space-y-4">
+                            <div>
+                                <p class="text-sm text-gray-500">Total payé</p>
+                                <p class="mt-1 text-2xl font-bold text-green-600">{{ formatAmount(stats.sub_prefet_payments) }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">En attente</p>
+                                <p class="mt-1 text-2xl font-bold text-yellow-600">{{ stats.sub_prefet_pending }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Secrétaires -->
+                    <div class="p-6 bg-white rounded-lg shadow">
+                        <h3 class="text-lg font-medium text-gray-900">Paiements des secrétaires</h3>
+                        <div class="mt-4 space-y-4">
+                            <div>
+                                <p class="text-sm text-gray-500">Total payé</p>
+                                <p class="mt-1 text-2xl font-bold text-green-600">{{ formatAmount(stats.secretary_payments) }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-500">En attente</p>
+                                <p class="mt-1 text-2xl font-bold text-yellow-600">{{ stats.secretary_pending }}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
