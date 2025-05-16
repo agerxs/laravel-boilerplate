@@ -659,9 +659,9 @@ class MeetingController extends Controller
         ]);
         
         // Vérifier si l'utilisateur a le droit de modifier les enrôlements
-        if (!Gate::allows('updateEnrollments', $meeting)) {
+       /* if (!Gate::allows('updateEnrollments', $meeting)) {
             return response()->json(['error' => 'Vous n\'êtes pas autorisé à modifier les enrôlements de cette réunion.'], 403);
-        }
+        }*/
         
         // Mettre à jour les champs d'enrôlement
         $meeting->update([

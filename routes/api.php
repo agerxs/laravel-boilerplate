@@ -43,6 +43,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // Routes pour les données de référence
     Route::get('/sub-prefectures', [SubPrefectureController::class, 'index']);
     Route::get('/local-committees', [LocalCommitteeController::class, 'index']);
+    Route::get('/local-committees/{localCommittee}', [LocalCommitteeController::class, 'show']);
 
     // Routes pour le mode hors ligne
     Route::post('/offline/queue', [OfflineController::class, 'queueOperation']);

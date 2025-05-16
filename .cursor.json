@@ -1,0 +1,66 @@
+{
+    "editor": {
+        "formatOnSave": true,
+        "tabSize": 4,
+        "insertSpaces": true,
+        "wordWrap": "on",
+        "rulers": [80, 100],
+        "trimTrailingWhitespace": true,
+        "insertFinalNewline": true
+    },
+    "files": {
+        "exclude": {
+            "**/.git": true,
+            "**/node_modules": true,
+            "**/vendor": true,
+            "**/storage": true,
+            "**/bootstrap/cache": true
+        },
+        "associations": {
+            "*.php": "php",
+            "*.blade.php": "blade",
+            "*.js": "javascript",
+            "*.ts": "typescript",
+            "*.vue": "vue"
+        }
+    },
+    "php": {
+        "format": {
+            "enable": true,
+            "rules": {
+                "array_syntax": {
+                    "syntax": "short"
+                },
+                "ordered_imports": {
+                    "sort_algorithm": "alpha"
+                },
+                "no_unused_imports": true,
+                "single_quote": true
+            }
+        }
+    },
+    "javascript": {
+        "format": {
+            "enable": true,
+            "semi": true,
+            "singleQuote": true,
+            "trailingComma": "es5"
+        }
+    },
+    "typescript": {
+        "format": {
+            "enable": true,
+            "semi": true,
+            "singleQuote": true,
+            "trailingComma": "es5"
+        }
+    },
+    "search": {
+        "exclude": {
+            "**/node_modules": true,
+            "**/vendor": true,
+            "**/storage": true,
+            "**/bootstrap/cache": true
+        }
+    }
+} 

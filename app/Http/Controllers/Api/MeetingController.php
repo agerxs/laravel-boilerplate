@@ -15,7 +15,7 @@ class MeetingController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Meeting::with(['localCommittee.locality', 'attendees'])
+        $query = Meeting::with(['localCommittee.locality', 'attendees','attachments'])
             ->when($request->status, function ($q, $status) {
                 return $q->where('status', $status);
             })

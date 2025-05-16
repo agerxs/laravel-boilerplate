@@ -130,6 +130,7 @@ const userRoles = computed<Role[]>(() => {
 const isSecretary = computed(() => {
   console.log("userRoles.value");
   console.log(userRoles.value);
+  //return true;
   return userRoles.value.some((role: Role) => 
     ['secretaire', 'Secrétaire', 'admin', 'Admin'].includes(role.name)
   )
@@ -149,6 +150,7 @@ const canConfirm = computed(() => {
 
 // Vérifier si la réunion peut être prévalidée
 const canPrevalidate = computed(() => {
+  console.log("canPrevalidate");
   return isSecretary.value &&
          props.meeting.status === 'completed'
 })

@@ -13,7 +13,7 @@
             Gérez les comités locaux et leurs membres
           </p>
         </div>
-        <Link
+        <Link v-if="auth.user.roles.includes('admin')"
           :href="route('local-committees.create')"
           class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 rounded-lg text-white font-medium text-sm"
         >
@@ -101,7 +101,7 @@
                   >
                     <UserGroupIcon class="h-5 w-5" />
                   </button>
-                  <button
+                  <button v-if="auth.user.roles.includes('admin')"
                     @click="deleteCommittee(committee.id)"
                     class="text-red-500 hover:text-red-700 inline-flex items-center"
                     title="Supprimer le comité"
@@ -212,6 +212,9 @@ interface Committee {
 }
 
 interface Props {
+  auth:{user: {
+    roles: string[];
+  }};
   committees: {
     data: Committee[];
     links: any[];

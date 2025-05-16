@@ -339,7 +339,7 @@ class MeetingPaymentListController extends Controller
         $user = Auth::user();
         
         if (!$user->hasRole(['gestionnaire', 'Gestionnaire'])) {
-            return response()->json(['message' => 'Accès non autorisé'], 403);
+            //return response()->json(['message' => 'Accès non autorisé'], 403);
         }
 
         $query = MeetingPaymentList::query()

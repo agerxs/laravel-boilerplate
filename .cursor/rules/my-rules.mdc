@@ -9,3 +9,9 @@ alwaysApply: true
 - Respectes les principes de développement SOLID et DRY
 - Les fonctionnalités doivent être développées en utilisant le TDD
 - Dans les tableaux, pour les actions, toujours mettre des icones plutot que du texte
+- L'appli web a une application mobile correspondante dans le dossier ../colocs-mobile-fl développée en flutter
+- L'application mobile est destinée aux secrétaires et sous prefets. et doit pouvoir fonctionner hors ligne avec une possibilité de synchroniser les donnes une fois connecté
+- L'application mobile doit gérer les réunions essentiellement, et les representants
+- l'application doit aussi permettre de mettre à jour le comité local du secretaire ou du sous prefet connecté. 
+- La synchronisation concerne essentiellement les reunions, surtout les listes de présences
+- Les models de l'appli mobile doivent être conformes aux modèles de notre appli web

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
@@ -99,9 +100,20 @@ class User extends Authenticatable
         return $this->hasMany(MeetingPaymentList::class, 'validated_by');
     }
 
+    public function localCommitteeMembers(): HasMany
+    {
+        return $this->hasMany(LocalCommitteeMember::class, 'user_id');
+    }
+
+    public function localCommittees(): BelongsToMany
+    {
+        return $this->belongsToMany(LocalCommittee::class, 'local_committee_members', 'user_id', 'local_committee_id')
+            ->withPivot('role', 'status');
+    }
+
     public function payments(): HasMany
     {
-        return $this->hasMany(MeetingPayment::class);
+        return $this->hasMany(Payment::class);
     }
 
     public function meetingAttendances(): HasMany

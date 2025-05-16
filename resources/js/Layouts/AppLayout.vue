@@ -49,11 +49,11 @@ interface CustomUser {
 
 const navigation: NavigationItem[] = [
   { name: 'Tableau de bord', href: route('dashboard'), icon: HomeIcon },
+  { name: 'Agenda', href: route('calendar.index'), icon: CalendarIcon },
+  { name: 'Représentants', href: route('representatives.index'), icon: UserIcon },
   { name: 'Comités Locaux', href: route('local-committees.index'), icon: UserGroupIcon },
   { name: 'Réunions', href: route('meetings.index'), icon: UsersIcon },
-  { name: 'Représentants', href: route('representatives.index'), icon: UserIcon },
-  { name: 'Agenda', href: route('calendar.index'), icon: CalendarIcon },
-  { name: 'Plaintes & Réclamations', href: '#', icon: DocumentIcon },
+ // { name: 'Plaintes & Réclamations', href: '#', icon: DocumentIcon },
   { name: 'Gestion des Paiements', href: route('meeting-payments.lists.index'), icon: DocumentIcon },
 ]
 

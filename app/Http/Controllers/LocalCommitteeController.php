@@ -61,6 +61,7 @@ class LocalCommitteeController extends Controller
         
         return Inertia::render('LocalCommittees/Index', [
             'committees' => $committees,
+            'auth.user' => $user,
             'filters' => [
                 'search' => $request->input('search', '')
             ]
