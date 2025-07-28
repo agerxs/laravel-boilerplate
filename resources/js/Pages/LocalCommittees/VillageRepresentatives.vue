@@ -25,8 +25,13 @@
           <div
             v-for="village in unaddedVillages"
             :key="village.id"
-            class="bg-gray-50 p-4 rounded-lg shadow-md cursor-pointer hover:bg-gray-100 transition"
-            @click="selectVillage(village.id)"
+            :class="[
+              'bg-gray-50 p-4 rounded-lg shadow-md transition',
+              (hasRole(props.auth.user.roles, 'admin') || hasRole(props.auth.user.roles, 'secretaire')) 
+                ? 'cursor-pointer hover:bg-gray-100' 
+                : 'cursor-not-allowed opacity-60'
+            ]"
+            @click="(hasRole(props.auth.user.roles, 'admin') || hasRole(props.auth.user.roles, 'secretaire')) ? selectVillage(village.id) : null"
           >
             <p class="text-sm text-gray-700">{{ village.name }}</p>
           </div>
@@ -69,12 +74,19 @@
                   v-model="rep.phone"
                   type="tel"
                   class="mt-1 block w-full"
+                  maxlength="10"
+                  pattern="\\d*"
+                  inputmode="numeric"
                 />
               </div>
             </div>
           </div>
         </div>
-        <button @click="addVillage" class="mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-medium transition duration-150 ease-in-out">
+        <button 
+          v-if="hasRole(props.auth.user.roles, 'admin') || hasRole(props.auth.user.roles, 'secretaire')"
+          @click="addVillage" 
+          class="mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-medium transition duration-150 ease-in-out"
+        >
           <i class="fas fa-plus-circle mr-2"></i>Ajouter le village
         </button>
       </div>
@@ -90,10 +102,18 @@
                 {{ rep.first_name }} {{ rep.last_name }} - {{ rep.phone }} ({{ rep.role }})
               </li>
             </ul>
-            <button @click="editVillage(index)" class="mt-2 text-blue-500 hover:text-blue-700 transition duration-150 ease-in-out">
+            <button 
+              v-if="hasRole(props.auth.user.roles, 'admin') || hasRole(props.auth.user.roles, 'secretaire')"
+              @click="editVillage(index)" 
+              class="mt-2 text-blue-500 hover:text-blue-700 transition duration-150 ease-in-out"
+            >
               <i class="fas fa-edit mr-1"></i>Modifier
             </button>
-            <button @click="removeVillage(index)" class="mt-2 text-red-500 hover:text-red-700 transition duration-150 ease-in-out">
+            <button 
+              v-if="hasRole(props.auth.user.roles, 'admin') || hasRole(props.auth.user.roles, 'secretaire')"
+              @click="removeVillage(index)" 
+              class="mt-2 text-red-500 hover:text-red-700 transition duration-150 ease-in-out"
+            >
               <i class="fas fa-trash-alt mr-1"></i>Supprimer
             </button>
           </div>
@@ -102,7 +122,11 @@
 
       <!-- Bouton pour sauvegarder tous les villages ajoutés -->
       <div class="mt-8">
-        <button @click="saveAll" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm font-medium transition duration-150 ease-in-out">
+        <button 
+          v-if="hasRole(props.auth.user.roles, 'admin') || hasRole(props.auth.user.roles, 'secretaire')"
+          @click="saveAll" 
+          class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm font-medium transition duration-150 ease-in-out"
+        >
           <i class="fas fa-save mr-1"></i>Sauvegarder tous les villages
         </button>
       </div>
@@ -143,15 +167,26 @@
                   v-model="rep.phone"
                   type="tel"
                   class="mt-1 block w-full"
+                  maxlength="10"
+                  pattern="\\d*"
+                  inputmode="numeric"
                 />
               </div>
             </div>
           </div>
         </div>
-        <button @click="saveEdit" class="mt-4 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm font-medium transition duration-150 ease-in-out">
+        <button 
+          v-if="hasRole(props.auth.user.roles, 'admin') || hasRole(props.auth.user.roles, 'secretaire')"
+          @click="saveEdit" 
+          class="mt-4 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm font-medium transition duration-150 ease-in-out"
+        >
           <i class="fas fa-save mr-1"></i>Enregistrer les modifications
         </button>
-        <button @click="cancelEdit" class="mt-4 ml-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium transition duration-150 ease-in-out">
+        <button 
+          v-if="hasRole(props.auth.user.roles, 'admin') || hasRole(props.auth.user.roles, 'secretaire')"
+          @click="cancelEdit" 
+          class="mt-4 ml-2 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium transition duration-150 ease-in-out"
+        >
           <i class="fas fa-times mr-1"></i>Annuler
         </button>
       </div>
@@ -166,6 +201,8 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 import InputLabel from '@/Components/InputLabel.vue'
 import TextInput from '@/Components/TextInput.vue'
 import axios from 'axios'
+import { hasRole } from '@/utils/authUtils'
+import { Role } from '@/types/Role'
 
 const { props } = usePage()
 const committee = props.committee

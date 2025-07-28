@@ -56,13 +56,18 @@
 }
 
 /* Style pour les champs obligatoires */
-.required::after {
-  content: " *";
-  color: #dc2626; /* Rouge */
+.required {
+  display: inline-block;
 }
 
-/* Style alternatif si vous préférez l'astérisque avant le label */
-.required::before {
-  content: "* ";
+.required::after {
+  content: " *";
   color: #dc2626;
+  display: inline;
+  vertical-align: middle;
+  margin-left: 2px;
+}
+
+.vc-header{
+  margin-bottom: 30px !important;
 }

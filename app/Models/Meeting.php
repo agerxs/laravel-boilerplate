@@ -34,6 +34,7 @@ class Meeting extends Model
         'validated_by',
         'validation_comments',
         'created_by',
+        'bulk_import_id',
     ];
 
     protected $casts = [
@@ -108,6 +109,14 @@ class Meeting extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Relation avec l'import par lots qui a créé cette réunion
+     */
+    public function bulkImport()
+    {
+        return $this->belongsTo(BulkImport::class);
     }
 
     /**

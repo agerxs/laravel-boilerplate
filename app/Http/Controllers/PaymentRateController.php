@@ -19,7 +19,7 @@ class PaymentRateController extends Controller
         // Récupérer les utilisateurs avec leurs rôles et taux de paiement
         $query = User::with(['roles', 'paymentRates'])
             ->whereHas('roles', function ($query) {
-                $query->whereIn('name', ['Prefet', 'Sous-prefet', 'Secrétaire']);
+                $query->whereIn('name', ['Sous-prefet', 'Secrétaire']);
             });
         
         // Appliquer la recherche si elle existe
@@ -63,7 +63,7 @@ class PaymentRateController extends Controller
             });
         
         // Récupérer les rôles pour le filtre
-        $roles = Role::whereIn('name', ['Prefet', 'Sous-prefet', 'Secrétaire'])->get();
+        $roles = Role::whereIn('name', ['Sous-prefet', 'Secrétaire'])->get();
         
         return Inertia::render('PaymentRates/Index', [
             'users' => $users,
@@ -81,7 +81,6 @@ class PaymentRateController extends Controller
     public function create()
     {
         $roles = [
-            'prefet' => 'Préfet',
             'sous_prefet' => 'Sous-préfet',
             'secretaire' => 'Secrétaire',
             'representant' => 'Représentant'
@@ -127,7 +126,6 @@ class PaymentRateController extends Controller
     public function edit(PaymentRate $paymentRate)
     {
         $roles = [
-            'prefet' => 'Préfet',
             'sous_prefet' => 'Sous-préfet',
             'secretaire' => 'Secrétaire',
             'representant' => 'Représentant'

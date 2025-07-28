@@ -44,4 +44,24 @@ class LocalityController extends Controller
         $children = $locality->children()->with(['type'])->get();
         return response()->json($children);
     }
+
+    public function villages(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        // Récupérer les comités locaux de l'utilisateur
+        $committees = $user->localCommittees()->with('locality')->get();
+        $localityIds = $committees->pluck('locality.id')->filter()->unique();
+        $villages = collect();
+        foreach ($localityIds as $localityId) {
+            $children = Locality::where('parent_id', $localityId)
+                ->whereHas('type', function($q) { $q->where('name', 'village'); })
+                ->get();
+            $villages = $villages->merge($children);
+        }
+        // On retourne la liste unique des villages (par id)
+        $villages = $villages->unique('id')->values();
+        return $this->format(Constants::JSON_STATUS_SUCCESS, 200, 'Liste des villages récupérée avec succès', [
+            'villages' => $villages,
+        ]);
+    }
 } 

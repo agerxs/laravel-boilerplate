@@ -21,6 +21,8 @@ class MeetingAttendee extends Model
         'is_expected',
         'is_present',
         'comments',
+        'localite_id',
+        'meeting_id',
         'attendance_status',
         'replacement_name',
         'replacement_phone',
@@ -29,7 +31,7 @@ class MeetingAttendee extends Model
         'payment_status',
         'presence_photo',
         'presence_location',
-        'presence_timestamp'
+        'presence_timestamp',
     ];
 
     protected $casts = [
@@ -51,6 +53,11 @@ class MeetingAttendee extends Model
     /**
      * Relation avec la localité (village)
      */
+    public function locality()
+    {
+        return $this->belongsTo(Locality::class, 'localite_id');
+    }
+
     public function village()
     {
         return $this->belongsTo(Locality::class, 'localite_id');

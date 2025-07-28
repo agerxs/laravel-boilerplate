@@ -100,17 +100,17 @@
                   <tbody class="bg-white divide-y divide-gray-200">
                     <tr v-for="list in stats.recent_payment_lists" :key="list.id">
                       <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium text-gray-900">{{ list.meeting.title }}</div>
-                        <div class="text-sm text-gray-500">{{ formatDate(list.meeting.scheduled_date) }}</div>
+                        <div class="text-sm font-medium text-gray-900">{{ list.meeting?.title || 'Réunion non définie' }}</div>
+                        <div class="text-sm text-gray-500">{{ formatDate(list.meeting?.scheduled_date) }}</div>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900">{{ list.meeting.local_committee.name }}</div>
+                        <div class="text-sm text-gray-900">{{ list.meeting?.local_committee?.name || 'Comité non défini' }}</div>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900">{{ formatCurrency(list.total_amount) }}</div>
+                        <div class="text-sm text-gray-900">{{ formatCurrency(list.total_amount || 0) }}</div>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm text-gray-900">{{ list.submitter.name }}</div>
+                        <div class="text-sm text-gray-900">{{ list.submitter?.name || 'Utilisateur non défini' }}</div>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap">
                         <div class="text-sm text-gray-500">{{ formatDate(list.submitted_at) }}</div>
@@ -122,6 +122,11 @@
                         >
                           Voir détails
                         </Link>
+                      </td>
+                    </tr>
+                    <tr v-if="!stats.recent_payment_lists || stats.recent_payment_lists.length === 0">
+                      <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                        Aucune liste de paiement soumise récemment
                       </td>
                     </tr>
                   </tbody>
@@ -154,7 +159,7 @@
               </div>
             </div>
 
-            <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6">
+            <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6" v-if="user?.roles?.includes('admin')">
               <div class="text-sm font-medium text-gray-500">Utilisateurs</div>
               <div class="mt-2 text-3xl font-semibold text-gray-900">{{ stats.total_users }}</div>
               <div class="mt-2 flex items-center text-sm text-green-600">
@@ -169,6 +174,17 @@
               <div class="mt-2 flex items-center text-sm text-blue-600">
                 <BuildingOfficeIcon class="h-4 w-4 mr-1" />
                 <span>En activité</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Utilisateurs par rôle -->
+          <div v-if="user?.roles?.includes('admin')" class="mb-8">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Utilisateurs par rôle</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div v-for="role in usersByRole" :key="role.name" class="bg-white p-4 rounded shadow text-center">
+                <div class="text-lg font-bold">{{ role.count }}</div>
+                <div class="text-sm text-gray-600">{{ role.name }}</div>
               </div>
             </div>
           </div>
@@ -193,7 +209,7 @@
           <!-- Prochaines réunions -->
           <div class="bg-white overflow-hidden shadow-sm rounded-lg">
             <div class="p-6">
-              <h3 class="text-lg font-medium text-gray-900 mb-4">Prochaines réunions</h3>
+              <h3 class="text-lg font-medium text-gray-900 mb-4">Prochaines réunions (30 jours)</h3>
               <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                   <thead class="bg-gray-50">
@@ -283,6 +299,7 @@ const props = defineProps<{
     roles: string[]
     locality_id: number
   }
+  usersByRole: { name: string; count: number }[]
 }>()
 
 const chartData = computed(() => ({

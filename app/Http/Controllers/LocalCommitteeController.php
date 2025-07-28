@@ -32,15 +32,13 @@ class LocalCommitteeController extends Controller
         
         $user = auth()->user();
         
-        // Filtrer par localité si l'utilisateur est un préfet ou un secrétaire
-        if ($user->hasRole(['prefet', 'Prefet', 'sous-prefet', 'Sous-prefet', 'secretaire', 'Secrétaire'])) {
-            if ($user->hasRole(['prefet', 'Prefet'])) {
-                // Pour les préfets, montrer les comités de leur département et des sous-préfectures associées
-                $query->whereHas('locality', function ($q) use ($user) {
-                    $q->where('id', $user->locality_id)
-                      ->orWhere('parent_id', $user->locality_id);
-                });
-            } else {
+        // Les gestionnaires peuvent voir tous les comités locaux
+        if (!in_array('gestionnaire', $user->roles->pluck('name')->toArray()) && !in_array('Gestionnaire', $user->roles->pluck('name')->toArray())) {
+            // Filtrer par localité si l'utilisateur est un préfet ou un secrétaire
+            if (in_array('sous-prefet', $user->roles->pluck('name')->toArray()) || 
+                      in_array('Sous-prefet', $user->roles->pluck('name')->toArray()) ||
+                      in_array('secretaire', $user->roles->pluck('name')->toArray()) ||
+                      in_array('Secrétaire', $user->roles->pluck('name')->toArray())) {
                 // Pour les autres (sous-préfets et secrétaires), montrer uniquement les comités de leur localité
                 $query->where('locality_id', $user->locality_id);
             }
@@ -57,11 +55,10 @@ class LocalCommitteeController extends Controller
             });
         }
         
-        $committees = $query->paginate(10)->withQueryString();
+        $committees = $query->paginate(10);
         
         return Inertia::render('LocalCommittees/Index', [
             'committees' => $committees,
-            'auth.user' => $user,
             'filters' => [
                 'search' => $request->input('search', '')
             ]
@@ -126,8 +123,7 @@ class LocalCommitteeController extends Controller
             'name' => 'required|string|max:255',
             'locality_id' => 'required',
             'status' => 'required|string|in:active,inactive',
-            'members' => 'required|json',
-            'villages' => 'required|json',
+            'members' => 'required',
         ]);
         
         // Créer le comité local
@@ -146,25 +142,42 @@ class LocalCommitteeController extends Controller
         }
         
         // Gérer les fichiers
-        if ($request->hasFile('decree_file') && Schema::hasColumn('local_committees', 'decree_file')) {
-            $path = $request->file('decree_file')->store('committee_files', 'public');
-            $committee->decree_file = $path;
+        $decreeFile = $request->file('decree_file') ?? $request->input('decree_file');
+        $minutesFile = $request->file('installation_minutes_file') ?? $request->input('installation_minutes_file');
+        $attendanceFile = $request->file('attendance_list_file') ?? $request->input('attendance_list_file');
+        
+        if ($decreeFile && Schema::hasColumn('local_committees', 'decree_file')) {
+            if ($decreeFile instanceof \Illuminate\Http\UploadedFile) {
+                $path = $decreeFile->store('committee_files', 'public');
+                $committee->decree_file = $path;
+            } else {
+                $committee->decree_file = $decreeFile;
+            }
         }
         
-        if ($request->hasFile('installation_minutes_file') && Schema::hasColumn('local_committees', 'installation_minutes_file')) {
-            $path = $request->file('installation_minutes_file')->store('committee_files', 'public');
-            $committee->installation_minutes_file = $path;
+        if ($minutesFile && Schema::hasColumn('local_committees', 'installation_minutes_file')) {
+            if ($minutesFile instanceof \Illuminate\Http\UploadedFile) {
+                $path = $minutesFile->store('committee_files', 'public');
+                $committee->installation_minutes_file = $path;
+            } else {
+                $committee->installation_minutes_file = $minutesFile;
+            }
         }
         
-        if ($request->hasFile('attendance_list_file') && Schema::hasColumn('local_committees', 'attendance_list_file')) {
-            $path = $request->file('attendance_list_file')->store('committee_files', 'public');
-            $committee->attendance_list_file = $path;
+        if ($attendanceFile && Schema::hasColumn('local_committees', 'attendance_list_file')) {
+            if ($attendanceFile instanceof \Illuminate\Http\UploadedFile) {
+                $path = $attendanceFile->store('committee_files', 'public');
+                $committee->attendance_list_file = $path;
+            } else {
+                $committee->attendance_list_file = $attendanceFile;
+            }
         }
         
         $committee->save();
         
         // Ajouter les membres
-        $members = json_decode($request->members, true);
+        // $members = json_decode($request->members, true);
+        $members = ($request->members);
         foreach ($members as $memberData) {
             $member = new LocalCommitteeMember();
             $member->local_committee_id = $committee->id;
@@ -184,36 +197,10 @@ class LocalCommitteeController extends Controller
         }
         
         // Ajouter les villages et leurs représentants
-        $villages = json_decode($request->villages, true);
-        foreach ($villages as $villageData) {
-            // Récupérer la localité qui est un village (type 7)
-            $village = Locality::where('id', $villageData['id'])
-                              ->where('locality_type_id', 7)
-                              ->first();
-            
-            if ($village) {
-                
-                
-                // Ajouter les représentants du village
-                if (isset($villageData['representatives'])) {
-                    foreach ($villageData['representatives'] as $repData) {
-                        $representative = new Representative();
-                        $representative->locality_id = $village->id;
-                        $representative->local_committee_id = $committee->id;
-                        $representative->first_name = $repData['first_name'];
-                        $representative->last_name = $repData['last_name'];
-                        $representative->phone = $repData['phone'];
-                        $representative->role = $repData['role'];
-                        $representative->save();
-                    }
-                }
-            }
-        }
         
-        return response()->json([
-            'message' => 'Comité local créé avec succès',
-            'id' => $committee->id
-        ]);
+        // Redirection Inertia vers la liste des comités locaux
+        return redirect()->route('local-committees.index')
+            ->with('success', 'Comité local créé avec succès');
     }
 
     public function edit($id)
@@ -221,7 +208,6 @@ class LocalCommitteeController extends Controller
         $committee = LocalCommittee::with(['locality.children.representatives', 'members.user'])->findOrFail($id);
         $localities = $this->administrativeService->getLocalityHierarchy();
        
-        $users = User::all();
         $sousPrefets = User::role('Sous-prefet')
             ->with('locality')
             ->get()
@@ -250,11 +236,28 @@ class LocalCommitteeController extends Controller
                     'locality_name' => $user->locality?->name,
                 ];
             });
+            
+            //dump($committee->attendance_list_file);
+            //dd($committee->decree_file);
+            //dd($committee->installation_minutes_file);
 
-        return Inertia::render('LocalCommittees/Form', [
-            'committee' => $committee,
+        return Inertia::render('LocalCommittees/Create', [
+            'isEditMode' => true,
+            'draft' => false,
+            'committeeData' => [
+                'id' => $committee->id,
+                'name' => $committee->name,
+                'locality_id' => $committee->locality_id,
+                'status' => $committee->status,
+                'members' => $committee->members,
+                'villages' => $committee->locality->children,
+                'installation_date' => $committee->installation_date,
+                'installation_location' => $committee->installation_location,
+                'decree_file' => $committee->decree_file,
+                'installation_minutes_file' => $committee->installation_minutes_file,
+                'attendance_list_file' => $committee->attendance_list_file,
+            ],
             'localities' => $localities,
-            'users' => $users,  
             'sousPrefets' => $sousPrefets,
             'secretaires' => $secretaires,
         ]);
@@ -262,68 +265,99 @@ class LocalCommitteeController extends Controller
 
     public function update(Request $request, LocalCommittee $localCommittee)
     {
+
+
+        // Décoder les champs JSON si besoin
+        if (is_string($request->members)) {
+            $request->merge([
+                'members' => json_decode($request->members, true)
+            ]);
+        }
+        if (is_string($request->villages)) {
+            $request->merge([
+                'villages' => json_decode($request->villages, true)
+            ]);
+        }
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'locality_id' => 'required|exists:localite,id',
+            'locality_id' => 'required', // 'exists' retiré temporairement
             'status' => 'required|in:active,inactive,pending',
             'members' => 'required|array|min:1',
             'members.*.is_user' => 'required|boolean',
             'members.*.role' => ['required', 'string', Rule::in(['secretary', 'president'])],
             'members.*.status' => 'required|in:active,inactive',
-            // Validation pour les membres utilisateurs
             'members.*.user_id' => 'required_if:members.*.is_user,true|exists:users,id|nullable',
-            // Validation pour les membres non-utilisateurs
             'members.*.first_name' => 'required_if:members.*.is_user,false|string|max:255|nullable',
             'members.*.last_name' => 'required_if:members.*.is_user,false|string|max:255|nullable',
             'members.*.phone' => 'nullable|string|max:20',
-            'villages' => 'required|array',
-            'villages.*.id' => 'required|exists:localite,id',
-            'villages.*.representatives' => 'required|array',
-            'villages.*.representatives.*.first_name' => 'required|string|max:255',
-            'villages.*.representatives.*.last_name' => 'required|string|max:255',
-            'villages.*.representatives.*.phone' => 'nullable|string|max:20',
-            'villages.*.representatives.*.role' => 'required|string|max:255',
+        
         ]);
-
         $localCommittee->update([
             'name' => $validated['name'],
             'locality_id' => $validated['locality_id'],
-            'status' => $validated['status']
+            'status' => $validated['status'],
         ]);
 
-        // Supprimer tous les membres actuels
+        if (Schema::hasColumn('local_committees', 'installation_date')) {
+            $localCommittee->installation_date = $request->installation_date;
+        }
+
+        if (Schema::hasColumn('local_committees', 'installation_location')) {
+            $localCommittee->installation_location = $request->installation_location;
+        }
+        $decreeFile = $request->file('decree_file') ?? $request->input('decree_file');
+        $minutesFile = $request->file('installation_minutes_file') ?? $request->input('installation_minutes_file');
+        $attendanceFile = $request->file('attendance_list_file') ?? $request->input('attendance_list_file');
+
+        if ($decreeFile && Schema::hasColumn('local_committees', 'decree_file')) {
+            if ($decreeFile instanceof \Illuminate\Http\UploadedFile) {
+                $path = $decreeFile->store('committee_files', 'public');
+                $localCommittee->decree_file = $path;
+            } else {
+                $localCommittee->decree_file = $decreeFile;
+            }
+        }
+
+        if ($minutesFile && Schema::hasColumn('local_committees', 'installation_minutes_file')) {
+            if ($minutesFile instanceof \Illuminate\Http\UploadedFile) {
+                $path = $minutesFile->store('committee_files', 'public');
+                $localCommittee->installation_minutes_file = $path;
+            } else {
+                $localCommittee->installation_minutes_file = $minutesFile;
+            }
+        }
+
+        if ($attendanceFile && Schema::hasColumn('local_committees', 'attendance_list_file')) {
+            if ($attendanceFile instanceof \Illuminate\Http\UploadedFile) {
+                $path = $attendanceFile->store('committee_files', 'public');
+                $localCommittee->attendance_list_file = $path;
+            } else {
+                $localCommittee->attendance_list_file = $attendanceFile;
+            }
+        }
+        info("saveee");
+        $localCommittee->save();
+
         $localCommittee->members()->delete();
 
-        // Ajouter les nouveaux membres
-        
         foreach ($validated['members'] as $memberData) {
             $member = [
                 'role' => $memberData['role'],
-                'status' => $memberData['status']
+                'status' => $memberData['status'],
             ];
 
             if ($memberData['is_user']) {
                 $member['user_id'] = $memberData['user_id'];
             } else {
-              
                 $member['first_name'] = $memberData['first_name'];
                 $member['last_name'] = $memberData['last_name'];
                 $member['phone'] = $memberData['phone'] ?? null;
             }
-           
-           $localCommittee->members()->create($member);
+
+            $localCommittee->members()->create($member);
         }
-
-        foreach ($validated['villages'] as $villageData) {
-            $village = Locality::find($villageData['id']);
-            $village->representatives()->delete();
-            foreach ($villageData['representatives'] as $repData) {
-                $result=$village->representatives()->create($repData);
-            }
-        }
-
-        return redirect()->route('local-committees.index')->with('success', 'Comité local créé avec succès');
-
+        info("enndnd");
+        return redirect()->route('local-committees.index')->with('success', 'Comité local mis à jour avec succès');
     }
 
     public function destroy(LocalCommittee $localCommittee)

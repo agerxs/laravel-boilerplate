@@ -35,7 +35,7 @@ class PaymentRateManagementTest extends TestCase
         $this->actingAs($admin);
 
         $response = $this->post(route('payment-rates.store'), [
-            'role' => 'prefet',
+            'role' => 'sous-prefet',
             'meeting_rate' => 15000,
             'notes' => 'Test rate',
             'is_active' => true
@@ -43,7 +43,7 @@ class PaymentRateManagementTest extends TestCase
 
         $response->assertRedirect(route('payment-rates.index'));
         $this->assertDatabaseHas('payment_rates', [
-            'role' => 'prefet',
+            'role' => 'sous-prefet',
             'meeting_rate' => 15000
         ]);
     }

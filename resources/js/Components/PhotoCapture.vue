@@ -21,20 +21,40 @@
       <div class="mt-4 flex justify-center space-x-4">
         <button 
           @click="retakePhoto" 
-          class="px-4 py-2 bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200"
+          class="px-4 py-2 bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200 flex items-center space-x-2"
         >
-          Reprendre la photo
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+          <span>Reprendre la photo</span>
+        </button>
+        <button 
+          @click="cancelPhoto" 
+          class="px-4 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 flex items-center space-x-2"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+          <span>Annuler</span>
         </button>
         <button 
           @click="confirmPhoto" 
           class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center space-x-2"
           :disabled="!hasGeolocation"
         >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
           <span>Confirmer la photo</span>
           <span v-if="!hasGeolocation" class="text-xs bg-red-500 text-white px-2 py-1 rounded-full">
             GPS requis
           </span>
         </button>
+      </div>
+      
+      <!-- Message informatif -->
+      <div class="mt-3 text-center text-sm text-gray-600">
+        <p>Vous pouvez reprendre la photo ou l'annuler si elle ne vous convient pas</p>
       </div>
     </div>
   </div>
@@ -44,7 +64,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { CameraIcon } from '@heroicons/vue/24/outline'
 
-const emit = defineEmits(['photo-captured'])
+const emit = defineEmits(['photo-captured', 'photo-cancelled'])
 
 const video = ref(null)
 const canvas = ref(null)
@@ -112,6 +132,13 @@ const capturePhoto = () => {
 const retakePhoto = () => {
   photoTaken.value = false
   photoPreview.value = ''
+}
+
+// Annuler complètement la prise de photo
+const cancelPhoto = () => {
+  photoTaken.value = false
+  photoPreview.value = ''
+  emit('photo-cancelled')
 }
 
 // Confirmer la photo

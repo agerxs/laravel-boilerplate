@@ -20,6 +20,9 @@ use App\Http\Controllers\AttendancePhotoController;
 use App\Http\Controllers\MeetingPaymentListController;
 use App\Http\Controllers\LocalityController;
 use App\Http\Controllers\RepresentativeController;
+use App\Http\Controllers\ExecutivePaymentController;
+use App\Http\Controllers\TemplateController;
+use App\Http\Controllers\BulkImportController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -36,13 +39,21 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+
+    Route::post('/local-committees/save-progress', [LocalCommitteeController::class, 'saveProgress'])->name('local-committees.save-progress');
+
+    Route::get('/local-committees/{id}/villages', [LocalCommitteeController::class, 'getVillages'])
+        ->name('local-committees.get-villages');
+        
     // Routes pour les listes de paiement
     Route::prefix('meeting-payments/lists')->name('meeting-payments.lists.')->group(function () {
         Route::get('/', [MeetingPaymentListController::class, 'index'])->name('index');
         Route::get('/create/{meeting}', [MeetingPaymentListController::class, 'create'])->name('create');
         Route::get('/export', [MeetingPaymentListController::class, 'exportPaymentLists'])->name('export');
+        Route::get('/export-single/{meeting}', [MeetingPaymentListController::class, 'exportSingleMeeting'])->name('export-single');
         Route::post('/validate-all', [MeetingPaymentListController::class, 'validateAll'])->name('validate-all');
         Route::post('/items/{item}/validate', [MeetingPaymentListController::class, 'validateItem'])->name('validate-item');
+        Route::post('/items/{item}/invalidate', [MeetingPaymentListController::class, 'invalidateItem'])->name('invalidate-item');
         Route::post('/{meeting}', [MeetingPaymentListController::class, 'store'])->name('store');
         Route::get('/{paymentList}', [MeetingPaymentListController::class, 'show'])->name('show');
         Route::post('/{paymentList}/submit', [MeetingPaymentListController::class, 'submit'])->name('submit');
@@ -52,7 +63,19 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    
+    Route::get('/meetings/create-multiple', [MeetingController::class, 'createMultiple'])->name('meetings.create-multiple');
+    Route::post('/meetings/store-multiple', [MeetingController::class, 'storeMultiple'])->name('meetings.store-multiple');
+    Route::post('/meetings/import', [MeetingController::class, 'importMeetings'])->name('meetings.import');
+    Route::post('/meetings/store-multiple-with-attachments', [MeetingController::class, 'storeMultipleWithAttachments'])->name('meetings.store-multiple-with-attachments');
+    Route::get('/templates/meetings', [TemplateController::class, 'downloadMeetingsTemplate'])->name('templates.meetings');
     Route::resource('meetings', MeetingController::class);
+    
+    // Routes pour les imports par lots
+    Route::get('/bulk-imports', [BulkImportController::class, 'index'])->name('bulk-imports.index');
+    Route::get('/bulk-imports/{bulkImport}', [BulkImportController::class, 'show'])->name('bulk-imports.show');
+    Route::get('/bulk-imports/{bulkImport}/download', [BulkImportController::class, 'download'])->name('bulk-imports.download');
+    Route::delete('/bulk-imports/{bulkImport}', [BulkImportController::class, 'destroy'])->name('bulk-imports.destroy');
     Route::get('/meetings/{meeting}', [MeetingController::class, 'show'])
         ->name('meetings.show')
         ->middleware('check.locality');
@@ -118,7 +141,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/local-committees/{localCommittee}/edit', [LocalCommitteeController::class, 'edit'])
         ->name('local-committees.edit')
         ->middleware('check.locality');
-    Route::put('/local-committees/{localCommittee}', [LocalCommitteeController::class, 'update'])
+    Route::post('/local-committees/{localCommittee}', [\App\Http\Controllers\LocalCommitteeController::class, 'update'])
         ->name('local-committees.update')
         ->middleware('check.locality');
     Route::delete('/local-committees/{localCommittee}', [LocalCommitteeController::class, 'destroy'])
@@ -154,14 +177,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('meetings.invalidate')
         ->middleware('role:sous-prefet|Sous-prefet|admin|Admin'); // Sous-préfets et admins peuvent invalider
 
-    Route::get('/village-representatives', [VillageRepresentativesController::class, 'index'])->name('village-representatives.index');
+    //Route::get('/village-representatives', [VillageRepresentativesController::class, 'index'])->name('village-representatives.index');
 
     Route::post('/local-committees/{committeeId}/save-villages', [LocalCommitteeController::class, 'saveVillages'])->name('local-committees.save-villages');
 
-    Route::post('/local-committees/save-progress', [LocalCommitteeController::class, 'saveProgress'])->name('local-committees.save-progress');
 
-    Route::get('/local-committees/{id}/villages', [LocalCommitteeController::class, 'getVillages'])
-        ->name('local-committees.get-villages');
 
     // Routes pour les représentants des réunions
     Route::get('/meetings/{meeting}/representatives', [MeetingController::class, 'getRepresentatives'])
@@ -182,6 +202,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/meeting-payments', [MeetingPaymentController::class, 'index'])->name('meeting-payments.index');
     Route::get('/meeting-payments/{meeting}', [MeetingPaymentController::class, 'show'])->name('meeting-payments.show');
     Route::post('/meeting-payments/{meeting}', [MeetingPaymentController::class, 'processPayments'])->name('meeting-payments.process');
+
+    // Route pour le suivi des paiements des cadres
+    Route::get('/executive-payments', [\App\Http\Controllers\ExecutivePaymentController::class, 'index'])
+        ->name('executive-payments.index')
+        ->middleware('role:gestionnaire|admin');
+    
+    // Routes pour l'export et la gestion des paiements des cadres
+    Route::get('/executive-payments/export/all', [\App\Http\Controllers\ExecutivePaymentController::class, 'exportAll'])
+        ->name('executive-payments.export.all')
+        ->middleware('role:gestionnaire|admin');
+    Route::get('/executive-payments/export/pending', [\App\Http\Controllers\ExecutivePaymentController::class, 'exportPending'])
+        ->name('executive-payments.export.pending')
+        ->middleware('role:gestionnaire|admin');
+    Route::post('/executive-payments/{executivePayment}/update-status', [\App\Http\Controllers\ExecutivePaymentController::class, 'updateStatus'])
+        ->name('executive-payments.update-status')
+        ->middleware('role:gestionnaire|admin');
 
     // Routes pour la gestion des listes de présence
     Route::get('/meetings/{meeting}/attendance', [AttendanceController::class, 'index'])
@@ -206,6 +242,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('meetings.reschedule.submit');
     Route::post('/meetings/{meeting}/complete', [MeetingController::class, 'complete'])
         ->name('meetings.complete');
+    Route::post('/meetings/{meeting}/unpublish', [MeetingController::class, 'unpublish'])
+        ->name('meetings.unpublish');
     Route::patch('/meetings/{meeting}/update-enrollments', [MeetingController::class, 'updateEnrollments'])
         ->middleware(['auth', 'web'])
         ->name('meetings.update-enrollments');
@@ -247,5 +285,18 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     Route::get('/api-doc', [App\Http\Controllers\Api\DocumentationController::class, 'index'])
         ->name('api.documentation');
 });
+
+Route::middleware(['auth'])->prefix('admin/app-versions')->group(function () {
+    Route::get('/', [\App\Http\Controllers\AppVersionController::class, 'adminIndex'])->name('admin.app_versions.index');
+    Route::post('/', [\App\Http\Controllers\AppVersionController::class, 'adminStore'])->name('admin.app_versions.store');
+    Route::delete('/{id}', [\App\Http\Controllers\AppVersionController::class, 'adminDestroy'])->name('admin.app_versions.destroy');
+});
+
+Route::resource('payment-rates', PaymentRateController::class);
+Route::resource('meeting-payments', MeetingPaymentController::class);
+Route::resource('executive-payments', ExecutivePaymentController::class)->only(['index']);
+
+Route::post('/meetings/{meeting}/attendance', [AttendanceController::class, 'store'])->name('meetings.attendance.store');
+Route::delete('/meetings/{meeting}/attendance/{attendee}', [AttendanceController::class, 'destroy'])->name('meetings.attendance.destroy');
 
 require __DIR__.'/auth.php';

@@ -23,8 +23,7 @@ class MeetingMinutesController extends Controller
             'status' => 'draft'
         ]);
 
-        // Mettre à jour le statut de la réunion
-        $meeting->update(['status' => 'completed']);
+        // Ne pas changer automatiquement le statut de la réunion
 
         return response()->json([
             'message' => 'Compte rendu créé avec succès',
@@ -152,8 +151,7 @@ class MeetingMinutesController extends Controller
             ]);
         }
 
-        // Mettre à jour le statut de la réunion
-        $meeting->update(['status' => 'completed']);
+        // Ne pas changer automatiquement le statut de la réunion
 
         return response()->json([
             'message' => 'Compte rendu importé avec succès',

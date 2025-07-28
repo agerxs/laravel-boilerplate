@@ -11,6 +11,41 @@ use Carbon\Carbon;
 class AttendeeController extends Controller
 {
     /**
+     * Formater les données d'un attendee
+     */
+    private function formatAttendee(MeetingAttendee $attendee)
+    {
+        // Recharger l'attendee avec les relations
+        $attendee->load(['village', 'representative']);
+
+        // Récupérer le village soit depuis la relation directe, soit depuis le représentant
+        $village = $attendee->village ?? ($attendee->representative ? $attendee->representative->locality : null);
+        
+        return [
+            'id' => $attendee->id,
+            'name' => $attendee->name,
+            'phone' => $attendee->phone,
+            'role' => $attendee->role,
+            'village' => [
+                'id' => $village ? $village->id : null,
+                'name' => $village ? $village->name : 'Village non trouvé'
+            ],
+            'is_expected' => $attendee->is_expected,
+            'is_present' => $attendee->is_present,
+            'attendance_status' => $attendee->attendance_status,
+            'replacement_name' => $attendee->replacement_name,
+            'replacement_phone' => $attendee->replacement_phone,
+            'replacement_role' => $attendee->replacement_role,
+            'arrival_time' => $attendee->arrival_time,
+            'comments' => $attendee->comments,
+            'payment_status' => $attendee->payment_status,
+            'presence_photo' => $attendee->presence_photo,
+            'presence_location' => $attendee->presence_location,
+            'presence_timestamp' => $attendee->presence_timestamp
+        ];
+    }
+
+    /**
      * Liste des participants d'une réunion
      */
     public function index(Meeting $meeting)
@@ -19,31 +54,7 @@ class AttendeeController extends Controller
             ->with(['village', 'representative'])
             ->get()
             ->map(function ($attendee) {
-                // Récupérer le village soit depuis la relation directe, soit depuis le représentant
-                $village = $attendee->village ?? ($attendee->representative ? $attendee->representative->locality : null);
-                
-                return [
-                    'id' => $attendee->id,
-                    'name' => $attendee->name,
-                    'phone' => $attendee->phone,
-                    'role' => $attendee->role,
-                    'village' => [
-                        'id' => $village ? $village->id : null,
-                        'name' => $village ? $village->name : 'Village non trouvé'
-                    ],
-                    'is_expected' => $attendee->is_expected,
-                    'is_present' => $attendee->is_present,
-                    'attendance_status' => $attendee->attendance_status,
-                    'replacement_name' => $attendee->replacement_name,
-                    'replacement_phone' => $attendee->replacement_phone,
-                    'replacement_role' => $attendee->replacement_role,
-                    'arrival_time' => $attendee->arrival_time,
-                    'comments' => $attendee->comments,
-                    'payment_status' => $attendee->payment_status,
-                    'presence_photo' => $attendee->presence_photo,
-                    'presence_location' => $attendee->presence_location,
-                    'presence_timestamp' => $attendee->presence_timestamp
-                ];
+                return $this->formatAttendee($attendee);
             });
 
         return response()->json([
@@ -68,7 +79,7 @@ class AttendeeController extends Controller
 
         return response()->json([
             'message' => 'Participant marqué comme présent',
-            'attendee' => $attendee
+            'attendee' => $this->formatAttendee($attendee)
         ]);
     }
 
@@ -81,7 +92,7 @@ class AttendeeController extends Controller
 
         return response()->json([
             'message' => 'Participant marqué comme absent',
-            'attendee' => $attendee
+            'attendee' => $this->formatAttendee($attendee)
         ]);
     }
 
@@ -104,7 +115,7 @@ class AttendeeController extends Controller
 
         return response()->json([
             'message' => 'Remplaçant enregistré avec succès',
-            'attendee' => $attendee
+            'attendee' => $this->formatAttendee($attendee)
         ]);
     }
 
@@ -123,7 +134,7 @@ class AttendeeController extends Controller
 
         return response()->json([
             'message' => 'Commentaire ajouté avec succès',
-            'attendee' => $attendee
+            'attendee' => $this->formatAttendee($attendee)
         ]);
     }
 
@@ -158,12 +169,43 @@ class AttendeeController extends Controller
 
             return response()->json([
                 'message' => 'Présence confirmée avec succès',
-                'attendee' => $attendee
+                'attendee' => $this->formatAttendee($attendee)
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Erreur lors de la confirmation de présence',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Supprimer la photo de présence
+     */
+    public function deletePhoto(MeetingAttendee $attendee)
+    {
+        try {
+            // Supprimer le fichier photo s'il existe
+            if ($attendee->presence_photo) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($attendee->presence_photo);
+            }
+
+            // Mettre à jour l'attendee pour supprimer les informations de photo
+            $attendee->update([
+                'presence_photo' => null,
+                'presence_location' => null,
+                'presence_timestamp' => null
+            ]);
+
+            return response()->json([
+                'message' => 'Photo supprimée avec succès',
+                'attendee' => $this->formatAttendee($attendee)
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Erreur lors de la suppression de la photo',
                 'error' => $e->getMessage()
             ], 500);
         }

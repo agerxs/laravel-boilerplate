@@ -5,11 +5,16 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\MeetingController;
 use App\Http\Controllers\Api\AttendeeController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\LocalCommitteeController as ApiLocalCommitteeController;
 use App\Http\Controllers\SubPrefectureController;
 use App\Http\Controllers\LocalCommitteeController;
 use App\Http\Controllers\Api\OfflineController;
 use App\Http\Controllers\Api\LocalityController;
 use App\Http\Controllers\Api\LocalityTypeController;
+use App\Http\Controllers\Api\RepresentativeController as ApiRepresentativeController;
+use App\Http\Controllers\RepresentativeController;
+use App\Http\Controllers\Api\PaymentListController;
+use App\Http\Controllers\AttachmentController;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
@@ -32,6 +37,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/meetings/{meeting}/enroll', [MeetingController::class, 'enroll']);
     Route::post('/meetings/{meeting}/unenroll', [MeetingController::class, 'unenroll']);
 
+    Route::post('/attachments/upload', [AttachmentController::class, 'upload']);
+    Route::resource('attachments', AttachmentController::class);
+    Route::post('/attachments/upload-mobile', [AttachmentController::class, 'uploadFromMobile']);
     // Routes pour les participants
     Route::get('/meetings/{meeting}/attendees', [AttendeeController::class, 'index']);
     Route::post('/attendees/{attendee}/present', [AttendeeController::class, 'markPresent']);
@@ -39,11 +47,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/attendees/{attendee}/comment', [AttendeeController::class, 'addComment']);
     Route::post('meetings/attendees/{attendee}/confirm-presence-with-photo', [AttendeeController::class, 'confirmPresenceWithPhoto'])
         ->name('meetings.attendees.confirm-presence-with-photo');
+    Route::post('meetings/attendees/{attendee}/delete-photo', [AttendeeController::class, 'deletePhoto'])
+        ->name('meetings.attendees.delete-photo');
 
     // Routes pour les données de référence
     Route::get('/sub-prefectures', [SubPrefectureController::class, 'index']);
-    Route::get('/local-committees', [LocalCommitteeController::class, 'index']);
-    Route::get('/local-committees/{localCommittee}', [LocalCommitteeController::class, 'show']);
+    Route::get('/local-committees', [ApiLocalCommitteeController::class, 'index']);
+    Route::get('/local-committees/{localCommittee}', [ApiLocalCommitteeController::class, 'show']);
 
     // Routes pour le mode hors ligne
     Route::post('/offline/queue', [OfflineController::class, 'queueOperation']);
@@ -52,6 +62,20 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/offline/status', [OfflineController::class, 'getSyncStatus']);
     Route::post('/offline/conflicts/resolve', [OfflineController::class, 'resolveConflict']);
     Route::get('/offline/data', [OfflineController::class, 'getLocalData']);
+
+    // Routes pour les représentants
+    Route::prefix('representatives')->group(function () {
+        Route::get('/', [ApiRepresentativeController::class, 'index']);
+        Route::post('/', [ApiRepresentativeController::class, 'store']);
+        Route::get('/mine', [ApiRepresentativeController::class, 'myRepresentatives']);
+        Route::get('/{representative}', [ApiRepresentativeController::class, 'show']);
+        Route::put('/{representative}', [ApiRepresentativeController::class, 'update']);
+        Route::delete('/{representative}', [ApiRepresentativeController::class, 'destroy']);
+        
+    });
+
+    // Endpoint villages pour l'utilisateur connecté
+    Route::get('/localities/villages', [LocalityController::class, 'villages']);
 });
 
 Route::get('/meetings/create', [MeetingController::class, 'create'])->name('meetings.create');
@@ -77,4 +101,16 @@ Route::prefix('locality-types')->group(function () {
     Route::put('/{type}', [LocalityTypeController::class, 'update']);
     Route::delete('/{type}', [LocalityTypeController::class, 'destroy']);
     Route::get('/{type}/localities', [LocalityTypeController::class, 'localities']);
+});
+
+Route::prefix('payment-lists')->group(function () {
+    Route::get('/', [PaymentListController::class, 'index']);
+    Route::get('/{id}', [PaymentListController::class, 'show']);
+});
+
+Route::prefix('app-versions')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Api\AppVersionController::class, 'index']);
+    Route::post('/', [\App\Http\Controllers\Api\AppVersionController::class, 'store']);
+    Route::get('/latest', [\App\Http\Controllers\Api\AppVersionController::class, 'latest']);
+    Route::get('/{id}', [\App\Http\Controllers\Api\AppVersionController::class, 'show']);
 });

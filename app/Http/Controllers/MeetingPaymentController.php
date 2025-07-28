@@ -46,10 +46,6 @@ class MeetingPaymentController extends Controller
         // Récupérer les officiels associés à cette réunion
         $officials = [];
         
-        // Préfet et sous-préfet (un seul par réunion)
-        $prefet = User::whereHas('roles', function ($query) {
-            $query->where('name', 'prefet');
-        })->first();
         
         $sousPrefet = User::whereHas('roles', function ($query) {
             $query->where('name', 'sous_prefet');
@@ -70,7 +66,6 @@ class MeetingPaymentController extends Controller
         
         // Récupérer les taux de paiement pour chaque rôle
         $paymentRates = [
-            'prefet' => PaymentRate::getActiveRateForRole('prefet'),
             'sous_prefet' => PaymentRate::getActiveRateForRole('sous_prefet'),
             'secretaire' => PaymentRate::getActiveRateForRole('secretaire'),
             'representant' => PaymentRate::getActiveRateForRole('representant'),
@@ -79,10 +74,7 @@ class MeetingPaymentController extends Controller
         // Préparer les données pour la vue
         $paymentData = [];
         
-        // Ajouter le préfet
-        if ($prefet && $paymentRates['prefet']) {
-            $paymentData[] = $this->preparePaymentData($meeting, $prefet, 'prefet', $paymentRates['prefet']);
-        }
+        
         
         // Ajouter le sous-préfet
         if ($sousPrefet && $paymentRates['sous_prefet']) {
