@@ -38,20 +38,7 @@ $subPrefet->save();
 $role = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'sous-prefet']);
 $subPrefet->assignRole('sous-prefet');
 
-// Créer un utilisateur préfet de test
-$prefet = new \App\Models\User([
-    'name' => 'Prefet Test',
-    'email' => 'prefet@test.com',
-    'password' => bcrypt('password123'),
-    'locality_id' => $department->id,
-    'phone' => '0700000002',
-    'email_verified_at' => now()
-]);
-$prefet->save();
 
-// Créer un rôle préfet si nécessaire
-$rolePrefet = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'prefet']);
-$prefet->assignRole('prefet');
 
 // Créer un utilisateur secrétaire de test
 $secretaire = new \App\Models\User([

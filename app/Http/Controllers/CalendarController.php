@@ -17,8 +17,8 @@ class CalendarController extends Controller
                 return [
                     'id' => $meeting->id,
                     'title' => $meeting->title,
-                    'start_datetime' => $meeting->scheduled_date->format('Y-m-d H:i:s'),
-                    'end_datetime' => $meeting->scheduled_date->addHours(2)->format('Y-m-d H:i:s'),
+                    'scheduled_date' => $meeting->scheduled_date->format('Y-m-d H:i:s'),
+                    
                     'location' => $meeting->localCommittee?->locality?->name ?? 'Non défini',
                     'status' => $meeting->status,
                     'local_committee' => $meeting->localCommittee ? [

@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\MeetingPaymentList;
+use Spatie\Permission\Models\Role;
 
 class DashboardController extends Controller
 {
@@ -20,7 +21,7 @@ class DashboardController extends Controller
         $committeeQuery = LocalCommittee::query();
 
         // Filtrer les données en fonction du rôle
-        if ($user->hasRole(['prefet', 'Prefet'])) {
+        if (in_array('prefet', $user->roles->pluck('name')->toArray()) || in_array('Prefet', $user->roles->pluck('name')->toArray())) {
             // Pour les préfets, montrer les données de leur département et sous-préfectures
             $query->whereHas('localCommittee.locality', function ($q) use ($user) {
                 $q->where('id', $user->locality_id)
@@ -30,7 +31,10 @@ class DashboardController extends Controller
                 $q->where('id', $user->locality_id)
                   ->orWhere('parent_id', $user->locality_id);
             });
-        } elseif ($user->hasRole(['sous-prefet', 'Sous-prefet', 'secretaire', 'Secrétaire'])) {
+        } elseif (in_array('sous-prefet', $user->roles->pluck('name')->toArray()) || 
+                   in_array('Sous-prefet', $user->roles->pluck('name')->toArray()) ||
+                   in_array('secretaire', $user->roles->pluck('name')->toArray()) ||
+                   in_array('Secrétaire', $user->roles->pluck('name')->toArray())) {
             // Pour les sous-préfets et secrétaires, montrer uniquement les données de leur localité
             $query->whereHas('localCommittee.locality', function ($q) use ($user) {
                 $q->where('id', $user->locality_id);
@@ -83,7 +87,7 @@ class DashboardController extends Controller
             ->pluck('count', 'status')
             ->toArray();
 
-        if ($user->hasRole(['gestionnaire', 'Gestionnaire'])) {
+        if (in_array('gestionnaire', $user->roles->pluck('name')->toArray()) || in_array('Gestionnaire', $user->roles->pluck('name')->toArray())) {
             // Statistiques des paiements
             $stats['total_payments'] = MeetingPaymentList::where('status', 'validated')->sum('total_amount');
             $stats['pending_payments'] = MeetingPaymentList::where('status', 'submitted')->count();
@@ -142,7 +146,22 @@ class DashboardController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->take(5)
                 ->get();
+
+            // Dernières listes de paiement soumises (pour l'affichage dans le tableau)
+            $stats['recent_payment_lists'] = MeetingPaymentList::with(['meeting.localCommittee', 'submitter'])
+                ->whereIn('status', ['submitted', 'validated'])
+                ->orderBy('submitted_at', 'desc')
+                ->take(10)
+                ->get();
         }
+
+        // Statistiques utilisateurs par rôle
+        $usersByRole = Role::whereNotIn('name', ['admin', 'prefet', 'Admin', 'Prefet'])->get()->map(function ($role) {
+            return [
+                'name' => $role->name,
+                'count' => User::role($role->name)->count(),
+            ];
+        });
 
         return Inertia::render('Dashboard/Index', [
             'stats' => $stats,
@@ -155,7 +174,8 @@ class DashboardController extends Controller
                 'email' => $user->email,
                 'roles' => $user->roles->pluck('name')->toArray(),
                 'locality_id' => $user->locality_id
-            ]
+            ],
+            'usersByRole' => $usersByRole,
         ]);
     }
 } 

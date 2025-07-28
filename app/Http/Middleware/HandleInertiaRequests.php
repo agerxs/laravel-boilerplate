@@ -35,7 +35,13 @@ class HandleInertiaRequests extends Middleware
                     'id' => $request->user()->id,
                     'name' => $request->user()->name,
                     'email' => $request->user()->email,
-                    'roles' => $request->user()->roles->pluck('name'),
+                    'roles' => $request->user()->roles->map(function($role) {
+                        return [
+                            'id' => $role->id,
+                            'name' => $role->name,
+                            'guard_name' => $role->guard_name,
+                        ];
+                    }),
                     'locality_id' => $request->user()->locality_id,
                 ] : null,
             ],

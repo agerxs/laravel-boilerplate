@@ -1,34 +1,12 @@
 <template>
   <div>
     <!-- Bouton de confirmation (pour les secrétaires) -->
-    <button
-      v-if="canConfirm"
-      @click="confirmMeeting"
-      title="Confirmer cette réunion"
-      class="text-green-600 hover:text-green-900 action-button"
-    >
-      <CheckCircleIcon class="h-5 w-5" />
-    </button>
+   
     
     <!-- Bouton de prévalidation (pour les secrétaires) -->
-    <button
-      v-if="canPrevalidate"
-      @click="prevalidateMeeting"
-      title="Prévalider cette réunion"
-      class="text-blue-600 hover:text-blue-900 action-button"
-    >
-      <ClipboardIcon class="h-5 w-5" />
-    </button>
-    
+   
     <!-- Bouton de validation (pour les sous-préfets) -->
-    <button
-      v-if="canValidate"
-      @click="showValidationModal = true"
-      title="Valider définitivement cette réunion"
-      class="text-violet-600 hover:text-violet-900 action-button"
-    >
-      <ShieldCheckIcon class="h-5 w-5" />
-    </button>
+   
     
     <!-- Modal de validation définitive -->
     <Modal :show="showValidationModal" @close="closeValidationModal">
@@ -183,27 +161,7 @@ const confirmMeeting = async () => {
   }
 }
 
-// Prévalider la réunion
-const prevalidateMeeting = async () => {
-  if (!confirm('Êtes-vous sûr de vouloir prévalider cette réunion?')) return
-  
-  try {
-    const response = await axios.post(
-      route('meetings.prevalidate', props.meeting.id)
-    )
-    
-    toast.success('Réunion prévalidée avec succès')
-    emit('meeting-updated', response.data.meeting)
-    
-    // Recharger la page pour afficher les changements
-    window.location.reload()
-  } catch (error: any) {
-    toast.error(
-      error.response?.data?.message || 
-      'Une erreur est survenue lors de la prévalidation'
-    )
-  }
-}
+
 
 // Valider définitivement la réunion
 const validateMeeting = async () => {

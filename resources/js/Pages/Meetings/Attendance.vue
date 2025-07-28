@@ -1,20 +1,25 @@
 <template>
   <AppLayout :title="`Liste de présence - ${meeting.title}`">
+    <!-- Debug info -->
+    <div class="hidden">
+      {{ debugButtonConditions }}
+    </div>
+
     <template #header>
       <div class="flex justify-between items-center">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
           Liste de présence - {{ meeting.title }}
         </h2>
         <div class="flex space-x-4">
-          <Link
-            :href="route('meetings.show', meeting.id)"
+          <button
+            @click="handleReturnToMeeting"
             class="inline-flex items-center px-4 py-2 bg-indigo-100 text-indigo-800 rounded-md text-sm font-medium hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
             </svg>
             Retour à la réunion
-          </Link>
+          </button>
           <a
             :href="route('meetings.attendance.export', meeting.id)"
             target="_blank"
@@ -23,7 +28,7 @@
             Exporter PDF
           </a>
           <button
-            v-if="!meeting.is_completed"
+            v-if="isSecretary && (meeting.status === 'planned' || meeting.status === 'scheduled') && !meeting.is_completed"
             @click="confirmFinalize"
             class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium hover:bg-blue-200"
           >
@@ -44,6 +49,20 @@
             <div class="ml-3">
               <p class="text-sm text-yellow-700">
                 Cette réunion est déjà marquée comme terminée. Vous pouvez consulter la liste de présence mais vous ne pouvez plus la modifier.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Message informatif pour les sous-préfets -->
+        <div v-if="isSubPrefect && !meeting.is_completed" class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <InformationCircleIcon class="h-5 w-5 text-blue-400" aria-hidden="true" />
+            </div>
+            <div class="ml-3">
+              <p class="text-sm text-blue-700">
+                Vous êtes en mode consultation. Seuls les secrétaires peuvent modifier la liste de présence, et uniquement pour les réunions en statut "planifié".
               </p>
             </div>
           </div>
@@ -73,6 +92,12 @@
             </div>
           </div>
         </div>
+
+        <!-- Analyse géographique -->
+        <GeographicAnalysis 
+          :attendees="attendees" 
+          :max-distance="100"
+        />
 
         <!-- Barre de recherche -->
         <div class="bg-white shadow sm:rounded-lg">
@@ -147,7 +172,6 @@
                       </div>
                       <div>
                         <div class="text-sm font-medium text-gray-900">{{ attendee.name }}</div>
-                        <div class="text-sm text-gray-500">{{ attendee.phone || 'Pas de téléphone' }}</div>
                       </div>
                     </div>
                   </td>
@@ -156,17 +180,10 @@
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div class="text-sm text-gray-900">{{ attendee.role || '-' }}</div>
+                    <div v-if="attendee.phone" class="text-xs text-gray-500">📞 {{ attendee.phone }}</div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
-                    <span :class="{
-                      'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full': true,
-                      'bg-green-100 text-green-800': attendee.attendance_status === 'present',
-                      'bg-red-100 text-red-800': attendee.attendance_status === 'absent',
-                      'bg-yellow-100 text-yellow-800': attendee.attendance_status === 'replaced',
-                      'bg-gray-100 text-gray-800': attendee.attendance_status === 'expected'
-                    }">
-                      {{ formatStatus(attendee.attendance_status) }}
-                    </span>
+                    <StatusBadge :status="attendee.attendance_status" />
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div v-if="attendee.replacement_name" class="text-sm text-gray-900">
@@ -178,7 +195,7 @@
                   <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div class="flex space-x-2">
                       <button
-                        v-if="!meeting.is_completed"
+                        v-if="isSecretary && (meeting.status === 'planned' || meeting.status === 'scheduled') && !meeting.is_completed"
                         @click="markPresent(attendee)"
                         :class="[
                           'p-1 rounded-full',
@@ -191,7 +208,7 @@
                         <CheckCircleIcon class="h-5 w-5" />
                       </button>
                       <button
-                        v-if="!meeting.is_completed"
+                        v-if="isSecretary && (meeting.status === 'planned' || meeting.status === 'scheduled') && !meeting.is_completed"
                         @click="markAbsent(attendee)"
                         :class="[
                           'p-1 rounded-full',
@@ -204,7 +221,7 @@
                         <XCircleIcon class="h-5 w-5" />
                       </button>
                       <button
-                        v-if="!meeting.is_completed"
+                        v-if="isSecretary && (meeting.status === 'planned' || meeting.status === 'scheduled') && !meeting.is_completed"
                         @click="showReplacementModal(attendee)"
                         :class="[
                           'p-1 rounded-full',
@@ -217,7 +234,7 @@
                         <ArrowPathIcon class="h-5 w-5" />
                       </button>
                       <button
-                        v-if="!meeting.is_completed"
+                        v-if="isSecretary && (meeting.status === 'planned' || meeting.status === 'scheduled') && !meeting.is_completed"
                         @click="showCommentModal(attendee)"
                         :class="[
                           'p-1 rounded-full',
@@ -230,13 +247,13 @@
                         <ChatBubbleLeftIcon class="h-5 w-5" />
                       </button>
                       <button
-                        v-if="!meeting.is_completed"
+                        v-if="isSecretary && (meeting.status === 'planned' || meeting.status === 'scheduled') && !meeting.is_completed"
                         @click="showPhotoModal(attendee)"
                         :class="[
                           'p-1 rounded-full',
                           attendee.presence_photo 
-                            ? 'bg-purple-100 text-purple-600' 
-                            : 'bg-gray-100 text-gray-600 hover:bg-purple-100 hover:text-purple-600'
+                            ? 'bg-green-100 text-green-600' 
+                            : 'bg-gray-100 text-gray-600 hover:bg-green-100 hover:text-green-600'
                         ]"
                         :title="attendee.presence_photo ? 'Voir la photo' : 'Prendre une photo'"
                       >
@@ -280,17 +297,49 @@
           </div>
         </div>
 
+        <!-- Indicateur des participants incomplets -->
+        <div v-if="getIncompleteParticipants().length > 0" class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <div class="flex items-start">
+            <svg class="w-5 h-5 text-yellow-400 mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+            <div>
+              <h4 class="text-sm font-medium text-yellow-800">
+                {{ getIncompleteParticipants().length }} participant(s) avec des informations incomplètes
+              </h4>
+              <p class="text-sm text-yellow-700 mt-1">
+                Certains participants n'ont pas encore de statut défini ou de photo de présence. 
+                Ces informations sont recommandées pour une gestion complète de la présence.
+              </p>
+              <div class="mt-2 text-xs text-yellow-600">
+                <p class="font-medium">Participants concernés :</p>
+                <ul class="mt-1 space-y-1">
+                  <li v-for="participant in getIncompleteParticipants()" :key="participant.id" class="flex items-center space-x-2">
+                    <span>• {{ participant.name }}</span>
+                    <span v-if="!participant.attendance_status || participant.attendance_status === 'expected'" class="px-2 py-0.5 bg-yellow-200 text-yellow-800 rounded text-xs">
+                      Statut manquant
+                    </span>
+                    <span v-if="(participant.attendance_status === 'present' || participant.attendance_status === 'replaced') && !participant.presence_photo" class="px-2 py-0.5 bg-yellow-200 text-yellow-800 rounded text-xs">
+                      Photo manquante
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Bouton de retour en bas de page -->
         <div class="flex justify-center mt-8 mb-4">
-          <Link
-            :href="route('meetings.show', meeting.id)"
+          <button
+            @click="handleReturnToMeeting"
             class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
             </svg>
             Retourner à la page de la réunion
-          </Link>
+          </button>
         </div>
       </div>
     </div>
@@ -440,9 +489,22 @@
             <p>Photo prise le {{ formatDate(selectedAttendee.presence_timestamp) }}</p>
             <p>Localisation : {{ formatLocation(selectedAttendee.presence_location) }}</p>
           </div>
+          
+          <!-- Bouton pour supprimer la photo existante -->
+          <div class="mt-4 flex justify-center">
+            <button
+              @click="deleteExistingPhoto"
+              class="px-4 py-2 bg-red-100 text-red-700 rounded-md hover:bg-red-200 flex items-center space-x-2"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+              </svg>
+              <span>Supprimer cette photo</span>
+            </button>
+          </div>
         </div>
         <div v-else>
-          <PhotoCapture @photo-captured="handlePhotoCaptured" />
+          <PhotoCapture @photo-captured="handlePhotoCaptured" @photo-cancelled="closePhotoModal" />
         </div>
         
         <div class="mt-6 flex justify-end">
@@ -460,8 +522,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { Link, router } from '@inertiajs/vue3'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { Link, router, usePage } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import Modal from '@/Components/Modal.vue'
 import PhotoCapture from '@/Components/PhotoCapture.vue'
@@ -472,10 +534,14 @@ import {
   ArrowPathIcon,
   ChatBubbleLeftIcon,
   InformationCircleIcon,
-  CameraIcon
+  CameraIcon,
+  UserIcon
 } from '@heroicons/vue/24/outline'
 import axios from 'axios'
 import { useToast } from '@/Composables/useToast'
+import StatusBadge from '@/Components/StatusBadge.vue'
+import GeographicAnalysis from '@/Components/GeographicAnalysis.vue'
+import { analyzeGeographicConsistency, calculateDistance, formatDistance } from '@/utils/geoUtils'
 
 const props = defineProps({
   meeting: Object,
@@ -491,6 +557,42 @@ const finalizeModalOpen = ref(false)
 const photoModalOpen = ref(false)
 const selectedAttendee = ref(null)
 const localAttendees = ref([...props.attendees])
+
+// Détecter les rôles de l'utilisateur
+const isSubPrefect = computed(() => {
+  const user = usePage().props.auth.user
+  console.log('Debug - User:', user)
+  console.log('Debug - User roles:', user?.roles)
+  if (!user || !user.roles) return false
+  return user.roles.some(role => ['sous-prefet', 'Sous-prefet'].includes(role.name))
+})
+
+const isSecretary = computed(() => {
+  const user = usePage().props.auth.user
+  console.log('Debug - User for secretary check:', user)
+  console.log('Debug - User roles for secretary check:', user?.roles)
+  if (!user || !user.roles) {
+    console.log('Debug - No user or no roles found')
+    return false
+  }
+  const hasSecretaryRole = user.roles.some(role => ['secretaire', 'Secrétaire', 'admin', 'Admin'].includes(role.name))
+  console.log('Debug - Has secretary role:', hasSecretaryRole)
+  return hasSecretaryRole
+})
+
+// Debug pour les conditions d'affichage des boutons
+const debugButtonConditions = computed(() => {
+  console.log('Debug - Meeting status:', props.meeting.status)
+  console.log('Debug - Meeting is_completed:', props.meeting.is_completed)
+  console.log('Debug - Is secretary:', isSecretary.value)
+  console.log('Debug - Should show buttons:', isSecretary.value && (props.meeting.status === 'planned' || props.meeting.status === 'scheduled') && !props.meeting.is_completed)
+  return {
+    isSecretary: isSecretary.value,
+    meetingStatus: props.meeting.status,
+    isCompleted: props.meeting.is_completed,
+    shouldShowButtons: isSecretary.value && (props.meeting.status === 'planned' || props.meeting.status === 'scheduled') && !props.meeting.is_completed
+  }
+})
 
 // Données pour les formulaires
 const replacementData = ref({
@@ -570,17 +672,6 @@ const formatDate = (date) => {
     hour: '2-digit',
     minute: '2-digit'
   })
-}
-
-// Formatter un statut de présence
-const formatStatus = (status) => {
-  switch (status) {
-    case 'present': return 'Présent'
-    case 'absent': return 'Absent'
-    case 'replaced': return 'Remplacé'
-    case 'expected': return 'Prévu'
-    default: return status
-  }
 }
 
 // Marquer un participant comme présent
@@ -761,11 +852,8 @@ const handlePhotoCaptured = async (photoData) => {
       }
     )
 
-    // Mettre à jour l'attendee dans la liste
-    const index = localAttendees.value.findIndex(a => a.id === selectedAttendee.value.id)
-    if (index !== -1) {
-      localAttendees.value[index] = response.data.attendee
-    }
+    // Utiliser updateAttendee pour préserver toutes les propriétés
+    updateAttendee(selectedAttendee.value.id, response.data.attendee)
 
     closePhotoModal()
     toast.success('Photo de présence enregistrée avec succès')
@@ -777,6 +865,181 @@ const handlePhotoCaptured = async (photoData) => {
 
 const formatLocation = (location) => {
   if (!location) return 'Non disponible'
-  return `${location.latitude.toFixed(6)}, ${location.longitude.toFixed(6)}`
+  
+  // Vérifier que latitude et longitude sont des nombres valides
+  const lat = parseFloat(location.latitude)
+  const lng = parseFloat(location.longitude)
+  
+  if (isNaN(lat) || isNaN(lng)) {
+    return 'Coordonnées invalides'
+  }
+  
+  return `${lat.toFixed(6)}, ${lng.toFixed(6)}`
+}
+
+const deleteExistingPhoto = async () => {
+  if (!selectedAttendee.value) return
+  
+  try {
+    const response = await axios.post(route('meetings.attendees.delete-photo', selectedAttendee.value.id))
+    updateAttendee(selectedAttendee.value.id, response.data.attendee)
+    toast.success('Photo supprimée avec succès')
+  } catch (error) {
+    console.error('Erreur:', error)
+    toast.error(error.response?.data?.message || 'Erreur lors de la suppression de la photo')
+  }
+}
+
+const isGeographicOutlier = (attendee) => {
+  // Analyser la cohérence géographique de tous les participants
+  const positions = localAttendees.value.filter(a => 
+    a.presence_location && 
+    a.presence_location.latitude && 
+    a.presence_location.longitude
+  ).map(a => ({
+    ...a,
+    latitude: a.presence_location.latitude,
+    longitude: a.presence_location.longitude
+  }))
+  
+  const analysis = analyzeGeographicConsistency(positions, 100)
+  
+  // Vérifier si ce participant est dans les anomalies
+  return analysis.outliers.some(outlier => outlier.attendee.id === attendee.id)
+}
+
+const getDistanceFromCenter = (attendee) => {
+  if (!attendee.presence_location) return 0
+  
+  // Calculer le centre de tous les participants
+  const positions = localAttendees.value.filter(a => 
+    a.presence_location && 
+    a.presence_location.latitude && 
+    a.presence_location.longitude
+  ).map(a => ({
+    latitude: a.presence_location.latitude,
+    longitude: a.presence_location.longitude
+  }))
+  
+  if (positions.length === 0) return 0
+  
+  // Calculer le centroïde
+  const sumLat = positions.reduce((sum, pos) => sum + parseFloat(pos.latitude), 0)
+  const sumLng = positions.reduce((sum, pos) => sum + parseFloat(pos.longitude), 0)
+  const centerLat = sumLat / positions.length
+  const centerLng = sumLng / positions.length
+  
+  // Calculer la distance
+  return calculateDistance(
+    centerLat,
+    centerLng,
+    parseFloat(attendee.presence_location.latitude),
+    parseFloat(attendee.presence_location.longitude)
+  )
+}
+
+const getStatusClass = (status) => {
+  const classes = {
+    present: 'bg-green-100 text-green-800',
+    absent: 'bg-red-100 text-red-800',
+    replaced: 'bg-yellow-100 text-yellow-800',
+    expected: 'bg-gray-100 text-gray-800'
+  }
+  return classes[status] || classes.expected
+}
+
+const getStatusText = (status, type) => {
+  if (type === 'attendance') {
+    const texts = {
+      present: 'Présent',
+      absent: 'Absent',
+      replaced: 'Remplacé',
+      expected: 'En attente'
+    }
+    return texts[status] || 'En attente'
+  }
+  return status
+}
+
+// Vérification des participants incomplets
+const getIncompleteParticipants = () => {
+  return localAttendees.value.filter(attendee => {
+    // Vérifier si le participant n'a pas de statut de présence
+    const noStatus = !attendee.attendance_status || attendee.attendance_status === 'expected'
+    
+    // Vérifier si le participant n'a pas de photo (seulement pour les présents)
+    const noPhoto = (attendee.attendance_status === 'present' || attendee.attendance_status === 'replaced') && !attendee.presence_photo
+    
+    return noStatus || noPhoto
+  })
+}
+
+// Fonction pour afficher l'alerte avant de quitter
+const showExitWarning = () => {
+  const incompleteParticipants = getIncompleteParticipants()
+  
+  if (incompleteParticipants.length > 0) {
+    const message = `Attention : ${incompleteParticipants.length} participant(s) n'ont pas encore toutes les informations renseignées.\n\n` +
+      incompleteParticipants.map(p => {
+        const issues = []
+        if (!p.attendance_status || p.attendance_status === 'expected') {
+          issues.push('statut non défini')
+        }
+        if ((p.attendance_status === 'present' || p.attendance_status === 'replaced') && !p.presence_photo) {
+          issues.push('photo manquante')
+        }
+        return `• ${p.name} : ${issues.join(', ')}`
+      }).join('\n')
+    
+    return message
+  }
+  
+  return null
+}
+
+// Événement avant de quitter la page
+const handleBeforeUnload = (event) => {
+  const warningMessage = showExitWarning()
+  if (warningMessage) {
+    event.preventDefault()
+    event.returnValue = warningMessage
+    return warningMessage
+  }
+}
+
+// Ajouter l'écouteur d'événement au montage du composant
+onMounted(() => {
+  window.addEventListener('beforeunload', handleBeforeUnload)
+})
+
+// Nettoyer l'écouteur d'événement au démontage du composant
+onBeforeUnmount(() => {
+  window.removeEventListener('beforeunload', handleBeforeUnload)
+})
+
+// Fonction pour gérer le retour à la réunion avec vérification
+const handleReturnToMeeting = () => {
+  const incompleteParticipants = getIncompleteParticipants()
+  
+  if (incompleteParticipants.length > 0) {
+    const message = `Attention : ${incompleteParticipants.length} participant(s) n'ont pas encore toutes les informations renseignées.\n\n` +
+      incompleteParticipants.map(p => {
+        const issues = []
+        if (!p.attendance_status || p.attendance_status === 'expected') {
+          issues.push('statut non défini')
+        }
+        if ((p.attendance_status === 'present' || p.attendance_status === 'replaced') && !p.presence_photo) {
+          issues.push('photo manquante')
+        }
+        return `• ${p.name} : ${issues.join(', ')}`
+      }).join('\n') + '\n\nVoulez-vous quand même quitter cette page ?'
+    
+    if (confirm(message)) {
+      router.visit(route('meetings.show', props.meeting.id))
+    }
+  } else {
+    // Aucun participant incomplet, navigation directe
+    router.visit(route('meetings.show', props.meeting.id))
+  }
 }
 </script> 

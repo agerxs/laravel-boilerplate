@@ -14,15 +14,13 @@ class LocalCommitteeController extends Controller
         
         $user = auth()->user();
         
-        // Filtrer par localité si l'utilisateur est un préfet ou un secrétaire
-        if ($user->hasRole(['prefet', 'Prefet', 'sous-prefet', 'Sous-prefet', 'secretaire', 'Secrétaire'])) {
-            if ($user->hasRole(['prefet', 'Prefet'])) {
-                // Pour les préfets, montrer les comités de leur département et des sous-préfectures associées
-                $query->whereHas('locality', function ($q) use ($user) {
-                    $q->where('id', $user->locality_id)
-                      ->orWhere('parent_id', $user->locality_id);
-                });
-            } else {
+        // Les gestionnaires peuvent voir tous les comités locaux
+        if (!in_array('gestionnaire', $user->roles->pluck('name')->toArray()) && !in_array('Gestionnaire', $user->roles->pluck('name')->toArray())) {
+            // Filtrer par localité si l'utilisateur est un préfet ou un secrétaire
+            if (in_array('sous-prefet', $user->roles->pluck('name')->toArray()) || 
+                      in_array('Sous-prefet', $user->roles->pluck('name')->toArray()) ||
+                      in_array('secretaire', $user->roles->pluck('name')->toArray()) ||
+                      in_array('Secrétaire', $user->roles->pluck('name')->toArray())) {
                 // Pour les autres (sous-préfets et secrétaires), montrer uniquement les comités de leur localité
                 $query->where('locality_id', $user->locality_id);
             }

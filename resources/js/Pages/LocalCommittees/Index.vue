@@ -1,122 +1,130 @@
 <template>
-  <Head title="Comités locaux" />
+  <Head title="Comités Locaux" />
 
-  <AppLayout title="Comités locaux">
-    <div class="space-y-6">
-      <!-- Header avec actions -->
-      <div class="flex justify-between items-center">
-        <div>
-          <h2 class="text-xl font-semibold text-gray-900">
-            Liste des comités locaux
-          </h2>
-          <p class="mt-1 text-sm text-gray-600">
-            Gérez les comités locaux et leurs membres
-          </p>
+  <AppLayout title="Gestion des Comités Locaux">
+    <div class="py-12">
+      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+
+        <!-- Messages flash -->
+        <div v-if="page.props.flash.success" class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+          {{ page.props.flash.success }}
         </div>
-        <Link v-if="auth.user.roles.includes('admin')"
-          :href="route('local-committees.create')"
-          class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 rounded-lg text-white font-medium text-sm"
-        >
-          <PlusIcon class="h-5 w-5 mr-2" />
-          Nouveau comité
-        </Link>
-      </div>
+        <div v-if="page.props.flash.error" class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          {{ page.props.flash.error }}
+        </div>
 
-      <!-- Filtres -->
-      <div class="bg-white rounded-lg shadow p-4 space-y-4">
-        <div class="flex gap-4">
-          <div class="flex-1">
-            <input
-              type="text"
-              v-model="search"
-              placeholder="Rechercher..."
-              class="w-full rounded-lg border-gray-300 focus:border-primary-500 focus:ring-primary-500"
-            />
+        <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">Liste des Comités Locaux</h2>
+            
+            <Link v-if="hasRole(props.auth.user.roles, 'admin')"
+              :href="route('local-committees.create')"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium inline-flex items-center"
+            >
+              <PlusIcon class="h-4 w-4 mr-2" />
+              Nouveau Comité
+            </Link>
           </div>
-        </div>
-      </div>
 
-      <!-- Table -->
-      <div class="bg-white rounded-lg shadow overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Nom
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Sous-préfecture
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Membres
-              </th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Statut
-              </th>
-              <th scope="col" class="relative px-6 py-3">
-                <span class="sr-only">Actions</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="committee in committees.data" :key="committee.id" class="hover:bg-gray-50">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">
-                  {{ committee.name }}
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">
-                  {{ committee.locality?.name }}
-                </div>
-              </td>
-              <td class="px-6 py-4">
-                <div class="text-sm text-gray-900">
-                  <AvatarGroup :members="committee.members" />
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <StatusBadge :status="committee.status" />
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <div class="flex items-center justify-end space-x-3">
-                  <Link
-                    :href="route('local-committees.show', { id: committee.id })"
-                    class="text-blue-500 hover:text-blue-700 inline-flex items-center"
-                    title="Voir le comité"
-                  >
-                    <EyeIcon class="h-5 w-5" />
-                  </Link>
-                  <Link
-                    :href="route('local-committees.edit', committee.id)"
-                    class="text-primary-600 hover:text-primary-900 inline-flex items-center"
-                    title="Modifier le comité"
-                  >
-                    <PencilIcon class="h-5 w-5" />
-                  </Link>
-                  <button
-                    @click="openRepresentativesModal(committee)"
-                    class="text-green-600 hover:text-green-900 inline-flex items-center"
-                    title="Voir les représentants par village"
-                  >
-                    <UserGroupIcon class="h-5 w-5" />
-                  </button>
-                  <button v-if="auth.user.roles.includes('admin')"
-                    @click="deleteCommittee(committee.id)"
-                    class="text-red-500 hover:text-red-700 inline-flex items-center"
-                    title="Supprimer le comité"
-                  >
-                    <TrashIcon class="h-5 w-5" />
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+          <!-- Filtres -->
+          <div class="mb-6 bg-gray-50 p-4 rounded-lg">
+            <h3 class="text-lg font-medium mb-4">Filtres</h3>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div class="md:col-span-3">
+                <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Rechercher</label>
+                <input
+                  id="search"
+                  type="text"
+                  v-model="search"
+                  placeholder="Rechercher par nom, sous-préfecture..."
+                  class="w-full border-gray-300 rounded-md shadow-sm"
+                  @keyup.enter="applyFilters"
+                />
+              </div>
+            </div>
+            <div class="mt-4 flex space-x-2 justify-end">
+              <button
+                @click="applyFilters"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+              >
+                Appliquer
+              </button>
+              <button
+                @click="clearFilters"
+                class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-md text-sm font-medium"
+              >
+                Réinitialiser
+              </button>
+            </div>
+          </div>
 
-        <!-- Pagination -->
-        <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
-          <Pagination :links="committees.links" />
+          <!-- Table -->
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sous-préfecture</th>
+                  <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Membres</th>
+                  <th scope="col" class="relative px-6 py-3"><span class="sr-only">Actions</span></th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr v-if="committees.data.length === 0">
+                  <td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Aucun comité trouvé.</td>
+                </tr>
+                <tr v-for="committee in committees.data" :key="committee.id" class="hover:bg-gray-50">
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">
+                      {{ committee.name }}
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">
+                      {{ committee.locality?.name }}
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="text-sm text-gray-900">
+                      <AvatarGroup :members="committee.members" />
+                    </div>
+                  </td>
+                 
+                  <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div class="flex items-center justify-end space-x-3">
+                      <Link
+                        :href="route('local-committees.show', { id: committee.id })"
+                        class="text-blue-500 hover:text-blue-700 inline-flex items-center"
+                        title="Voir le comité"
+                      >
+                        <EyeIcon class="h-5 w-5" />
+                      </Link>
+                      <Link
+                        v-if="hasRole(props.auth.user.roles, 'admin') || hasRole(props.auth.user.roles, 'secretaire')"
+                        :href="route('local-committees.edit', committee.id)"
+                        class="text-primary-600 hover:text-primary-900 inline-flex items-center"
+                        title="Modifier le comité"
+                      >
+                        <PencilIcon class="h-5 w-5" />
+                      </Link>
+                     
+                      <button v-if="hasRole(props.auth.user.roles, 'admin')"
+                        @click="deleteCommittee(committee.id)"
+                        class="text-red-500 hover:text-red-700 inline-flex items-center"
+                        title="Supprimer le comité"
+                      >
+                        <TrashIcon class="h-5 w-5" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mt-4">
+            <Pagination :links="committees.links" />
+          </div>
         </div>
       </div>
     </div>
@@ -175,7 +183,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { Link, router } from '@inertiajs/vue3'
+import { Head, Link, router, usePage } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import Pagination from '@/Components/Pagination.vue'
 import { computed } from 'vue'
@@ -189,6 +197,8 @@ import {
   UserGroupIcon
 } from '@heroicons/vue/24/outline'
 import axios from 'axios'
+import { hasRole } from '@/utils/authUtils'
+import { Role } from '@/types/Role'
 
 interface Member {
   id: number;
@@ -212,9 +222,11 @@ interface Committee {
 }
 
 interface Props {
-  auth:{user: {
-    roles: string[];
-  }};
+  auth: {
+    user: {
+      roles: Role[];
+    };
+  };
   committees: {
     data: Committee[];
     links: any[];
@@ -225,24 +237,26 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const page = usePage()
 
 const search = ref(props.filters.search)
 
-watch(search, (value) => {
+const applyFilters = () => {
   router.get(
     route('local-committees.index'),
-    { search: value },
-    { preserveState: true, preserveScroll: true }
+    { search: search.value },
+    { preserveState: true, replace: true }
   )
-})
+}
+
+const clearFilters = () => {
+  search.value = ''
+  applyFilters()
+}
 
 const deleteCommittee = (id: number) => {
   if (confirm('Êtes-vous sûr de vouloir supprimer ce comité ?')) {
-    router.delete(route('local-committees.destroy', id), {
-      onSuccess: () => {
-        alert('Comité supprimé avec succès.');
-      }
-    });
+    router.delete(route('local-committees.destroy', id))
   }
 }
 
@@ -281,6 +295,12 @@ const openRepresentativesModal = async (committee: Committee) => {
     console.error('Erreur lors de la récupération des représentants:', error);
   }
 };
+
+console.log('Rôles initiaux de l\'utilisateur:', props.auth.user.roles);
+
+watch(() => props.auth.user.roles, (newRoles) => {
+  console.log('Rôles de l\'utilisateur:', newRoles);
+});
 </script>
 
 <style scoped>

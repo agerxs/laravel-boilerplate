@@ -117,16 +117,10 @@
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <div v-for="role in user.roles" :key="role" class="mb-2">
-                      <span
-                        :class="{
-                          'px-2 py-1 text-xs rounded-full': true,
-                          'bg-green-100 text-green-800': user.payment_rates[role]?.is_active,
-                          'bg-red-100 text-red-800': !user.payment_rates[role]?.is_active && user.payment_rates[role],
-                          'bg-gray-100 text-gray-800': !user.payment_rates[role]
-                        }"
-                      >
-                        {{ getStatusLabel(user.payment_rates[role]) }}
-                      </span>
+                      <StatusBadge 
+                        :status="user.payment_rates[role]?.is_active ? 'active' : (!user.payment_rates[role] ? 'inactive' : 'inactive')"
+                        :show-icon="false"
+                      />
                     </div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -162,6 +156,7 @@ import TextInput from '@/Components/TextInput.vue'
 import Pagination from '@/Components/Pagination.vue'
 import { useToast } from '@/Composables/useToast'
 import axios from 'axios'
+import StatusBadge from '@/Components/StatusBadge.vue'
 
 const props = defineProps({
   users: Object,
@@ -195,11 +190,6 @@ const applyFilters = () => {
     preserveState: true,
     replace: true
   })
-}
-
-const getStatusLabel = (rate) => {
-  if (!rate) return 'Non configuré'
-  return rate.is_active ? 'Actif' : 'Inactif'
 }
 
 const saveUserRates = async (user) => {

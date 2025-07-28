@@ -74,7 +74,7 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <div>
-                                                    <InputLabel for="amount" value="Montant *" class="required" />
+                                                    <InputLabel for="amount" value="Montant" :isRequired="true" />
                                                     <TextInput
                                                         id="amount"
                                                         v-model="payment.amount"
@@ -205,7 +205,6 @@ function formatCurrency(amount) {
 
 function translateRole(role) {
     const translations = {
-        'prefet': 'Préfet',
         'sous_prefet': 'Sous-préfet',
         'secretaire': 'Secrétaire',
         'representant': 'Représentant'

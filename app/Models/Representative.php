@@ -11,24 +11,32 @@ class Representative extends Model
     use HasFactory;
 
     protected $fillable = [
-        'first_name',
-        'last_name',
-        'village_id',
+        'name',
+        'phone',
         'locality_id',
         'local_committee_id',
         'role',
-        'phone',
+        'createdAt',
+        'updatedAt',
+        'isSynced',
+        'isDirty',
+        'lastModified',
+        'remoteId'
     ];
 
-    public function village(): BelongsTo
-    {
-        return $this->belongsTo(Village::class);
-    }
+    protected $casts = [
+        'isSynced' => 'boolean',
+        'isDirty' => 'boolean',
+        'createdAt' => 'datetime',
+        'updatedAt' => 'datetime',
+        'lastModified' => 'datetime',
+    ];
 
     public function locality(): BelongsTo
     {
-        return $this->belongsTo(Locality::class);
+        return $this->belongsTo(Locality::class, 'locality_id');
     }
+
 
     public function localCommittee(): BelongsTo
     {

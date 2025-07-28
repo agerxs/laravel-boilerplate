@@ -20,12 +20,12 @@ const formatAmount = (amount) => {
 
 const getStatusClass = (status) => {
     const classes = {
-        draft: 'bg-gray-100 text-gray-800',
-        submitted: 'bg-yellow-100 text-yellow-800',
-        validated: 'bg-green-100 text-green-800',
-        rejected: 'bg-red-100 text-red-800',
+        draft: 'bg-slate-100 text-slate-700 border border-slate-200',
+        submitted: 'bg-amber-100 text-amber-700 border border-amber-200',
+        validated: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
+        rejected: 'bg-red-100 text-red-700 border border-red-200'
     };
-    return `px-2 py-1 rounded-full text-xs ${classes[status]}`;
+    return classes[status] || 'bg-slate-100 text-slate-700 border border-slate-200';
 };
 
 const getStatusText = (status) => {

@@ -15,19 +15,19 @@ class PaymentRateTest extends TestCase
     {
         // Créer un taux actif
         $activeRate = PaymentRate::factory()->create([
-            'role' => 'prefet',
+            'role' => 'sous-prefet',
             'meeting_rate' => 15000,
             'is_active' => true
         ]);
 
         // Créer un taux inactif
         PaymentRate::factory()->create([
-            'role' => 'prefet',
+            'role' => 'sous-prefet',
             'meeting_rate' => 10000,
             'is_active' => false
         ]);
 
-        $result = PaymentRate::getActiveRateForRole('prefet');
+        $result = PaymentRate::getActiveRateForRole('sous-prefet');
 
         $this->assertEquals($activeRate->id, $result->id);
         $this->assertEquals(15000, $result->meeting_rate);
@@ -38,20 +38,20 @@ class PaymentRateTest extends TestCase
     {
         // Créer un premier taux actif
         PaymentRate::factory()->create([
-            'role' => 'prefet',
+            'role' => 'sous-prefet',
             'meeting_rate' => 15000,
             'is_active' => true
         ]);
 
         // Créer un second taux actif pour le même rôle
         $newRate = PaymentRate::factory()->create([
-            'role' => 'prefet',
+            'role' => 'sous-prefet',
             'meeting_rate' => 20000,
             'is_active' => true
         ]);
 
         // Vérifier qu'il n'y a qu'un seul taux actif
-        $activeRates = PaymentRate::where('role', 'prefet')
+        $activeRates = PaymentRate::where('role', 'sous-prefet')
             ->where('is_active', true)
             ->count();
 

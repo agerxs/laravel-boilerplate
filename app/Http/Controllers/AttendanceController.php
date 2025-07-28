@@ -15,6 +15,38 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class AttendanceController extends Controller
 {
     /**
+     * Formater les données d'un attendee
+     */
+    private function formatAttendee(MeetingAttendee $attendee)
+    {
+        // Recharger l'attendee avec les relations
+        $attendee->load('village');
+
+        return [
+            'id' => $attendee->id,
+            'name' => $attendee->name,
+            'phone' => $attendee->phone,
+            'role' => $attendee->role,
+            'village' => [
+                'id' => $attendee->localite_id,
+                'name' => $attendee->village ? $attendee->village->name : ($attendee->localite_id ? 'Village à identifier' : 'Pas de village associé')
+            ],
+            'is_expected' => $attendee->is_expected,
+            'is_present' => $attendee->is_present,
+            'attendance_status' => $attendee->attendance_status,
+            'replacement_name' => $attendee->replacement_name,
+            'replacement_phone' => $attendee->replacement_phone,
+            'replacement_role' => $attendee->replacement_role,
+            'arrival_time' => $attendee->arrival_time,
+            'comments' => $attendee->comments,
+            'payment_status' => $attendee->payment_status,
+            'presence_photo' => $attendee->presence_photo,
+            'presence_location' => $attendee->presence_location,
+            'presence_timestamp' => $attendee->presence_timestamp
+        ];
+    }
+
+    /**
      * Affiche l'interface de gestion de la liste de présence pour une réunion.
      */
     public function index(Meeting $meeting)
@@ -33,25 +65,7 @@ class AttendanceController extends Controller
             ->with('village')
             ->get()
             ->map(function ($attendee) {
-                return [
-                    'id' => $attendee->id,
-                    'name' => $attendee->name,
-                    'phone' => $attendee->phone,
-                    'role' => $attendee->role,
-                    'village' => [
-                        'id' => $attendee->localite_id,
-                        'name' => $attendee->village ? $attendee->village->name : ($attendee->localite_id ? 'Village à identifier' : 'Pas de village associé')
-                    ],
-                    'is_expected' => $attendee->is_expected,
-                    'is_present' => $attendee->is_present,
-                    'attendance_status' => $attendee->attendance_status,
-                    'replacement_name' => $attendee->replacement_name,
-                    'replacement_phone' => $attendee->replacement_phone,
-                    'replacement_role' => $attendee->replacement_role,
-                    'arrival_time' => $attendee->arrival_time,
-                    'comments' => $attendee->comments,
-                    'payment_status' => $attendee->payment_status
-                ];
+                return $this->formatAttendee($attendee);
             });
         
         return Inertia::render('Meetings/Attendance', [
@@ -93,7 +107,7 @@ class AttendanceController extends Controller
 
         return response()->json([
             'message' => 'Participant marqué comme présent',
-            'attendee' => $attendee
+            'attendee' => $this->formatAttendee($attendee)
         ]);
     }
 
@@ -114,7 +128,7 @@ class AttendanceController extends Controller
 
         return response()->json([
             'message' => 'Participant marqué comme absent',
-            'attendee' => $attendee
+            'attendee' => $this->formatAttendee($attendee)
         ]);
     }
 
@@ -137,7 +151,7 @@ class AttendanceController extends Controller
 
         return response()->json([
             'message' => 'Remplaçant enregistré avec succès',
-            'attendee' => $attendee
+            'attendee' => $this->formatAttendee($attendee)
         ]);
     }
 
@@ -156,7 +170,7 @@ class AttendanceController extends Controller
 
         return response()->json([
             'message' => 'Commentaire ajouté avec succès',
-            'attendee' => $attendee
+            'attendee' => $this->formatAttendee($attendee)
         ]);
     }
 

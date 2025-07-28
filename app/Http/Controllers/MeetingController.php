@@ -22,6 +22,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Models\MeetingPaymentList;
 use App\Models\MeetingPaymentItem;
+use App\Imports\MeetingsImport;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Storage;
+use App\Models\BulkImport;
 
 class MeetingController extends Controller
 {
@@ -39,19 +43,11 @@ class MeetingController extends Controller
         $user = auth()->user();
         
         // Filtrer par localité si l'utilisateur est un préfet ou un secrétaire
-        if ($user->hasRole(['prefet', 'Prefet', 'sous-prefet', 'Sous-prefet', 'secretaire', 'Secrétaire'])) {
-            if ($user->hasRole(['prefet', 'Prefet'])) {
-                // Pour les préfets, montrer les réunions de leur département et des sous-préfectures associées
-                $query->whereHas('localCommittee.locality', function($q) use ($user) {
-                    $q->where('id', $user->locality_id)
-                      ->orWhere('parent_id', $user->locality_id);
-                });
-            } else {
-                // Pour les autres (sous-préfets et secrétaires), montrer uniquement les réunions de leur localité
-                $query->whereHas('localCommittee', function($q) use ($user) {
-                    $q->where('locality_id', $user->locality_id);
-                });
-            }
+        if ($user->hasRole(['sous-prefet', 'Sous-prefet', 'secretaire', 'Secrétaire'])) {
+            // Pour les autres (sous-préfets et secrétaires), montrer uniquement les réunions de leur localité
+            $query->whereHas('localCommittee', function($q) use ($user) {
+                $q->where('locality_id', $user->locality_id);
+            });
         }
         
         // Appliquer la recherche si elle existe
@@ -65,7 +61,7 @@ class MeetingController extends Controller
         $direction = $request->input('direction', 'desc');
         
         // Valider la colonne de tri pour éviter les injections SQL
-        $allowedColumns = ['title', 'scheduled_date', 'status'];
+        $allowedColumns = ['title', 'scheduled_date', 'status', 'updated_at'];
         
         if (in_array($sortColumn, $allowedColumns)) {
             $query->orderBy($sortColumn, $direction);
@@ -86,9 +82,11 @@ class MeetingController extends Controller
                     'scheduled_date' => $meeting->scheduled_date,
                     'status' => $meeting->status,
                     'locality_name' => $meeting->localCommittee->locality->name ?? 'Non défini',
+                    'updated_at' => $meeting->updated_at,
                 ];
             });
         
+         
         return Inertia::render('Meetings/Index', [
             'meetings' => $meetings,
             'filters' => [
@@ -119,6 +117,34 @@ class MeetingController extends Controller
         
         return Inertia::render('Meetings/Create', [
             'localCommittees' => $localCommittees,
+        ]);
+    }
+
+    public function createMultiple(Request $request)
+    {
+        $user = auth()->user();
+        $query = LocalCommittee::query();
+
+        if ($user->hasRole(['prefet', 'Prefet'])) {
+            // Pour les préfets, montrer les comités de leur département et sous-préfectures
+            $query->whereHas('locality', function ($q) use ($user) {
+                $q->where('id', $user->locality_id)
+                  ->orWhere('parent_id', $user->locality_id);
+            });
+        } elseif ($user->hasRole(['sous-prefet', 'Sous-prefet', 'secretaire', 'Secrétaire'])) {
+            // Pour les sous-préfets et secrétaires, montrer uniquement les comités de leur localité
+            $query->where('locality_id', $user->locality_id);
+        }
+
+        $localCommittees = $query->get();
+        
+        return Inertia::render('Meetings/CreateMultiple', [
+            'localCommittees' => $localCommittees,
+            'flash' => [
+                'imported_meetings' => session('imported_meetings'),
+                'selected_committee' => session('selected_committee'),
+                'success' => session('success'),
+            ],
         ]);
     }
 
@@ -290,6 +316,292 @@ class MeetingController extends Controller
         }
 
         return redirect()->route('meetings.index')->with('success', 'Réunion créée avec succès');
+    }
+
+    public function storeMultiple(Request $request)
+    {
+        $validated = $request->validate([
+            'local_committee_id' => 'required|exists:local_committees,id',
+            'meetings' => 'required|array|min:1',
+            'meetings.*.title' => 'required|string|max:255',
+            'meetings.*.scheduled_date' => 'required|date',
+            'meetings.*.scheduled_time' => 'required',
+            'meetings.*.location' => 'required|string|max:255',
+        ]);
+        
+        $createdMeetings = [];
+        $errors = [];
+        
+        // Créer chaque réunion
+        foreach ($validated['meetings'] as $index => $meetingData) {
+            try {
+                // Combiner la date et l'heure
+                $scheduledDateTime = $meetingData['scheduled_date'] . ' ' . $meetingData['scheduled_time'];
+                
+                // Créer la réunion
+                $meeting = new Meeting();
+                $meeting->title = $meetingData['title'];
+                $meeting->local_committee_id = $validated['local_committee_id'];
+                $meeting->scheduled_date = $scheduledDateTime;
+                $meeting->location = $meetingData['location'];
+                $meeting->status = 'scheduled';
+                $meeting->created_by = auth()->id();
+                $meeting->save();
+                
+                // Récupérer le comité local avec ses villages et représentants
+                $localCommittee = LocalCommittee::with(['locality.children.representatives'])->find($validated['local_committee_id']);
+                
+                // Pour chaque village du comité local
+                if ($localCommittee->locality) {
+                    foreach ($localCommittee->locality->children as $village) {
+                        foreach ($village->representatives as $representative) {
+                            $meeting->attendees()->create([
+                                'representative_id' => $representative->id,
+                                'name' => $representative->first_name . ' ' . $representative->last_name,
+                                'role' => $representative->role,
+                                'phone' => $representative->phone,
+                                'localite_id' => $village->id
+                            ]);
+                        }
+                    }
+                }
+                
+                $createdMeetings[] = $meeting;
+                
+            } catch (\Exception $e) {
+                $errors[] = "Erreur lors de la création de la réunion " . ($index + 1) . ": " . $e->getMessage();
+            }
+        }
+        
+        if (count($errors) > 0) {
+            return redirect()->back()
+                ->withErrors($errors)
+                ->withInput();
+        }
+        
+        // Mettre à jour le bulk import avec les informations finales
+        $bulkImport = BulkImport::where('user_id', auth()->id())
+            ->where('local_committee_id', $validated['local_committee_id'])
+            ->where('status', 'completed')
+            ->latest()
+            ->first();
+            
+        if ($bulkImport) {
+            $bulkImport->update([
+                'meetings_created' => count($createdMeetings),
+            ]);
+        }
+        
+        $successMessage = count($createdMeetings) . ' réunion(s) créée(s) avec succès';
+        return redirect()->route('meetings.index')->with('success', $successMessage);
+    }
+
+    public function importMeetings(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls,csv|max:2048',
+            'local_committee_id' => 'required|exists:local_committees,id',
+        ]);
+
+        try {
+            // Créer l'enregistrement d'import
+            $bulkImport = BulkImport::create([
+                'user_id' => auth()->id(),
+                'local_committee_id' => $request->local_committee_id,
+                'import_type' => 'meetings',
+                'original_filename' => $request->file('file')->getClientOriginalName(),
+                'file_type' => $request->file('file')->getMimeType(),
+                'file_size' => $request->file('file')->getSize(),
+                'status' => 'processing',
+            ]);
+
+            // Stocker le fichier
+            $filename = time() . '_' . $request->file('file')->getClientOriginalName();
+            $filePath = $request->file('file')->storeAs('bulk_imports', $filename, 'public');
+            
+            $bulkImport->update([
+                'file_path' => $filePath,
+            ]);
+
+            $import = new MeetingsImport();
+            Excel::import($import, $request->file('file'));
+
+            $importedData = $import->getData();
+            $errors = $import->getErrors();
+
+            if (empty($importedData)) {
+                $bulkImport->update([
+                    'status' => 'failed',
+                    'error_message' => 'Aucune donnée valide trouvée dans le fichier.'
+                ]);
+
+                return redirect()->back()
+                    ->withErrors(['file' => 'Aucune donnée valide trouvée dans le fichier.'])
+                    ->withInput();
+            }
+
+            if (!empty($errors)) {
+                $bulkImport->update([
+                    'status' => 'failed',
+                    'error_message' => 'Erreurs dans le fichier: ' . implode(', ', $errors)
+                ]);
+
+                return redirect()->back()
+                    ->withErrors(['file' => 'Erreurs dans le fichier: ' . implode(', ', $errors)])
+                    ->withInput();
+            }
+
+            // Mettre à jour l'import avec les données
+            $bulkImport->update([
+                'import_data' => $importedData,
+                'status' => 'completed',
+            ]);
+
+            // Retourner les données importées pour pré-remplir le formulaire
+            return redirect()->back()
+                ->with('imported_meetings', $importedData)
+                ->with('selected_committee', $request->local_committee_id)
+                ->with('bulk_import_id', $bulkImport->id)
+                ->with('success', count($importedData) . ' réunions importées et prêtes à être créées');
+
+        } catch (\Exception $e) {
+            // En cas d'erreur, mettre à jour le statut
+            if (isset($bulkImport)) {
+                $bulkImport->update([
+                    'status' => 'failed',
+                    'error_message' => $e->getMessage()
+                ]);
+            }
+
+            return redirect()->back()
+                ->withErrors(['file' => 'Erreur lors de l\'import: ' . $e->getMessage()])
+                ->withInput();
+        }
+    }
+
+    public function storeMultipleWithAttachments(Request $request)
+    {
+        $validated = $request->validate([
+            'local_committee_id' => 'required|exists:local_committees,id',
+            'meetings' => 'required|array|min:1',
+            'meetings.*.title' => 'required|string|max:255',
+            'meetings.*.scheduled_date' => 'required|date',
+            'meetings.*.scheduled_time' => 'required',
+            'meetings.*.location' => 'required|string|max:255',
+            'common_attachments.*' => 'nullable|file|max:10240', // 10MB max
+            'bulk_import_id' => 'nullable|exists:bulk_imports,id',
+        ]);
+        
+        $createdMeetings = [];
+        $errors = [];
+        $attachmentsInfo = [];
+        
+        // Traiter les pièces jointes communes
+        if ($request->hasFile('common_attachments')) {
+            foreach ($request->file('common_attachments') as $attachment) {
+                $attachmentsInfo[] = [
+                    'original_name' => $attachment->getClientOriginalName(),
+                    'file_type' => $attachment->getMimeType(),
+                    'size' => $attachment->getSize(),
+                ];
+            }
+        }
+        
+        // Créer chaque réunion
+        foreach ($validated['meetings'] as $index => $meetingData) {
+            try {
+                // Combiner la date et l'heure
+                $scheduledDateTime = $meetingData['scheduled_date'] . ' ' . $meetingData['scheduled_time'];
+                
+                // Créer la réunion
+                $meeting = new Meeting();
+                $meeting->title = $meetingData['title'];
+                $meeting->local_committee_id = $validated['local_committee_id'];
+                $meeting->scheduled_date = $scheduledDateTime;
+                $meeting->location = $meetingData['location'];
+                $meeting->status = 'scheduled';
+                $meeting->created_by = auth()->id();
+                $meeting->bulk_import_id = $validated['bulk_import_id'] ?? null;
+                $meeting->save();
+                
+                // Gérer les pièces jointes communes pour cette réunion
+                if ($request->hasFile('common_attachments')) {
+                    foreach ($request->file('common_attachments') as $attachment) {
+                        $filename = time() . '_' . $attachment->getClientOriginalName();
+                        $path = $attachment->storeAs('meeting_attachments', $filename, 'public');
+                        
+                        $meeting->attachments()->create([
+                            'title' => $attachment->getClientOriginalName(),
+                            'original_name' => $attachment->getClientOriginalName(),
+                            'file_path' => $path,
+                            'file_type' => $attachment->getMimeType(),
+                            'nature' => 'document_justificatif',
+                            'size' => $attachment->getSize(),
+                            'uploaded_by' => auth()->id(),
+                        ]);
+                    }
+                }
+                
+                // Récupérer le comité local avec ses villages et représentants
+                $localCommittee = LocalCommittee::with(['locality.children.representatives'])->find($validated['local_committee_id']);
+                
+                // Pour chaque village du comité local
+                if ($localCommittee->locality) {
+                    foreach ($localCommittee->locality->children as $village) {
+                        foreach ($village->representatives as $representative) {
+                            $meeting->attendees()->create([
+                                'representative_id' => $representative->id,
+                                'name' => $representative->first_name . ' ' . $representative->last_name,
+                                'role' => $representative->role,
+                                'phone' => $representative->phone,
+                                'localite_id' => $village->id
+                            ]);
+                        }
+                    }
+                }
+                
+                $createdMeetings[] = $meeting;
+                
+            } catch (\Exception $e) {
+                $errors[] = "Erreur lors de la création de la réunion " . ($index + 1) . ": " . $e->getMessage();
+            }
+        }
+        
+        if (count($errors) > 0) {
+            return redirect()->back()
+                ->withErrors($errors)
+                ->withInput();
+        }
+        
+        // Mettre à jour le bulk import avec les informations finales
+        if (isset($validated['bulk_import_id'])) {
+            $bulkImport = BulkImport::find($validated['bulk_import_id']);
+            if ($bulkImport) {
+                $bulkImport->update([
+                    'meetings_created' => count($createdMeetings),
+                    'attachments_count' => count($attachmentsInfo),
+                    'attachments_info' => $attachmentsInfo,
+                ]);
+            }
+        } else {
+            // Si pas de bulk_import_id, chercher le dernier import de l'utilisateur pour ce comité
+            $bulkImport = BulkImport::where('user_id', auth()->id())
+                ->where('local_committee_id', $validated['local_committee_id'])
+                ->where('status', 'completed')
+                ->latest()
+                ->first();
+                
+            if ($bulkImport) {
+                $bulkImport->update([
+                    'meetings_created' => count($createdMeetings),
+                    'attachments_count' => count($attachmentsInfo),
+                    'attachments_info' => $attachmentsInfo,
+                ]);
+            }
+        }
+        
+        $successMessage = count($createdMeetings) . ' réunion(s) créée(s) avec succès';
+        return redirect()->route('meetings.index')->with('success', $successMessage);
     }
 
     public function update(Request $request, Meeting $meeting)
@@ -645,6 +957,30 @@ class MeetingController extends Controller
         ]);
         
         return response()->json(['success' => true, 'message' => 'La réunion a été marquée comme terminée']);
+    }
+
+    /**
+     * Dépublier une réunion (revenir à l'état planifié).
+     */
+    public function unpublish(Meeting $meeting)
+    {
+        // Vérifier si la réunion peut être dépublicée
+        if ($meeting->status !== 'completed') {
+            return back()->with('error', 'Seules les réunions publiées peuvent être dépublicées.');
+        }
+        
+        // Vérifier que la réunion n'a pas encore été validée ou invalidée par le sous-préfet
+        if ($meeting->validated_at || $meeting->invalidated_at) {
+            return back()->with('error', 'Cette réunion ne peut plus être dépublicée car elle a déjà été validée ou invalidée par le sous-préfet.');
+        }
+        
+        $meeting->update([
+            'status' => 'scheduled',
+            'completed_at' => null,
+            'completed_by' => null
+        ]);
+        
+        return response()->json(['success' => true, 'message' => 'La réunion a été dépublicée avec succès']);
     }
 
     /**

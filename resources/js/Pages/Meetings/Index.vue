@@ -1,173 +1,138 @@
 <template>
   <Head title="Réunions" />
 
-  <AppLayout title="Réunions">
-    <div class="space-y-6">
-      <!-- Header avec actions -->
-      <div class="flex justify-between items-center">
-        <div>
-          <h2 class="text-xl font-semibold text-gray-900">
-            Liste des réunions
-          </h2>
-          <p class="mt-1 text-sm text-gray-600">
-            Gérez vos réunions et suivez leur statut
-          </p>
+  <AppLayout title="Gestion des Réunions">
+    <div class="py-12">
+      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        
+        <div v-if="page.props.flash.success" class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+          {{ page.props.flash.success }}
         </div>
-        <Link
-          :href="route('meetings.create')"
-          class="inline-flex items-center px-4 py-2 bg-primary-600 hover:bg-primary-700 rounded-lg text-white font-medium text-sm"
-        >
-          <PlusIcon class="h-5 w-5 mr-2" />
-          Nouvelle réunion
-        </Link>
-      </div>
+        <div v-if="page.props.flash.error" class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          {{ page.props.flash.error }}
+        </div>
 
-      <!-- Champ de recherche -->
-      <div class="mb-4">
-        <input
-          v-model="search"
-          type="text"
-          placeholder="Rechercher..."
-          class="border rounded-md p-2 w-full"
-        />
-      </div>
+        <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">Liste des Réunions</h2>
+            <div class="flex space-x-3">
+              <Link
+                :href="route('meetings.create-multiple')"
+                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium inline-flex items-center"
+              >
+                <svg class="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Créer plusieurs réunions
+              </Link>
+              <Link
+                :href="route('meetings.create')"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium inline-flex items-center"
+              >
+                <PlusIcon class="h-4 w-4 mr-2" />
+                Nouvelle Réunion
+              </Link>
+            </div>
+          </div>
 
-      <!-- Table -->
-      <div class="bg-white rounded-lg shadow overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th 
-                scope="col" 
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                @click="sortBy('title')"
-              >
-                Titre
-                <span v-if="sortColumn === 'title'" class="ml-1">
-                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
-                </span>
-              </th>
-              <th 
-                scope="col" 
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                @click="sortBy('scheduled_date')"
-              >
-                Date
-                <span v-if="sortColumn === 'date'" class="ml-1">
-                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
-                </span>
-              </th>
-              <th 
-                scope="col" 
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                @click="sortBy('status')"
-              >
-                Statut
-                <span v-if="sortColumn === 'status'" class="ml-1">
-                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
-                </span>
-              </th>
-              <th 
-                scope="col" 
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                @click="sortBy('local_committee')"
-              >
-                Comité Local
-                <span v-if="sortColumn === 'local_committee'" class="ml-1">
-                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
-                </span>
-              </th>
-              <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="meeting in sortedMeetings" :key="meeting.id" class="hover:bg-gray-50">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">
-                  {{ meeting.title }}
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">
-                  {{ formatDate(meeting.scheduled_date) }}
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <MeetingStatusBadge :status="meeting.status" :scheduled-date="meeting.scheduled_date" />
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">
-                  {{ meeting.locality_name }}
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                <div class="action-buttons-container">
-                  <Link
-                    :href="route('meetings.show', { meeting: meeting.id })"
-                    class="text-primary-600 hover:text-primary-900 action-button"
-                    title="Voir la réunion"
-                  >
-                    <EyeIcon class="h-5 w-5" />
-                  </Link>
-                  <Link
-                    :href="route('meeting-payments.lists.create', { meeting: meeting.id })"
-                    class="text-green-600 hover:text-green-900 action-button"
-                    title="Gérer les paiements"
-                    v-if="meeting.status === 'confirmed' && canManagePayments(meeting)"
-                  >
-                    <CurrencyDollarIcon class="h-5 w-5" />
-                  </Link>
-                  <button
-                    v-if="(meeting.status === 'scheduled' || meeting.status === 'planned') && isSecretary && !isSubPrefect"
-                    @click="cancelMeeting(meeting)"
-                    class="text-red-600 hover:text-red-900 action-button"
-                    title="Annuler la réunion"
-                  >
-                    <XCircleIcon class="h-5 w-5" />
-                  </button>
-                  <Link
-                    v-if="(meeting.status === 'scheduled' || meeting.status === 'planned') && isSecretary && !isSubPrefect"
-                    :href="route('meetings.reschedule.form', meeting.id)"
-                    class="text-yellow-600 hover:text-yellow-900 action-button"
-                    title="Reporter la réunion"
-                  >
-                    <ClockIcon class="h-5 w-5" />
-                  </Link>
-                  <MeetingValidationButtons :meeting="meeting" />
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+          <!-- Filtres -->
+          <div class="mb-6 bg-gray-50 p-4 rounded-lg">
+            <h3 class="text-lg font-medium mb-4">Filtres</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div class="lg:col-span-2">
+                <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Rechercher</label>
+                <input id="search" type="text" v-model="filters.search" @keyup.enter="applyFilters" placeholder="Par titre..." class="w-full border-gray-300 rounded-md shadow-sm">
+              </div>
+              <div>
+                <label for="status" class="block text-sm font-medium text-gray-700 mb-1">Statut</label>
+                <select id="status" v-model="filters.status" class="w-full border-gray-300 rounded-md shadow-sm">
+                  <option value="">Tous</option>
+                  <option v-for="status in meetingStatuses" :key="status.value" :value="status.value">{{ status.label }}</option>
+                </select>
+              </div>
+              <div class="lg:col-span-2">
+                <label for="committee" class="block text-sm font-medium text-gray-700 mb-1">Comité Local</label>
+                <select id="committee" v-model="filters.local_committee_id" class="w-full border-gray-300 rounded-md shadow-sm">
+                  <option value="">Tous</option>
+                  <option v-for="committee in localCommittees" :key="committee.id" :value="committee.id">{{ committee.name }}</option>
+                </select>
+              </div>
+              <div>
+                <label for="date_from" class="block text-sm font-medium text-gray-700 mb-1">Date de début</label>
+                <input id="date_from" type="date" v-model="filters.date_from" class="w-full border-gray-300 rounded-md shadow-sm">
+              </div>
+              <div>
+                <label for="date_to" class="block text-sm font-medium text-gray-700 mb-1">Date de fin</label>
+                <input id="date_to" type="date" v-model="filters.date_to" class="w-full border-gray-300 rounded-md shadow-sm">
+              </div>
+            </div>
+            <div class="mt-4 flex space-x-2 justify-end">
+               <button @click="applyFilters" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">Appliquer</button>
+               <button @click="clearFilters" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-md text-sm font-medium">Réinitialiser</button>
+            </div>
+          </div>
 
-      <!-- Pagination -->
-      <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
-        <Pagination :links="meetings.links" />
+          <!-- Table -->
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                    <th @click="sortBy('title')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Titre</th>
+                    <th @click="sortBy('scheduled_date')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Date</th>
+                    <th @click="sortBy('status')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Statut</th>
+                    <th @click="sortBy('local_committee')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Comité Local</th>
+                    <th @click="sortBy('updated_at')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Date de modification</th>
+                    <th class="relative px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                 <tr v-if="meetings.data.length === 0">
+                  <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Aucune réunion trouvée.</td>
+                </tr>
+                <tr v-for="meeting in meetings.data" :key="meeting.id">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <Link :href="route('meetings.show', { meeting: meeting.id })" class="text-blue-700 hover:underline">
+                        {{ meeting.title }}
+                      </Link>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(meeting.scheduled_date) }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <MeetingStatusBadge :status="meeting.status" :scheduled-date="meeting.scheduled_date" />
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ meeting.locality_name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDateTime(meeting.updated_at) }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <div class="flex items-center justify-end space-x-2">
+                             <Link :href="route('meetings.show', { meeting: meeting.id })" class="flex items-center justify-center w-8 h-8 text-blue-600 hover:text-blue-900 rounded transition-colors" title="Voir"><EyeIcon class="h-5 w-5" /></Link>
+                             <button v-if="isSecretary && !isSubPrefect && (meeting.status === 'scheduled' || meeting.status === 'planned')" @click="cancelMeeting(meeting)" class="flex items-center justify-center w-8 h-8 text-red-600 hover:text-red-900 rounded transition-colors" title="Annuler"><XCircleIcon class="h-5 w-5" /></button>
+                             <Link v-if="isSecretary && !isSubPrefect && (meeting.status === 'scheduled' || meeting.status === 'planned')" :href="route('meetings.reschedule', meeting.id)" class="flex items-center justify-center w-8 h-8 text-yellow-600 hover:text-yellow-900 rounded transition-colors" title="Reporter"><ClockIcon class="h-5 w-5" /></Link>
+                             <MeetingValidationButtons :meeting="meeting" />
+                        </div>
+                    </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <div class="mt-4">
+            <Pagination :links="meetings.links" />
+          </div>
+        </div>
       </div>
     </div>
   </AppLayout>
 </template>
 
 <script setup lang="ts">
-import { Link, router, Head } from '@inertiajs/vue3'
-import AppLayout from '@/Layouts/AppLayout.vue'
-import Pagination from '@/Components/Pagination.vue'
-import { ref, computed, watch} from 'vue'
-import {
-  PlusIcon,
-  EyeIcon,
-  XCircleIcon,
-  ClockIcon,
-  CurrencyDollarIcon,
-} from '@heroicons/vue/24/outline'
-import { useToast } from '@/Composables/useToast'
-import axios from 'axios'
-import MeetingStatusBadge from '@/Components/MeetingStatusBadge.vue'
-import MeetingValidationButtons from '@/Components/MeetingValidationButtons.vue'
-import { usePage } from '@inertiajs/vue3'
+import { ref, reactive, computed } from 'vue';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import AppLayout from '@/Layouts/AppLayout.vue';
+import Pagination from '@/Components/Pagination.vue';
+import MeetingStatusBadge from '@/Components/MeetingStatusBadge.vue';
+import MeetingValidationButtons from '@/Components/MeetingValidationButtons.vue';
+import { PlusIcon, EyeIcon, XCircleIcon, ClockIcon } from '@heroicons/vue/24/outline';
+import { useToast } from '@/Composables/useToast';
+import { hasRole } from '@/utils/authUtils';
 
 interface Meeting {
   id: number;
@@ -175,6 +140,17 @@ interface Meeting {
   scheduled_date: string;
   status: string;
   locality_name: string;
+  updated_at: string;
+}
+
+interface LocalCommittee {
+    id: number;
+    name: string;
+}
+
+interface MeetingStatus {
+  value: string;
+  label: string;
 }
 
 interface Props {
@@ -184,147 +160,103 @@ interface Props {
   };
   filters: {
     search: string;
+    status: string;
+    local_committee_id: string;
+    date_from: string;
+    date_to: string;
     sort?: string;
     direction?: string;
   };
-}
-
-const props = defineProps<Props>()
-const toast = useToast()
-
-const search = ref(props.filters.search)
-
-// État pour le tri
-const sortColumn = ref(props.filters.sort || 'scheduled_date')
-const sortDirection = ref(props.filters.direction || 'desc')
-
-// Fonction pour changer la colonne de tri
-const sortBy = (column) => {
-  let direction;
-  
-  // Si on clique sur la même colonne, on inverse la direction
-  if (sortColumn.value === column) {
-    direction = sortDirection.value === 'asc' ? 'desc' : 'asc';
-    sortDirection.value = direction;
-  } else {
-    // Pour une nouvelle colonne, on commence par asc
-    sortColumn.value = column;
-    direction = 'asc';
-    sortDirection.value = direction;
+  localCommittees: LocalCommittee[];
+  meetingStatuses: MeetingStatus[];
+  auth: {
+    user: {
+      roles: any[];
+    }
   }
-  
-  // Effectuer une requête au serveur avec les paramètres de tri
-  router.get(
-    route('meetings.index'),
-    { 
-      search: search.value,
-      sort: column,
-      direction: direction
-    },
-    { 
-      preserveState: true, 
-      preserveScroll: true 
-    }
-  );
 }
 
-// Computed property pour les réunions triées
-const sortedMeetings = computed(() => {
-  return [...props.meetings.data].sort((a, b) => {
-    let valueA, valueB;
-    
-    // Déterminer les valeurs à comparer en fonction de la colonne
-    switch (sortColumn.value) {
-      case 'title':
-        valueA = a.title.toLowerCase();
-        valueB = b.title.toLowerCase();
-        break;
-      case 'date':
-        valueA = new Date(a.scheduled_date);
-        valueB = new Date(b.scheduled_date);
-        break;
-      case 'status':
-        valueA = a.status.toLowerCase();
-        valueB = b.status.toLowerCase();
-        break;
-      case 'local_committee':
-        valueA = a.locality_name.toLowerCase();
-        valueB = b.locality_name.toLowerCase();
-        break;
-      default:
-        valueA = a[sortColumn.value];
-        valueB = b[sortColumn.value];
-    }
-    
-    // Comparer les valeurs
-    if (valueA < valueB) {
-      return sortDirection.value === 'asc' ? -1 : 1;
-    }
-    if (valueA > valueB) {
-      return sortDirection.value === 'asc' ? 1 : -1;
-    }
-    return 0;
-  });
+const props = defineProps<Props>();
+const page = usePage();
+const toast = useToast();
+
+const filters = reactive({
+  search: props.filters.search || '',
+  status: props.filters.status || '',
+  local_committee_id: props.filters.local_committee_id || '',
+  date_from: props.filters.date_from || '',
+  date_to: props.filters.date_to || '',
 });
 
-watch(search, (value) => {
-  router.get(
-    route('meetings.index'),
-    { search: value },
-    { preserveState: true, preserveScroll: true }
-  )
-})
+const sortColumn = ref(props.filters.sort || 'scheduled_date');
+const sortDirection = ref(props.filters.direction || 'desc');
 
+const queryServer = (newSortColumn?: string) => {
+    let newSort = sortColumn.value;
+    let newDirection = sortDirection.value;
+
+    if (newSortColumn) {
+        if (sortColumn.value === newSortColumn) {
+            newDirection = sortDirection.value === 'asc' ? 'desc' : 'asc';
+        } else {
+            newSort = newSortColumn;
+            newDirection = 'asc';
+        }
+    }
+    
+    router.get(route('meetings.index'), {
+        ...filters,
+        sort: newSort,
+        direction: newDirection,
+    }, {
+        preserveState: true,
+        replace: true,
+        onSuccess: () => {
+            sortColumn.value = newSort;
+            sortDirection.value = newDirection;
+        },
+    });
+};
+
+const applyFilters = () => queryServer();
+const sortBy = (column: string) => queryServer(column);
+
+const clearFilters = () => {
+  filters.search = '';
+  filters.status = '';
+  filters.local_committee_id = '';
+  filters.date_from = '';
+  filters.date_to = '';
+  applyFilters();
+};
 
 const formatDate = (date: string) => {
-  if (!date) return 'Date non définie';
-  return new Date(date).toLocaleDateString('fr-FR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-}
+    if (!date) return 'N/A';
+    return new Date(date).toLocaleDateString('fr-FR');
+};
 
+const formatDateTime = (date: string) => {
+    if (!date) return 'N/A';
+    return new Date(date).toLocaleString('fr-FR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+};
 
-const cancelMeeting = async (meeting: Meeting) => {
-  if (!confirm('Êtes-vous sûr de vouloir annuler cette réunion ?')) return;
-
-  try {
-    await axios.post(route('meetings.cancel', meeting.id));
-    meeting.status = 'cancelled';
-    toast.success('La réunion a été annulée');
-  } catch (error) {
-    console.error('Erreur:', error);
-    toast.error('Erreur lors de l\'annulation de la réunion');
+const cancelMeeting = (meeting: Meeting) => {
+  if (confirm('Êtes-vous sûr de vouloir annuler cette réunion ?')) {
+    router.post(route('meetings.cancel', meeting.id), {}, {
+      onSuccess: () => toast.success('Réunion annulée avec succès.'),
+      onError: () => toast.error('Erreur lors de l\'annulation de la réunion.'),
+    });
   }
-}
+};
 
-// Ajouter d'abord la vérification du rôle de sous-préfet dans la partie script
-const user = computed(() => usePage().props.auth.user)
-
-// Vérifier si l'utilisateur est un sous-préfet
-const isSubPrefect = computed(() => {
-  return user.value?.roles?.some(role => 
-    ['sous-prefet', 'Sous-prefet'].includes(role.name)
-  ) || false
-})
-
-const canManagePayments = (meeting) => {
-  const meetingDate = new Date(meeting.scheduled_date);
-  const twoDaysBefore = new Date(meetingDate);
-  twoDaysBefore.setDate(twoDaysBefore.getDate() - 2);
-  const now = new Date();
-  
-  return now <= twoDaysBefore;
-}
-
-// Vérifier si l'utilisateur est un secrétaire
-const isSecretary = computed(() => {
-  return user.value?.roles?.some(role => 
-    ['secrétaire', 'Secrétaire'].includes(role.name)
-  ) || false
-})
-
+const isSecretary = computed(() => hasRole(props.auth.user.roles, 'secretaire') || hasRole(props.auth.user.roles, 'Secrétaire'));
+const isSubPrefect = computed(() => hasRole(props.auth.user.roles, 'sous-prefet') || hasRole(props.auth.user.roles, 'Sous-prefet'));
 </script>
 
 <style>

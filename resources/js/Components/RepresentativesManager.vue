@@ -7,8 +7,13 @@
         <div 
           v-for="village in unaddedVillages" 
           :key="village.id"
-          class="bg-gray-50 p-4 rounded-lg shadow-md cursor-pointer hover:bg-gray-100 transition"
-          @click="openRepresentativeModal(village)"
+          :class="[
+            'bg-gray-50 p-4 rounded-lg shadow-md transition',
+            (hasRole(props.auth.user.roles, 'admin') || hasRole(props.auth.user.roles, 'secretaire')) 
+              ? 'cursor-pointer hover:bg-gray-100' 
+              : 'cursor-not-allowed opacity-60'
+          ]"
+          @click="(hasRole(props.auth.user.roles, 'admin') || hasRole(props.auth.user.roles, 'secretaire')) ? openRepresentativeModal(village) : null"
         >
           <p class="text-sm text-gray-700">{{ village.name }}</p>
         </div>
@@ -26,10 +31,18 @@
               {{ rep.first_name }} {{ rep.last_name }} - {{ rep.phone }} ({{ rep.role }})
             </li>
           </ul>
-          <button @click="editVillageRepresentatives(village)" class="mt-2 text-blue-500 hover:text-blue-700 transition duration-150 ease-in-out">
+          <button 
+            v-if="hasRole(props.auth.user.roles, 'admin') || hasRole(props.auth.user.roles, 'secretaire')"
+            @click="editVillageRepresentatives(village)" 
+            class="mt-2 text-blue-500 hover:text-blue-700 transition duration-150 ease-in-out"
+          >
             <i class="fas fa-edit mr-1"></i>Modifier
           </button>
-          <button @click="removeVillage(index)" class="mt-2 text-red-500 hover:text-red-700 transition duration-150 ease-in-out">
+          <button 
+            v-if="hasRole(props.auth.user.roles, 'admin') || hasRole(props.auth.user.roles, 'secretaire')"
+            @click="removeVillage(index)" 
+            class="mt-2 text-red-500 hover:text-red-700 transition duration-150 ease-in-out"
+          >
             <i class="fas fa-trash-alt mr-1"></i>Supprimer
           </button>
         </div>
@@ -60,7 +73,7 @@
                   <div v-for="(rep, index) in villageRepresentatives" :key="index" class="border-b pb-4">
                     <div class="grid grid-cols-2 gap-4">
                       <div>
-                        <InputLabel value="Prénom" />
+                        <InputLabel value="Prénom" :isRequired="true" />
                         <TextInput
                           v-model="rep.first_name"
                           type="text"
@@ -69,7 +82,7 @@
                         />
                       </div>
                       <div>
-                        <InputLabel value="Nom" />
+                        <InputLabel value="Nom" :isRequired="true" />
                         <TextInput
                           v-model="rep.last_name"
                           type="text"
@@ -158,6 +171,8 @@
 import { ref, computed } from 'vue'
 import InputLabel from '@/Components/InputLabel.vue'
 import TextInput from '@/Components/TextInput.vue'
+import { hasRole } from '@/utils/authUtils'
+import { Role } from '@/types/Role'
 
 interface Village {
   id: number;
@@ -175,6 +190,11 @@ interface Representative {
 const props = defineProps<{
   villages: Village[];
   addedVillages: Village[];
+  auth: {
+    user: {
+      roles: Role[];
+    };
+  };
 }>();
 
 const emit = defineEmits<{

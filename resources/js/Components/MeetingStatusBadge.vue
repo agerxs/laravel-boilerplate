@@ -1,51 +1,83 @@
 <template>
-  <div :class="[
-    'px-2 py-1 text-xs font-medium rounded-full',
-    computedClass
-  ]">
-    {{ computedLabel }}
-  </div>
+  <span
+    class="inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-full transition-all duration-200"
+    :class="statusClass"
+  >
+    <span v-if="showIcon" class="mr-1.5">
+      <component :is="statusIcon" class="w-3 h-3" />
+    </span>
+    {{ statusText }}
+  </span>
 </template>
 
-<script setup>
-import { computed } from 'vue';
+<script setup lang="ts">
+import { computed } from 'vue'
+import { 
+  CheckCircleIcon, 
+  XCircleIcon, 
+  ClockIcon, 
+  DocumentIcon,
+  ExclamationTriangleIcon,
+  PlayIcon,
+  CalendarIcon
+} from '@heroicons/vue/16/solid'
 import { getStatusText, getStatusClass } from '@/Utils/translations';
 
-const props = defineProps({
-  status: {
-    type: String,
-    required: true
-  },
-  scheduledDate: {
-    type: [String, Date],
-    default: null
-  }
+interface Props {
+  status: string;
+  showIcon?: boolean;
+  isLate?: boolean;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  showIcon: true,
+  isLate: false
 });
 
-// Vérifie si la réunion est en retard (planifiée et date dépassée)
-const isLate = computed(() => {
-  if (props.status !== 'planned' && props.status !== 'scheduled') return false;
-  if (!props.scheduledDate) return false;
-  
-  const meetingDate = new Date(props.scheduledDate);
-  const now = new Date();
-  
-  return meetingDate < now;
-});
-
-// Classe CSS calculée en fonction du statut et si la réunion est en retard
-const computedClass = computed(() => {
-  if (isLate.value) {
-    return getStatusClass('late');
+const statusClass = computed(() => {
+  if (props.isLate) {
+    return 'bg-orange-100 text-orange-700 border border-orange-200';
   }
   return getStatusClass(props.status);
 });
 
-// Label calculé en fonction du statut et si la réunion est en retard
-const computedLabel = computed(() => {
-  if (isLate.value) {
-    return getStatusText('late');
+const statusIcon = computed(() => {
+  if (props.isLate) {
+    return ExclamationTriangleIcon;
   }
-  return getStatusText(props.status);
+  
+  const iconMap = {
+    // Statuts positifs
+    validated: CheckCircleIcon,
+    completed: CheckCircleIcon,
+    published: CheckCircleIcon,
+    
+    // Statuts négatifs
+    rejected: XCircleIcon,
+    cancelled: XCircleIcon,
+    
+    // Statuts en attente
+    pending: ClockIcon,
+    submitted: ClockIcon,
+    pending_validation: ClockIcon,
+    
+    // Statuts de travail
+    draft: DocumentIcon,
+    in_progress: PlayIcon,
+    
+    // Statuts de planification
+    scheduled: CalendarIcon,
+    planned: CalendarIcon,
+    prevalidated: ClockIcon
+  };
+  
+  return iconMap[props.status] || DocumentIcon;
+});
+
+const statusText = computed(() => {
+  if (props.isLate) {
+    return 'En retard';
+  }
+  return getStatusText(props.status, 'meeting');
 });
 </script>

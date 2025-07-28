@@ -91,7 +91,7 @@
                                                   :class="getPaymentStatusClass(meeting.payments)">
                                                 {{ getPaymentStatusText(meeting.payments) }}
                                             </span>
-                                            <span v-else class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                            <span v-else class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-slate-100 text-slate-700 border border-slate-200">
                                                 Non traité
                                             </span>
                                         </td>
@@ -158,17 +158,21 @@ function formatDate(dateString) {
     return format(new Date(dateString), 'dd MMMM yyyy', { locale: fr });
 }
 
-function getPaymentStatusClass(payments) {
-    const allPaid = payments.every(payment => payment.is_paid);
-    const somePaid = payments.some(payment => payment.is_paid);
-    
-    if (allPaid) {
-        return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800';
-    } else if (somePaid) {
-        return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800';
-    } else {
-        return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800';
-    }
+const getPaymentStatusClass = (payments) => {
+  if (!payments || payments.length === 0) {
+    return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-slate-100 text-slate-700 border border-slate-200';
+  }
+  
+  const allPaid = payments.every(payment => payment.status === 'paid');
+  const allPending = payments.every(payment => payment.status === 'pending');
+  
+  if (allPaid) {
+    return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200';
+  } else if (allPending) {
+    return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-700 border border-amber-200';
+  } else {
+    return 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-700 border border-red-200';
+  }
 }
 
 function getPaymentStatusText(payments) {

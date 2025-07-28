@@ -42,7 +42,6 @@ class PaymentRateResource extends Resource
                 Select::make('role')
                     ->label('Rôle')
                     ->options([
-                        'prefet' => 'Préfet',
                         'sous_prefet' => 'Sous-préfet',
                         'secretaire' => 'Secrétaire',
                         'representant' => 'Représentant',
@@ -74,7 +73,6 @@ class PaymentRateResource extends Resource
                 TextColumn::make('role')
                     ->label('Rôle')
                     ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'prefet' => 'Préfet',
                         'sous_prefet' => 'Sous-préfet',
                         'secretaire' => 'Secrétaire',
                         'representant' => 'Représentant',
@@ -106,7 +104,6 @@ class PaymentRateResource extends Resource
                 SelectFilter::make('role')
                     ->label('Rôle')
                     ->options([
-                        'prefet' => 'Préfet',
                         'sous_prefet' => 'Sous-préfet',
                         'secretaire' => 'Secrétaire',
                         'representant' => 'Représentant',

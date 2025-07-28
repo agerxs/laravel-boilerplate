@@ -12,11 +12,9 @@ defineProps({
 </script>
 
 <template>
-    <label :class="{ required: isRequired }" class="block text-sm font-medium ">
-        <span v-if="value" class="block font-medium text-sm text-gray-700">
-            {{ value }}
-        </span>
-        <span v-else><slot /></span>
+    <label :class="{ required: isRequired }" class="block text-sm font-medium text-gray-700">
+        <span v-if="value" class="inline-block">{{ value }}</span>
+        <span v-else class="inline-block"><slot /></span>
     </label>
 </template>
 
@@ -24,5 +22,8 @@ defineProps({
 .required::after {
     content: " *";
     color: #dc2626;
+    display: inline;
+    vertical-align: middle;
+    margin-left: 2px;
 }
 </style>

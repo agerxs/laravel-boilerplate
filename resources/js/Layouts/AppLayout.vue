@@ -2,12 +2,14 @@
 import {
     Bars3Icon,
     CalendarIcon,
+    Cog6ToothIcon,
     DocumentIcon,
     HomeIcon,
     UserGroupIcon,
     UsersIcon,
     XMarkIcon,
-    UserIcon
+    UserIcon,
+    ArrowUpTrayIcon
 } from '@heroicons/vue/24/outline';
 import { Link, usePage, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
@@ -17,45 +19,104 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { useToast } from '@/Composables/useToast';
 import Toast from '@/Components/Toast.vue';
 
+interface Role {
+    id: number;
+    name: string;
+    guard_name: string;
+    created_at: string;
+    updated_at: string;
+    pivot: {
+        model_type: string;
+        model_id: number;
+        role_id: number;
+    };
+}
+
 interface PageProps {
-  auth?: {
-    user?: {
-      id: number
-      name: string
-      email: string
-      roles: string[]
-      locality_id: number
-    }
-  }
-  flash?: {
-    message?: string
-    type?: string
-  }
+    auth?: {
+        user?: {
+            id: number;
+            name: string;
+            email: string;
+            roles: Role[];
+            locality_id: number;
+        };
+    };
+    flash?: {
+        message?: string;
+        type?: string;
+    };
 }
 
 interface NavigationItem {
-  name: string
-  href: string
-  icon: any
+    name: string;
+    href: string;
+    icon: any;
+    adminOnly?: boolean;
+    roles?: string[];
 }
 
 interface CustomUser {
-  id: number
-  name: string
-  email: string
-  roles: string[]
-  locality_id: number
+    id: number;
+    name: string;
+    email: string;
+    roles: Role[];
+    locality_id: number;
 }
 
 const navigation: NavigationItem[] = [
   { name: 'Tableau de bord', href: route('dashboard'), icon: HomeIcon },
   { name: 'Agenda', href: route('calendar.index'), icon: CalendarIcon },
-  { name: 'Représentants', href: route('representatives.index'), icon: UserIcon },
-  { name: 'Comités Locaux', href: route('local-committees.index'), icon: UserGroupIcon },
-  { name: 'Réunions', href: route('meetings.index'), icon: UsersIcon },
- // { name: 'Plaintes & Réclamations', href: '#', icon: DocumentIcon },
-  { name: 'Gestion des Paiements', href: route('meeting-payments.lists.index'), icon: DocumentIcon },
+  { 
+    name: 'Comités Locaux', 
+    href: route('local-committees.index'), 
+    icon: UserGroupIcon,
+    roles: ['sous-prefet', 'secretaire', 'prefet', 'admin', 'gestionnaire']
+  },
+  { 
+    name: 'Représentants', 
+    href: route('representatives.index'), 
+    icon: UserIcon,
+    roles: ['sous-prefet', 'secretaire']
+  },
+  { 
+    name: 'Réunions', 
+    href: route('meetings.index'), 
+    icon: UsersIcon,
+    roles: ['sous-prefet', 'secretaire', 'prefet', 'gestionnaire']
+  },
+  { 
+    name: 'Historique des imports', 
+    href: route('bulk-imports.index'), 
+    icon: ArrowUpTrayIcon,
+    roles: ['sous-prefet', 'secretaire', 'prefet', 'gestionnaire']
+  },
+  { 
+    name: 'Gestion des Paiements', 
+    href: route('meeting-payments.lists.index'), 
+    icon: DocumentIcon,
+    roles: ['sous-prefet', 'secretaire', 'gestionnaire']
+  },
+  {
+    name: 'Paiements des Comités',
+    href: route('executive-payments.index'),
+    icon: DocumentIcon,
+    roles: ['gestionnaire', 'admin']
+  },
+ /* { 
+    name: 'Gestion des APKs', 
+    href: route('admin.app_versions.index'), 
+    icon: DocumentIcon, 
+    roles: ['admin']
+  },*/
+  {
+    name: 'Paramétrage',
+    href: '/admin',
+    icon: Cog6ToothIcon,
+    roles: ['admin']
+  }
 ]
+
 
 const page = usePage()
 const showingNavigationDropdown = ref(false);
@@ -63,12 +124,23 @@ const showingNavigationDropdown = ref(false);
 const user = computed(() => page.props.auth?.user as CustomUser | undefined)
 
 const filteredNavigation = computed(() => {
+    const userRoles = user.value?.roles || [];
+    console.log('User roles objects:', userRoles);
+
+    const userRoleNames = userRoles.map(role => role.name.toLowerCase());
+    console.log('User role names (lowercase):', userRoleNames);
+    
     return navigation.filter((item: NavigationItem) => {
-        if (item.name === 'Réunions') {
-            return !user.value?.roles?.includes('gestionnaire')
+        // Si l'élément a des rôles spécifiques, vérifier si l'utilisateur a l'un de ces rôles
+        if (item.roles) {
+            const itemRoles = item.roles.map(role => role.toLowerCase());
+            const hasRequiredRole = itemRoles.some(role => userRoleNames.includes(role));
+            console.log(`Menu item ${item.name} - Required roles:`, itemRoles, 'Has access:', hasRequiredRole);
+            return hasRequiredRole;
         }
-        return true
-    })
+
+        return true;
+    });
 })
 
 const flash = computed(() => page.props.flash as { message?: string; type?: string } | undefined)
@@ -124,31 +196,42 @@ const { toasts } = useToast();
 
                 <!-- Navigation mobile -->
                 <nav class="flex-1 px-2 py-4 space-y-1 overflow-y-auto" role="navigation" aria-label="Navigation principale">
-                    <Link
-                        v-for="item in filteredNavigation"
-                        :key="item.name"
-                        :href="item.href"
-                        :class="[
-                            route().current(item.href)
-                                ? 'bg-gray-100 text-gray-900'
-                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
-                            'group flex items-center px-2 py-2 text-sm font-medium rounded-md nav-link'
-                        ]"
-                        @click="showingNavigationDropdown = false"
-                        :aria-current="route().current(item.href) ? 'page' : undefined"
-                    >
-                        <component
-                            :is="item.icon"
+                    <template v-for="item in filteredNavigation" :key="item.name">
+                        <a v-if="item.href.startsWith('/admin')"
+                           :href="item.href"
+                           :class="[
+                               'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
+                               'group flex items-center px-2 py-2 text-sm font-medium rounded-md nav-link'
+                           ]"
+                           @click="showingNavigationDropdown = false"
+                        >
+                            <component :is="item.icon" class="mr-3 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500" aria-hidden="true" />
+                            {{ item.name }}
+                        </a>
+                        <Link v-else
+                            :href="item.href"
                             :class="[
                                 route().current(item.href)
-                                    ? 'text-gray-500'
-                                    : 'text-gray-400 group-hover:text-gray-500',
-                                'mr-3 flex-shrink-0 h-6 w-6'
+                                    ? 'bg-gray-100 text-gray-900'
+                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
+                                'group flex items-center px-2 py-2 text-sm font-medium rounded-md nav-link'
                             ]"
-                            aria-hidden="true"
-                        />
-                        {{ item.name }}
-                    </Link>
+                            @click="showingNavigationDropdown = false"
+                            :aria-current="route().current(item.href) ? 'page' : undefined"
+                        >
+                            <component
+                                :is="item.icon"
+                                :class="[
+                                    route().current(item.href)
+                                        ? 'text-gray-500'
+                                        : 'text-gray-400 group-hover:text-gray-500',
+                                    'mr-3 flex-shrink-0 h-6 w-6'
+                                ]"
+                                aria-hidden="true"
+                            />
+                            {{ item.name }}
+                        </Link>
+                    </template>
                 </nav>
 
                 <!-- Footer mobile -->
@@ -194,28 +277,41 @@ const { toasts } = useToast();
                     <div class="flex items-center flex-shrink-0 px-4 text-2xl font-bold">
                         Colocs
                     </div>
-                    <nav class="mt-5 flex-1 px-2 space-y-1">
-                        <Link
-                            v-for="item in filteredNavigation"
-                            :key="item.name"
-                            :href="item.href"
-                            :class="[
-                                route().current(item.href)
-                                    ? 'bg-gray-100 text-gray-900'
-                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
-                                'group flex items-center px-2 py-2 text-sm font-medium rounded-md'
-                            ]"
-                        >
-                            <component
-                                :is="item.icon"
+                    <nav class="flex-1 px-2 py-4 space-y-1 overflow-y-auto" role="navigation" aria-label="Navigation principale">
+                        <template v-for="item in filteredNavigation" :key="item.name">
+                            <a v-if="item.href.startsWith('/admin')"
+                               :href="item.href"
+                               :class="[
+                                   'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
+                                   'group flex items-center px-2 py-2 text-base font-medium rounded-md'
+                               ]"
+                            >
+                                <component :is="item.icon" class="mr-4 flex-shrink-0 h-6 w-6 text-gray-400 group-hover:text-gray-500" aria-hidden="true" />
+                                {{ item.name }}
+                            </a>
+                            <Link v-else
+                                :href="item.href"
                                 :class="[
-                                    route().current(item.href) ? 'text-gray-500' : 'text-gray-400 group-hover:text-gray-500',
-                                    'mr-3 flex-shrink-0 h-6 w-6'
+                                    route().current(item.href)
+                                        ? 'bg-gray-100 text-gray-900'
+                                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
+                                    'group flex items-center px-2 py-2 text-base font-medium rounded-md'
                                 ]"
-                                aria-hidden="true"
-                            />
-                            {{ item.name }}
-                        </Link>
+                                :aria-current="route().current(item.href) ? 'page' : undefined"
+                            >
+                                <component
+                                    :is="item.icon"
+                                    :class="[
+                                        route().current(item.href)
+                                            ? 'text-gray-500'
+                                            : 'text-gray-400 group-hover:text-gray-500',
+                                        'mr-4 flex-shrink-0 h-6 w-6'
+                                    ]"
+                                    aria-hidden="true"
+                                />
+                                {{ item.name }}
+                            </Link>
+                        </template>
                     </nav>
                 </div>
                 <div class="flex-shrink-0 flex border-t border-gray-200 p-4">

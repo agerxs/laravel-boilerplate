@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Models\Locality;
 use App\Models\LocalCommittee;
 use App\Models\Meeting;
@@ -21,18 +22,13 @@ class CheckLocalityAccess
     {
         $user = Auth::user();
         
-        // Si l'utilisateur n'est pas connecté, rediriger vers la page de connexion
-        if (!$user) {
-            return redirect()->route('login');
-        }
-        
-        // Si l'utilisateur est un admin ou a un rôle supérieur, permettre l'accès complet
-        if ($user->hasRole(['admin', 'super-admin'])) {
+        // Les gestionnaires ont accès à toutes les localités
+        if (in_array('gestionnaire', $user->roles->pluck('name')->toArray()) || in_array('Gestionnaire', $user->roles->pluck('name')->toArray())) {
             return $next($request);
         }
         
-        // Pour les préfets et secrétaires, vérifier la localité
-        if ($user->hasRole(['prefet', 'Prefet', 'sous-prefet', 'Sous-prefet', 'secretaire', 'Secrétaire'])) {
+        if (in_array('sous-prefet', $user->roles->pluck('name')->toArray()) || in_array('Sous-prefet', $user->roles->pluck('name')->toArray()) || 
+            in_array('secretaire', $user->roles->pluck('name')->toArray()) || in_array('Secrétaire', $user->roles->pluck('name')->toArray())) {
             // Si l'utilisateur n'a pas de localité assignée, accès refusé
             if (!$user->locality_id) {
                 abort(403, "Vous n'avez pas de localité assignée.");
@@ -54,7 +50,7 @@ class CheckLocalityAccess
                         $committeeModel = LocalCommittee::find($localCommittee);
                         $requestedLocalityId = $committeeModel ? $committeeModel->locality_id : null;
                     }
-                } elseif ($request->route('meeting')) {
+                
                     $meeting = $request->route('meeting');
                     // Vérifier si $meeting est un objet ou un ID (string)
                     if (is_object($meeting)) {
@@ -80,16 +76,8 @@ class CheckLocalityAccess
                     abort(403, "Vous n'avez pas accès à cette localité.");
                 }
             } catch (\Exception $e) {
-                // Log de l'erreur pour faciliter le débogage
-                \Illuminate\Support\Facades\Log::error('Erreur dans CheckLocalityAccess: ' . $e->getMessage(), [
-                    'exception' => $e,
-                    'user_id' => $user->id,
-                    'route' => $request->route()->getName(),
-                    'parameters' => $routeParams
-                ]);
-                
-                // Redirection avec message d'erreur
-                abort(403, "Une erreur est survenue lors de la vérification des permissions d'accès. Détails: " . $e->getMessage());
+                // En cas d'erreur, on laisse passer pour éviter de bloquer l'accès
+                Log::warning('Erreur lors de la vérification d\'accès à la localité: ' . $e->getMessage());
             }
         }
         
@@ -106,18 +94,7 @@ class CheckLocalityAccess
             return true;
         }
         
-        // Pour les préfets, vérifier si la localité demandée est une sous-préfecture de leur département
-        if ($user->hasRole(['prefet', 'Prefet'])) {
-            $userLocality = Locality::find($user->locality_id);
-            
-            // Vérifier si la localité demandée est une sous-préfecture dans le département du préfet
-            $requestedLocality = Locality::find($requestedLocalityId);
-            
-            // Si la localité demandée a comme parent la localité du préfet, alors c'est autorisé
-            if ($requestedLocality && $requestedLocality->parent_id == $user->locality_id) {
-                return true;
-            }
-        }
+       
         
         return false;
     }

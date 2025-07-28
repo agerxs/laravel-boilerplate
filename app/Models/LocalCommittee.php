@@ -13,18 +13,7 @@ class LocalCommittee extends Model
 {
     use SoftDeletes, HasFactory;
 
-    protected $fillable = [
-        'name',
-        'locality_id',
-        'president_id',
-        'installation_date',
-        'ano_validation_date',
-        'fund_transmission_date',
-        'villages_count',
-        'population_rgph',
-        'population_to_enroll',
-        'status'
-    ];
+    protected $guarded = [];
 
     protected $casts = [
         'installation_date' => 'date',

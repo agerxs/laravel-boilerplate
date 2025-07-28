@@ -55,7 +55,7 @@ class MeetingPaymentListController extends Controller
             'paymentLists' => $paymentLists,
             'meetings' => Meeting::orderBy('scheduled_date', 'desc')->get(),
             'localCommittees' => LocalCommittee::orderBy('name')->get(),
-            'canValidate' => $user->hasRole(['gestionnaire', 'Gestionnaire']),
+            'canValidate' => in_array('gestionnaire', $user->roles->pluck('name')->toArray()) || in_array('Gestionnaire', $user->roles->pluck('name')->toArray()),
             'filters' => $request->only(['local_committee_id', 'meeting_id', 'status', 'role'])
         ]);
     }
@@ -127,11 +127,18 @@ class MeetingPaymentListController extends Controller
         ]);
 
         $user = Auth::user();
-        $canValidate = $user->hasRole(['sous-prefet', 'Sous-prefet']);
+        $canValidate = in_array('sous-prefet', $user->roles->pluck('name')->toArray()) || in_array('Sous-prefet', $user->roles->pluck('name')->toArray());
 
         return Inertia::render('MeetingPayments/Lists/Show', [
             'paymentList' => $paymentList,
-            'canValidate' => $canValidate
+            'canValidate' => $canValidate,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'roles' => $user->roles->pluck('name')->toArray(),
+                'locality_id' => $user->locality_id
+            ]
         ]);
     }
 
@@ -142,7 +149,7 @@ class MeetingPaymentListController extends Controller
         }
 
         // Vérifier si l'utilisateur est un secrétaire
-        if (!Auth::user()->hasRole(['secretaire', 'Secretaire'])) {
+        if (!in_array('secretaire', Auth::user()->roles->pluck('name')->toArray()) && !in_array('Secretaire', Auth::user()->roles->pluck('name')->toArray())) {
             return redirect()->back()->with('error', 'Seul un secrétaire peut soumettre une liste de paiement.');
         }
 
@@ -164,7 +171,7 @@ class MeetingPaymentListController extends Controller
         }
         info('cafdd');
 
-        if (!Auth::user()->hasRole(['gestionnaire', 'Gestionnaire'])) {
+        if (!in_array('gestionnaire', Auth::user()->roles->pluck('name')->toArray()) && !in_array('Gestionnaire', Auth::user()->roles->pluck('name')->toArray())) {
             return redirect()->back()->with('error', 'Seul un gestionnaire peut valider cette liste.');
         }
         info('sksjkdj');
@@ -187,7 +194,7 @@ class MeetingPaymentListController extends Controller
             return redirect()->back()->with('error', 'Cette liste ne peut pas être rejetée.');
         }
 
-        if (!Auth::user()->hasRole(['sous-prefet', 'Sous-prefet'])) {
+        if (!in_array('sous-prefet', Auth::user()->roles->pluck('name')->toArray()) && !in_array('Sous-prefet', Auth::user()->roles->pluck('name')->toArray())) {
             return redirect()->back()->with('error', 'Vous n\'avez pas les droits pour rejeter cette liste.');
         }
 
@@ -204,7 +211,7 @@ class MeetingPaymentListController extends Controller
     public function validateItem(MeetingPaymentItem $item)
     {
         // Vérifier si l'utilisateur est un gestionnaire
-        if (!Auth::user()->hasRole(['gestionnaire', 'Gestionnaire'])) {
+        if (!in_array('gestionnaire', Auth::user()->roles->pluck('name')->toArray()) && !in_array('Gestionnaire', Auth::user()->roles->pluck('name')->toArray())) {
             return response()->json([
                 'message' => 'Vous n\'avez pas les droits pour valider ce paiement.'
             ], 403);
@@ -243,10 +250,53 @@ class MeetingPaymentListController extends Controller
         ]);
     }
 
+    public function invalidateItem(MeetingPaymentItem $item)
+    {
+        // Vérifier si l'utilisateur est un gestionnaire
+        if (!in_array('gestionnaire', Auth::user()->roles->pluck('name')->toArray()) && !in_array('Gestionnaire', Auth::user()->roles->pluck('name')->toArray())) {
+            return response()->json([
+                'message' => 'Vous n\'avez pas les droits pour invalider ce paiement.'
+            ], 403);
+        }
+
+        // Vérifier si le paiement peut être invalidé
+        if ($item->payment_status !== 'validated') {
+            return response()->json([
+                'message' => 'Ce paiement ne peut pas être invalidé.'
+            ], 400);
+        }
+
+        // Mettre à jour le statut du paiement
+        $item->update([
+            'payment_status' => 'pending',
+            'validated_at' => null,
+            'validated_by' => null,
+        ]);
+
+        // Mettre à jour le statut de la liste si nécessaire
+        $paymentList = $item->paymentList;
+        $pendingCount = $paymentList->paymentItems()
+            ->where('payment_status', 'pending')
+            ->count();
+
+        if ($pendingCount > 0) {
+            $paymentList->update([
+                'status' => 'submitted',
+                'validated_at' => null,
+                'validated_by' => null,
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Paiement invalidé avec succès.',
+            'item' => $item
+        ]);
+    }
+
     public function validateAll(Request $request)
     {
         // Vérifier si l'utilisateur est un gestionnaire
-        if (!Auth::user()->hasRole(['gestionnaire', 'Gestionnaire'])) {
+        if (!in_array('gestionnaire', Auth::user()->roles->pluck('name')->toArray()) && !in_array('Gestionnaire', Auth::user()->roles->pluck('name')->toArray())) {
             return response()->json([
                 'message' => 'Vous n\'avez pas les droits pour valider les paiements.'
             ], 403);
@@ -334,11 +384,58 @@ class MeetingPaymentListController extends Controller
             ->with('success', 'Liste de paiement mise à jour avec succès.');
     }
 
+    public function exportSingleMeeting(Request $request, Meeting $meeting)
+    {
+        $user = Auth::user();
+        
+        if (!in_array('gestionnaire', $user->roles->pluck('name')->toArray()) && !in_array('Gestionnaire', $user->roles->pluck('name')->toArray())) {
+            return response()->json(['message' => 'Accès non autorisé'], 403);
+        }
+
+        $paymentList = MeetingPaymentList::with([
+            'meeting.localCommittee',
+            'paymentItems.attendee',
+            'submitter',
+            'validator'
+        ])
+        ->where('meeting_id', $meeting->id)
+        ->first();
+
+        if (!$paymentList) {
+            return response()->json(['message' => 'Aucune liste de paiement trouvée pour cette réunion'], 404);
+        }
+
+        \Illuminate\Support\Facades\Log::info('Exporting payment list:', $paymentList->toArray());
+
+        // Préparation des données pour l'export
+        $exportData = [
+            'Réunion' => $paymentList->meeting->title,
+            'Date' => $paymentList->meeting->scheduled_date->format('d/m/Y'),
+            'Comité Local' => $paymentList->meeting->localCommittee->name,
+            'Montant Total' => $paymentList->total_amount,
+            'Statut Liste' => $this->translateStatus($paymentList->status),
+            'Participants' => $paymentList->paymentItems->map(function($item) use ($paymentList) {
+                return [
+                    'Nom' => $item->attendee->name,
+                    'Rôle' => $this->translateRole($item->role),
+                    'Montant' => $item->amount,
+                    'Statut' => $this->translatePaymentStatus($item->payment_status)
+                ];
+            })
+        ];
+
+        return response()->json([
+            'data' => $exportData,
+            'total_amount' => $paymentList->total_amount,
+            'meeting_title' => $paymentList->meeting->title
+        ]);
+    }
+
     public function exportPaymentLists(Request $request)
     {
         $user = Auth::user();
         
-        if (!$user->hasRole(['gestionnaire', 'Gestionnaire'])) {
+        if (!in_array('gestionnaire', $user->roles->pluck('name')->toArray()) && !in_array('Gestionnaire', $user->roles->pluck('name')->toArray())) {
             //return response()->json(['message' => 'Accès non autorisé'], 403);
         }
 
@@ -348,18 +445,21 @@ class MeetingPaymentListController extends Controller
                 'paymentItems.attendee',
                 'submitter',
                 'validator'
-            ])
-            ->where('status', 'validated');
+            ]);
         
         // Filtrage par comité local
-        if ($request->has('local_committee_id') && $request->local_committee_id !== null) {
+        if ($request->filled('local_committee_id')) {
             $query->whereHas('meeting.localCommittee', function($q) use ($request) {
                 $q->where('id', $request->local_committee_id);
             });
         }
         // Filtrage par réunion
-        if ($request->has('meeting_id') && $request->meeting_id !== null) {
+        if ($request->filled('meeting_id')) {
             $query->where('meeting_id', $request->meeting_id);
+        }
+        // Filtrage par statut
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
         }
         
 
@@ -371,12 +471,14 @@ class MeetingPaymentListController extends Controller
                 'Réunion' => $list->meeting->title,
                 'Date' => $list->meeting->scheduled_date->format('d/m/Y'),
                 'Comité Local' => $list->meeting->localCommittee->name,
-                'Participants' => $list->paymentItems->map(function($item) use ($list) {
+                'Montant Total' => $list->total_amount,
+                'Statut Liste' => $this->translateStatus($list->status),
+                'Participants' => $list->paymentItems->map(function($item) {
                     return [
                         'Nom' => $item->attendee->name,
                         'Rôle' => $this->translateRole($item->role),
-                        'Montant' => $this->calculateAmount($item->role, $list->meeting),
-                        'Statut' => $item->payment_status
+                        'Montant' => $item->amount,
+                        'Statut' => $this->translatePaymentStatus($item->payment_status)
                     ];
                 })
             ];
@@ -412,13 +514,34 @@ class MeetingPaymentListController extends Controller
         return $translations[$role] ?? $role;
     }
 
+    private function translateStatus($status)
+    {
+        $translations = [
+            'draft' => 'Brouillon',
+            'submitted' => 'Soumis',
+            'validated' => 'Validé',
+            'rejected' => 'Rejeté'
+        ];
+        return $translations[$status] ?? $status;
+    }
+
+    private function translatePaymentStatus($status)
+    {
+        $translations = [
+            'pending' => 'En attente',
+            'validated' => 'Validé',
+            'paid' => 'Payé'
+        ];
+        return $translations[$status] ?? $status;
+    }
+
     public function validatePaymentList(MeetingPaymentList $paymentList)
     {
         if ($paymentList->status !== 'submitted') {
             return redirect()->back()->with('error', 'Cette liste ne peut pas être validée.');
         }
 
-        if (!Auth::user()->hasRole(['gestionnaire', 'Gestionnaire'])) {
+        if (!in_array('gestionnaire', Auth::user()->roles->pluck('name')->toArray()) && !in_array('Gestionnaire', Auth::user()->roles->pluck('name')->toArray())) {
             return redirect()->back()->with('error', 'Seul un gestionnaire peut valider cette liste.');
         }
 

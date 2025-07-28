@@ -1,116 +1,61 @@
 <template>
-  <AuthenticatedLayout :title="'Liste de paiement - ' + paymentList.meeting.title">
-    <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-        Liste de paiement
-      </h2>
-    </template>
-
-    <div class="py-12">
+  <AppLayout :title="`Liste de paiement - ${paymentList.meeting?.title || 'Réunion'}`">
+    <div class="py-6">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
-          <!-- En-tête -->
-          <div class="mb-6">
+        <!-- En-tête -->
+        <div class="bg-white shadow sm:rounded-lg mb-6">
+          <div class="px-4 py-5 sm:p-6">
             <div class="flex justify-between items-start">
               <div>
-                <h3 class="text-lg font-medium text-gray-900">
-                  {{ paymentList.meeting.title }}
-                </h3>
-                <p class="mt-1 text-sm text-gray-500">
-                  {{ paymentList.meeting.local_committee.name }} - {{ formatDate(paymentList.meeting.scheduled_date) }}
+                <h2 class="text-lg font-medium text-gray-900">
+                  Liste de paiement
+                </h2>
+                <p class="mt-1 text-sm text-gray-600">
+                  Réunion : {{ paymentList.meeting?.title || 'Réunion non définie' }}
+                </p>
+                <p class="text-sm text-gray-600">
+                  Comité : {{ paymentList.meeting?.local_committee?.name || 'Comité non défini' }}
                 </p>
               </div>
-              <div class="text-right">
-                <span :class="getStatusClass(paymentList.status)" class="px-3 py-1 rounded-full text-sm font-medium">
+              <div class="flex items-center space-x-3">
+                <span
+                  :class="[getStatusClass(paymentList.status), 'px-3 py-1 rounded-full text-sm font-medium']"
+                >
                   {{ getStatusText(paymentList.status) }}
                 </span>
-                <p class="mt-1 text-sm text-gray-500">
-                  Total : {{ formatCurrency(paymentList.total_amount) }}
-                </p>
               </div>
             </div>
-          </div>
+            
+            <!-- Informations de la liste -->
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <p class="text-sm font-medium text-gray-500">Montant total</p>
+                <p class="text-lg font-semibold text-gray-900">{{ formatCurrency(paymentList.total_amount) }}</p>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-gray-500">Soumis par</p>
+                <p class="text-sm text-gray-900">{{ paymentList.submitter?.name || 'Utilisateur non défini' }}</p>
+                <p class="text-xs text-gray-500">{{ formatDate(paymentList.submitted_at) }}</p>
+              </div>
+              <div v-if="paymentList.validator">
+                <p class="text-sm font-medium text-gray-500">Validé par</p>
+                <p class="text-sm text-gray-900">{{ paymentList.validator.name }}</p>
+                <p class="text-xs text-gray-500">{{ formatDate(paymentList.validated_at) }}</p>
+              </div>
+            </div>
 
-          <!-- Liste des participants -->
-          <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-              <thead class="bg-gray-50">
-                <tr>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Nom
-                  </th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Rôle
-                  </th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Montant
-                  </th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Statut
-                  </th>
-                  <th v-if="canValidate" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
-                <tr v-for="item in paymentList.payment_items" :key="item.id">
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm font-medium text-gray-900">
-                      {{ item.attendee.name }}
-                    </div>
-                    <div class="text-sm text-gray-500">
-                      {{ item.attendee.phone }}
-                    </div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">
-                      {{ translateRole(item.role) }}
-                    </div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">
-                      {{ formatCurrency(item.amount) }}
-                    </div>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap">
-                    <span :class="getPaymentStatusClass(item.payment_status)" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
-                      {{ getPaymentStatusText(item.payment_status) }}
-                    </span>
-                  </td>
-                  <td v-if="canValidate" class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button
-                      v-if="item.payment_status === 'pending'"
-                      @click="validateItem(item)"
-                      class="text-green-600 hover:text-green-900"
-                    >
-                      Valider
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Actions -->
-          <div class="mt-6 flex justify-end space-x-4">
-            <Link
-              :href="route('meeting-payments.lists.index')"
-              class="px-4 py-2 bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200"
-            >
-              Retour
-            </Link>
-
-            <!-- Boutons pour le gestionnaire -->
-            <template v-if="userHasRole('gestionnaire')">
-              <template v-if="paymentList.status === 'submitted'">
+            <!-- Actions -->
+            <div class="mt-6 flex items-center space-x-3">
+              <template v-if="paymentList.status === 'draft'">
                 <button
-                  @click="showRejectModal = true"
-                  class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                  @click="submitList"
+                  class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
                   :disabled="processing"
                 >
-                  Rejeter
+                  Soumettre
                 </button>
+              </template>
+              <template v-if="paymentList.status === 'submitted' && userHasRole('gestionnaire')">
                 <button
                   @click="validateList"
                   class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
@@ -118,15 +63,96 @@
                 >
                   Valider
                 </button>
+                <button
+                  @click="showRejectModal = true"
+                  class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                  :disabled="processing"
+                >
+                  Rejeter
+                </button>
               </template>
               <button
-                v-if="paymentList.status === 'validated'"
+                v-if="paymentList.status === 'validated' && userHasRole('gestionnaire')"
                 @click="validateAll"
                 class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
               >
                 Valider tous les paiements
               </button>
-            </template>
+            </div>
+          </div>
+        </div>
+
+        <!-- Liste des paiements -->
+        <div class="bg-white shadow sm:rounded-lg">
+          <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Détail des paiements</h3>
+            
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Participant
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Rôle
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Montant
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Statut
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <tr v-for="item in paymentList.payment_items" :key="item.id">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="text-sm font-medium text-gray-900">
+                        {{ item.attendee?.name || 'Participant non défini' }}
+                      </div>
+                      <div class="text-sm text-gray-500">
+                        {{ item.attendee?.phone || 'Pas de téléphone' }}
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="text-sm text-gray-900">{{ translateRole(item.role) }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="text-sm font-medium text-gray-900">{{ formatCurrency(item.amount) }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <span
+                        :class="[getPaymentStatusClass(item.payment_status), 'px-2 py-1 text-xs rounded-full']"
+                      >
+                        {{ getPaymentStatusText(item.payment_status) }}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <div class="flex space-x-2">
+                        <button
+                          v-if="item.payment_status === 'pending' && userHasRole('gestionnaire')"
+                          @click="validateItem(item)"
+                          class="text-indigo-600 hover:text-indigo-900"
+                        >
+                          Valider
+                        </button>
+                        <button
+                          v-if="item.payment_status === 'validated' && userHasRole('gestionnaire')"
+                          @click="invalidateItem(item)"
+                          class="text-red-600 hover:text-red-900"
+                        >
+                          Invalider
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
@@ -172,13 +198,13 @@
         </div>
       </div>
     </Modal>
-  </AuthenticatedLayout>
+  </AppLayout>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import { Link, useForm, router } from '@inertiajs/vue3';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AppLayout from '@/Layouts/AppLayout.vue';
 import Modal from '@/Components/Modal.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextArea from '@/Components/TextArea.vue';
@@ -210,7 +236,6 @@ function formatCurrency(amount) {
 
 function translateRole(role) {
   const translations = {
-    'prefet': 'Préfet',
     'sous_prefet': 'Sous-préfet',
     'secretaire': 'Secrétaire',
     'representant': 'Représentant'
@@ -220,12 +245,12 @@ function translateRole(role) {
 
 function getStatusClass(status) {
   const classes = {
-    draft: 'bg-gray-100 text-gray-800',
-    submitted: 'bg-yellow-100 text-yellow-800',
-    validated: 'bg-green-100 text-green-800',
-    rejected: 'bg-red-100 text-red-800',
+    draft: 'bg-slate-100 text-slate-700 border border-slate-200',
+    submitted: 'bg-amber-100 text-amber-700 border border-amber-200',
+    validated: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
+    rejected: 'bg-red-100 text-red-700 border border-red-200'
   };
-  return classes[status] || 'bg-gray-100 text-gray-800';
+  return classes[status] || 'bg-slate-100 text-slate-700 border border-slate-200';
 }
 
 function getStatusText(status) {
@@ -240,11 +265,11 @@ function getStatusText(status) {
 
 function getPaymentStatusClass(status) {
   const classes = {
-    pending: 'bg-yellow-100 text-yellow-800',
-    validated: 'bg-green-100 text-green-800',
-    rejected: 'bg-red-100 text-red-800'
+    pending: 'bg-amber-100 text-amber-700 border border-amber-200',
+    validated: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
+    rejected: 'bg-red-100 text-red-700 border border-red-200'
   };
-  return classes[status] || 'bg-gray-100 text-gray-800';
+  return classes[status] || 'bg-slate-100 text-slate-700 border border-slate-200';
 }
 
 function getPaymentStatusText(status) {
@@ -302,6 +327,12 @@ function validateItem(item) {
   }
 }
 
+function invalidateItem(item) {
+  if (confirm('Êtes-vous sûr de vouloir invalider ce paiement ?')) {
+    router.post(route('meeting-payments.lists.invalidate-item', item.id));
+  }
+}
+
 function validateAll() {
   if (confirm('Êtes-vous sûr de vouloir valider tous les paiements ?')) {
     router.post(route('meeting-payments.lists.validate-all'), {
@@ -311,6 +342,7 @@ function validateAll() {
 }
 
 const userHasRole = (role) => {
-  return props.user.roles.some(r => r.name.toLowerCase() === role.toLowerCase());
+  if (!props.user || !props.user.roles) return false;
+  return props.user.roles.some(r => r.toLowerCase() === role.toLowerCase());
 };
 </script> 

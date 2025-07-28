@@ -3,7 +3,7 @@ export const STATUS_MEETING = {
   submitted: 'Soumis',
   validated: 'Validé',
   rejected: 'Rejeté',
-  completed: 'Terminée',
+  completed: 'Publiée',
   cancelled: 'Annulée',
   scheduled: 'Planifiée',
   planned: 'Planifiée',
@@ -38,7 +38,6 @@ export const STATUS_ATTENDANCE = {
 }
 
 export const ROLES = {
-  prefet: 'Préfet',
   sous_prefet: 'Sous-préfet',
   secretaire: 'Secrétaire',
   representant: 'Représentant',
@@ -49,23 +48,35 @@ export const ROLES = {
 }
 
 export const STATUS_CLASSES = {
-  draft: 'bg-gray-100 text-gray-800',
-  submitted: 'bg-yellow-100 text-yellow-800',
-  validated: 'bg-green-100 text-green-800',
-  rejected: 'bg-red-100 text-red-800',
-  completed: 'bg-blue-100 text-blue-800',
-  cancelled: 'bg-red-100 text-red-800',
-  scheduled: 'bg-yellow-100 text-yellow-800',
-  planned: 'bg-yellow-100 text-yellow-800',
-  in_progress: 'bg-purple-100 text-purple-800',
-  pending: 'bg-yellow-100 text-yellow-800',
-  paid: 'bg-green-100 text-green-800',
-  prevalidated: 'bg-blue-100 text-blue-800',
-  late: 'bg-orange-100 text-orange-800',
-  present: 'bg-green-100 text-green-800',
-  absent: 'bg-red-100 text-red-800',
-  replaced: 'bg-yellow-100 text-yellow-800',
-  expected: 'bg-gray-100 text-gray-800'
+  // Statuts de réunions
+  draft: 'bg-slate-100 text-slate-700 border border-slate-200',
+  submitted: 'bg-amber-100 text-amber-700 border border-amber-200',
+  validated: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
+  rejected: 'bg-red-100 text-red-700 border border-red-200',
+  completed: 'bg-blue-100 text-blue-700 border border-blue-200',
+  cancelled: 'bg-red-100 text-red-700 border border-red-200',
+  scheduled: 'bg-indigo-100 text-indigo-700 border border-indigo-200',
+  planned: 'bg-indigo-100 text-indigo-700 border border-indigo-200',
+  in_progress: 'bg-purple-100 text-purple-700 border border-purple-200',
+  pending: 'bg-amber-100 text-amber-700 border border-amber-200',
+  prevalidated: 'bg-cyan-100 text-cyan-700 border border-cyan-200',
+  late: 'bg-orange-100 text-orange-700 border border-orange-200',
+  
+  // Statuts de paiements
+  paid: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
+  processing: 'bg-blue-100 text-blue-700 border border-blue-200',
+  
+  // Statuts de présence
+  present: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
+  absent: 'bg-red-100 text-red-700 border border-red-200',
+  replaced: 'bg-amber-100 text-amber-700 border border-amber-200',
+  expected: 'bg-slate-100 text-slate-700 border border-slate-200',
+  
+  // Statuts génériques
+  active: 'bg-emerald-100 text-emerald-700 border border-emerald-200',
+  inactive: 'bg-slate-100 text-slate-700 border border-slate-200',
+  published: 'bg-purple-100 text-purple-700 border border-purple-200',
+  pending_validation: 'bg-amber-100 text-amber-700 border border-amber-200'
 }
 
 export const getStatusText = (status, type = 'meeting') => {

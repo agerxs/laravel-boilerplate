@@ -35,7 +35,7 @@ const form = useForm({
             class="mt-6 space-y-6"
         >
             <div>
-                <InputLabel for="name" value="Name" />
+                <InputLabel for="name" value="Name" :isRequired="true" />
 
                 <TextInput
                     id="name"
@@ -51,7 +51,7 @@ const form = useForm({
             </div>
 
             <div>
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" value="Email" :isRequired="true" />
 
                 <TextInput
                     id="email"

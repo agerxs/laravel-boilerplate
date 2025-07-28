@@ -34,7 +34,6 @@ class User extends Authenticatable
         'assignment_location_id',
         'cni_number',
         'phone',
-        'whatsapp'
     ];
 
     /**

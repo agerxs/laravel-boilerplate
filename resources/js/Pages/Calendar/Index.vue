@@ -49,7 +49,7 @@
                     @click="showMeetingDetails(attr.customData.meeting)"
                   >
                     {{ attr.customData.meeting.title }}
-                    {{ formatTime(attr.customData.meeting.start_datetime) }}
+                    {{ formatTime(attr.customData.meeting.scheduled_date) }}
                   </div>
                 </div>
               </div>
@@ -68,9 +68,9 @@
         <div class="space-y-3">
           <p class="text-sm text-gray-600">
             <ClockIcon class="h-5 w-5 inline mr-2" />
-            {{ formatDateTime(selectedMeeting.start_datetime) }} - 
-            {{ formatDateTime(selectedMeeting.end_datetime) }}
+            Date prévue : {{ selectedMeeting.scheduled_date }}
           </p>
+         
           <p class="text-sm text-gray-600">
             <MapPinIcon class="h-5 w-5 inline mr-2" />
             {{ selectedMeeting.location || 'Aucun lieu spécifié' }}
@@ -117,7 +117,7 @@ import {
 interface Meeting {
   id: number
   title: string
-  start_datetime: string
+  scheduled_date: string
   end_datetime: string
   location: string
   status: string
@@ -170,13 +170,13 @@ const calendarOptions = {
 // Préparer les attributs pour le calendrier
 const attributes = computed(() => {
   return props.meetings.map(meeting => ({
-    dates: new Date(meeting.start_datetime),
+    dates: new Date(meeting.scheduled_date),
     dot: {
       color: getStatusColor(meeting.status),
     },
     customData: {
       meeting,
-      classes: `bg-${getStatusColor(meeting.status)}-100 text-${getStatusColor(meeting.status)}-800`
+      classes: `bg-${getStatusColor(meeting.status)}-100 text-${getStatusColor(meeting.status)}-700 border border-${getStatusColor(meeting.status)}-200`
     },
     key: meeting.id
   }))
@@ -184,11 +184,29 @@ const attributes = computed(() => {
 
 function getStatusColor(status: string) {
   switch (status) {
-    case 'planned': return 'yellow'
-    case 'ongoing': return 'blue'
-    case 'completed': return 'green'
-    case 'cancelled': return 'red'
-    default: return 'gray'
+    case 'planned': 
+    case 'scheduled': 
+      return 'indigo'
+    case 'in_progress': 
+    case 'ongoing': 
+      return 'purple'
+    case 'completed': 
+    case 'validated': 
+      return 'emerald'
+    case 'cancelled': 
+    case 'rejected': 
+      return 'red'
+    case 'pending': 
+    case 'submitted': 
+      return 'amber'
+    case 'draft': 
+      return 'slate'
+    case 'late': 
+      return 'orange'
+    case 'prevalidated': 
+      return 'cyan'
+    default: 
+      return 'slate'
   }
 }
 
@@ -260,8 +278,9 @@ function formatMonthYear(date: Date) {
 function formatStatus(status: string): string {
   const statusMap: { [key: string]: string } = {
     'planned': 'Planifiée',
+    'validated': 'Publiée',
     'ongoing': 'En cours',
-    'completed': 'Terminée',
+    'completed': 'Publiée',
     'cancelled': 'Annulée'
   };
   return statusMap[status] || status;

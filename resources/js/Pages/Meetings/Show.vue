@@ -11,58 +11,7 @@
               {{ getStatusText(meeting.status, 'meeting') }}
             </span>
           </h2>
-          <div class="flex flex-wrap gap-2">
-            <MeetingValidationButtons 
-              :meeting="meeting"
-              @meeting-updated="handleMeetingUpdated"
-            />
-            
-            <!-- Button to manage attendance list -->
-           
-            
-            <!-- Autres boutons d'action -->
-            <button
-              v-if="(meeting.status === 'planned' || meeting.status === 'scheduled') && isSecretary && !isSubPrefect"
-              @click="cancelMeeting(meeting.id)"
-              class="inline-flex items-center px-4 py-2 bg-white border border-red-300 text-red-700 rounded-md text-sm font-medium hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-            >
-              Annuler
-            </button>
-            <!-- Bouton pour valider -->
-            <button
-              v-if="(isSubPrefect || isAdmin) && meeting.status === 'completed'"
-              @click="showValidationModal = true"
-              class="inline-flex items-center px-4 py-2 bg-white border border-violet-300 text-violet-700 rounded-md text-sm font-medium hover:bg-violet-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500"
-            >
-              Valider
-            </button>
-            <!-- Bouton pour invalider -->
-            <button
-              v-if="(isSubPrefect || isAdmin) && meeting.status === 'validated' && meeting.status !== 'cancelled'"
-              @click="showInvalidationModal = true"
-              class="inline-flex items-center px-4 py-2 bg-white border border-red-300 text-red-700 rounded-md text-sm font-medium hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-            >
-              Invalider
-            </button>
-            
-            <!-- Reschedule button -->
-            <Link
-              v-if="(meeting.status === 'scheduled' || meeting.status === 'planned') && isSecretary && !isSubPrefect"
-              :href="route('meetings.reschedule', meeting.id)"
-              class="inline-flex items-center px-4 py-2 bg-white border border-blue-300 text-blue-700 rounded-md text-sm font-medium hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Reprogrammer
-            </Link>
-            
-            <!-- Complete button -->
-            <button
-              v-if="(meeting.status === 'scheduled' || meeting.status === 'planned') && isSecretary"
-              @click="completeConfirm"
-              class="inline-flex items-center px-4 py-2 bg-white border border-green-300 text-green-700 rounded-md text-sm font-medium hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-            >
-              Marquer comme terminée
-            </button>
-          </div>
+          
         </div>
       </div>
 
@@ -117,8 +66,8 @@
                   <p class="text-sm text-gray-600">
                     <span class="font-medium">Nombre de personnes enrôlées :</span>
                     {{ meeting.actual_enrollments || 0 }}
-                    <span v-if="meeting.target_enrollments" class="ml-2 text-xs inline-block bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
-                      {{ Math.round((meeting.actual_enrollments / meeting.target_enrollments) * 100) }}%
+                    <span v-if="meeting.target_enrollments" class="ml-2 text-xs inline-block bg-emerald-100 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full">
+                      {{ meeting.actual_enrollments }}/{{ meeting.target_enrollments }}
                     </span>
                   </p>
                   
@@ -180,8 +129,8 @@
             <div class="flex justify-between items-center">
               <h3 class="text-lg font-medium text-gray-900">Liste de Présence</h3>
            
-              <!-- Bouton pour gérer la liste de présence, affiché quelle que soit la situation -->
-              <div v-if="['scheduled', 'prevalidated', 'validated', 'planned'].includes(meeting.status) && !isSubPrefect" class="mt-2">
+              <!-- Bouton pour gérer la liste de présence (secrétaires et admins) -->
+              <div v-if="['scheduled', 'prevalidated', 'validated', 'planned'].includes(meeting.status) && isSecretary" class="mt-2">
                
                 <a 
                   href="#"
@@ -192,160 +141,213 @@
                   Gérer la liste de présence
                 </a>
               </div>
+              
+              <!-- Bouton pour consulter la liste de présence (sous-préfets et réunions terminées) -->
+              <div v-if="(isSubPrefect && ['scheduled', 'prevalidated', 'validated', 'planned'].includes(meeting.status)) || meeting.status === 'completed'" class="mt-2">
+                <a 
+                  href="#"
+                  @click.prevent="$inertia.visit(route('meetings.attendance', meeting.id))"
+                  class="inline-flex items-center px-4 py-2 bg-white border border-green-300 text-green-700 rounded-md text-sm font-medium hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                >
+                  <EyeIcon class="h-4 w-4 mr-1" />
+                  Consulter la liste de présence
+                </a>
+              </div>
+            </div>
+            
+            <!-- Analyse géographique si des participants ont des positions GPS -->
+            <div v-if="meeting.attendees && meeting.attendees.some(a => a.presence_location)" class="mt-4">
+              <GeographicAnalysis 
+                :attendees="meeting.attendees" 
+                :max-distance="100"
+              />
             </div>
             
             <div v-if="meeting.attendees && meeting.attendees.length > 0" class="mt-4">
-              <ul class="divide-y divide-gray-200">
-                <li v-for="attendee in meeting.attendees" :key="attendee.id" class="py-4">
-                  <div class="flex items-center space-x-4">
-                    <div class="flex-1 min-w-0">
-                      <p class="text-sm font-medium text-gray-900">
-                        {{ attendee.name }}
-                        <span v-if="attendee.replacement_name" class="text-xs text-yellow-600 ml-2">
-                          (Remplacé par {{ attendee.replacement_name }})
-                        </span>
-                      </p>
-                      <p class="text-sm text-gray-500">
-                        {{ attendee.role || 'Pas de rôle défini' }}
-                      </p>
-                    </div>
-                    <div>
-                      <span
-                        :class="[
-                          'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full',
-                          getStatusClass(attendee.attendance_status || 'expected')
-                        ]"
-                      >
-                        {{ getStatusText(attendee.attendance_status || 'expected', 'attendance') }}
-                      </span>
-                    </div>
+              <!-- Barre de recherche et filtres -->
+              <div class="mb-4 space-y-3">
+                <!-- Recherche -->
+                <div class="flex items-center space-x-4">
+                  <div class="flex-1">
+                    <input
+                      v-model="searchQuery"
+                      type="text"
+                      placeholder="Rechercher un participant..."
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    />
                   </div>
-                </li>
-              </ul>
-            </div>
-            <div v-else class="mt-4 text-sm text-gray-600">
-              <p>Aucun participant n'a encore été enregistré pour cette réunion.</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Comité Local -->
-        <div class="bg-white shadow sm:rounded-lg">
-          <div class="px-4 py-5 sm:p-6">
-            <h3 class="text-lg font-medium text-gray-900">Comité Local</h3>
-            <div v-if="meeting.local_committee" class="mt-4">
-              <div class="flex justify-between items-start">
-                <div>
-                  <h4 class="text-base font-medium text-gray-900">
-                    {{ meeting.local_committee.name }}
-                  </h4>
-                  <p class="text-sm text-gray-500 mt-1">
-                    {{ meeting.local_committee.city || 'Ville non définie' }}
-                  </p>
-                  <p class="text-sm text-gray-500">
-                    {{ meeting.local_committee.address || 'Adresse non définie' }}
-                  </p>
-                </div>
-              </div>
-
-              <div class="mt-6">
-                <h5 class="text-sm font-medium text-gray-900 mb-3">Membres du comité</h5>
-                <div v-if="meeting.local_committee.members && meeting.local_committee.members.length > 0" class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                  <div
-                    v-for="member in meeting.local_committee.members"
-                    :key="member.id"
-                    class="flex items-center space-x-3 bg-gray-50 p-3 rounded-lg"
-                  >
-                    <div class="flex-shrink-0">
-                      <img
-                        :src="`https://ui-avatars.com/api/?name=${encodeURIComponent(member.user?.name || 'Utilisateur')}`"
-                        :alt="member.user?.name || 'Utilisateur'"
-                        class="h-8 w-8 rounded-full"
-                      >
-                    </div>
-                    <div class="flex-grow">
-                      <p class="text-sm font-medium text-gray-900">
-                        {{ member.user?.name || 'Utilisateur non défini' }}
-                      </p>
-                      <p class="text-xs text-gray-500">{{ formatRole(member.role || 'member') }}</p>
-                    </div>
-                    <div v-if="member.user?.email" class="flex-shrink-0">
-                      <a
-                        :href="`mailto:${member.user.email}`"
-                        class="text-indigo-600 hover:text-indigo-900"
-                      >
-                        <EnvelopeIcon class="h-5 w-5" />
-                      </a>
-                    </div>
+                  <div class="flex items-center space-x-2">
+                    <label class="text-sm font-medium text-gray-700">Statut :</label>
+                    <select
+                      v-model="statusFilter"
+                      class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                    >
+                      <option value="">Tous</option>
+                      <option value="present">Présents</option>
+                      <option value="absent">Absents</option>
+                      <option value="replaced">Remplacés</option>
+                      <option value="expected">En attente</option>
+                    </select>
                   </div>
                 </div>
-                <div v-else class="text-sm text-gray-500">
-                  Aucun membre dans ce comité
-                </div>
-              </div>
-            </div>
-            <div v-else class="mt-4 text-sm text-gray-500">
-              Aucun comité local associé
-            </div>
-          </div>
-
-          <!-- Villages et représentants -->
-          <div class="px-4 py-5 sm:p-6 border-t border-gray-200">
-            <div class="flex justify-between items-center mb-4">
-              <h3 class="text-lg font-medium text-gray-900">Villages et représentants</h3>
-              <!--<button 
-                v-if="meeting.status !== 'cancelled' && isSecretary"
-                @click="showManageRepresentativesModal = true" 
-                class="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700"
-              >
-                Gérer les participants
-              </button>-->
-            </div>
-            
-            <div v-if="meeting.local_committee?.locality?.children && meeting.local_committee.locality.children.length > 0" 
-                 class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div v-for="village in meeting.local_committee.locality.children" 
-                   :key="village.id" 
-                   class="bg-white shadow-md rounded-lg p-4">
-                <h3 class="text-xl font-medium text-gray-800">
-                  {{ village.name }} 
-                  <span class="text-sm text-gray-500">
-                    ({{ getParticipantsCount(village.id) }} représentants)
+                
+                <!-- Informations sur les résultats -->
+                <div class="flex justify-between items-center text-sm text-gray-600">
+                  <span>
+                    {{ filteredAttendees.length }} participant(s) sur {{ meeting.attendees.length }} total
                   </span>
-                </h3>
-                <ul v-if="village.representatives && village.representatives.length > 0" class="list-none mt-2">
-                  <li v-for="rep in village.representatives" 
-                      :key="rep.id" 
-                      class="flex items-center space-x-4 py-2">
-                    <div class="flex-shrink-0">
-                      <div class="h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center text-white">
-                        {{ getInitials(rep) }}
+                  <span v-if="searchQuery || statusFilter">
+                    Filtres actifs
+                  </span>
+                </div>
+              </div>
+
+              <!-- Liste des participants avec pagination -->
+              <div v-if="paginatedAttendees.length > 0">
+                <ul class="divide-y divide-gray-200">
+                  <li v-for="attendee in paginatedAttendees" :key="attendee.id" class="py-4">
+                    <div class="flex items-center space-x-4">
+                      <!-- Photo de présence si disponible -->
+                      <div v-if="attendee.presence_photo" class="flex-shrink-0">
+                        <img 
+                          :src="`/storage/${attendee.presence_photo}`" 
+                          class="h-12 w-12 rounded-full object-cover border-2 border-primary-500 cursor-pointer hover:opacity-80 transition-opacity"
+                          @click="showPhotoModal(attendee)"
+                          :title="'Photo prise le ' + formatDate(attendee.presence_timestamp)"
+                        />
                       </div>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                      <p class="text-sm font-medium text-gray-900">
-                        {{ rep.first_name }} {{ rep.last_name }}
-                      </p>
-                      <p class="text-sm text-gray-500">
-                        {{ rep.phone || 'Pas de téléphone' }} - {{ formatRole(rep.role || 'Représentant') }}
-                      </p>
-                    </div>
-                    <div class="flex-shrink-0">
-                      <span 
-                        :class="[getStatusClass(rep.attendance_status || 'expected'), 'px-2 py-1 text-xs rounded-full']"
-                      >
-                        {{ getStatusText(rep.attendance_status || 'expected', 'attendance') }}
-                      </span>
+                      <div v-else class="flex-shrink-0">
+                        <div class="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center">
+                          <UserIcon class="h-6 w-6 text-gray-400" />
+                        </div>
+                      </div>
+                      
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900">
+                          {{ attendee.name }}
+                          <span v-if="attendee.replacement_name" class="text-xs text-yellow-600 ml-2">
+                            (Remplacé par {{ attendee.replacement_name }})
+                          </span>
+                        </p>
+                        <p class="text-sm text-gray-500">
+                          {{ attendee.role || 'Pas de rôle défini' }}
+                          <span v-if="attendee.village?.name" class="ml-2">• {{ attendee.village.name }}</span>
+                        </p>
+                        <p v-if="attendee.phone" class="text-sm text-gray-500">
+                          📞 {{ attendee.phone }}
+                        </p>
+                        <!-- Informations de présence -->
+                        <div v-if="attendee.attendance_status === 'present' || attendee.attendance_status === 'replaced'" class="mt-1">
+                          <p v-if="attendee.arrival_time" class="text-xs text-green-600">
+                            🕐 Arrivé à {{ formatTime(attendee.arrival_time) }}
+                          </p>
+                          <p v-if="attendee.presence_location" class="text-xs text-blue-600">
+                            📍 {{ formatLocation(attendee.presence_location) }}
+                          </p>
+                        </div>
+                        <!-- Commentaires -->
+                        <p v-if="attendee.comments" class="text-xs text-gray-600 mt-1">
+                          💬 {{ attendee.comments }}
+                        </p>
+                      </div>
+                      <div>
+                        <span
+                          :class="[
+                            'px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full',
+                            getStatusClass(attendee.attendance_status || 'expected')
+                          ]"
+                        >
+                          {{ getStatusText(attendee.attendance_status || 'expected', 'attendance') }}
+                        </span>
+                      </div>
                     </div>
                   </li>
                 </ul>
-                <p v-else class="text-sm text-gray-500 mt-2">
-                  Aucun représentant pour ce village
-                </p>
+                
+                <!-- Pagination -->
+                <div v-if="totalPages > 1" class="mt-6 flex items-center justify-between">
+                  <div class="flex items-center space-x-2 text-sm text-gray-700">
+                    <span>
+                      Page {{ currentPage }} sur {{ totalPages }}
+                    </span>
+                    <span>
+                      ({{ startIndex + 1 }}-{{ endIndex }} sur {{ filteredAttendees.length }})
+                    </span>
+                  </div>
+                  
+                  <div class="flex items-center space-x-2">
+                    <button
+                      @click="previousPage"
+                      :disabled="currentPage === 1"
+                      class="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Précédent
+                    </button>
+                    
+                    <div class="flex items-center space-x-1">
+                      <button
+                        v-for="page in visiblePages"
+                        :key="page"
+                        @click="goToPage(page)"
+                        :class="[
+                          'px-3 py-1 text-sm rounded-md',
+                          page === currentPage
+                            ? 'bg-indigo-600 text-white'
+                            : 'border border-gray-300 hover:bg-gray-50'
+                        ]"
+                      >
+                        {{ page }}
+                      </button>
+                    </div>
+                    
+                    <button
+                      @click="nextPage"
+                      :disabled="currentPage === totalPages"
+                      class="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Suivant
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Message si aucun résultat -->
+              <div v-else class="text-center py-8 text-gray-500">
+                <p>Aucun participant trouvé avec les critères actuels.</p>
+                <button
+                  v-if="searchQuery || statusFilter"
+                  @click="clearFilters"
+                  class="mt-2 text-indigo-600 hover:text-indigo-800 text-sm"
+                >
+                  Effacer les filtres
+                </button>
+              </div>
+              
+              <!-- Statistiques de présence -->
+              <div class="mt-6 pt-4 border-t border-gray-200">
+                <h4 class="text-sm font-medium text-gray-900 mb-2">Statistiques de présence</h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div class="text-center">
+                    <div class="text-2xl font-bold text-gray-900">{{ getAttendanceCount('present') }}</div>
+                    <div class="text-xs text-gray-500">Présents</div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-2xl font-bold text-yellow-600">{{ getAttendanceCount('replaced') }}</div>
+                    <div class="text-xs text-gray-500">Remplacés</div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-2xl font-bold text-red-600">{{ getAttendanceCount('absent') }}</div>
+                    <div class="text-xs text-gray-500">Absents</div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-2xl font-bold text-blue-600">{{ getAttendanceCount('expected') }}</div>
+                    <div class="text-xs text-gray-500">En attente</div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div v-else class="text-sm text-gray-500">
-              Aucun village associé à ce comité local
+            <div v-else class="mt-4 text-sm text-gray-600">
+              <p>Aucun participant n'a encore été enregistré pour cette réunion.</p>
             </div>
           </div>
         </div>
@@ -371,7 +373,7 @@
             </div>
 
             <div class="mt-4">
-              <form v-if="isSecretary" @submit.prevent="uploadFile" class="flex items-end space-x-4" enctype="multipart/form-data">
+              <form v-if="isSecretary && meeting.status !== 'completed'" @submit.prevent="uploadFile" class="flex items-end space-x-4" enctype="multipart/form-data">
                 <div class="flex-1">
                   <InputLabel for="title" value="Titre du document" />
                   <TextInput
@@ -464,7 +466,7 @@
                     Télécharger
                   </button>
                   <button
-                    v-if="isSecretary"
+                    v-if="isSecretary && meeting.status !== 'completed'"
                     @click="deleteFile(attachment)"
                     class="text-red-600 hover:text-red-900"
                   >
@@ -484,16 +486,7 @@
         <div class="bg-white rounded-lg shadow p-6 mb-6">
           <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-semibold">Compte rendu</h3>
-            <div class="flex items-center space-x-2">
-              <button
-                v-if="canEditMinutes"
-                @click="startEditMinutes"
-                class="inline-flex items-center px-3 py-1 bg-indigo-100 text-indigo-700 text-sm rounded hover:bg-indigo-200"
-              >
-                <PencilIcon class="h-4 w-4 mr-1" />
-                Modifier
-              </button>
-            </div>
+            
           </div>
           <div>
             <div v-if="editingMinutes">
@@ -502,21 +495,82 @@
                 placeholder="Rédigez le compte rendu ici..."
               />
 
+              
               <div class="mt-4 flex justify-end space-x-3">
+                
                 <button
+                  v-if="meeting.status !== 'completed'"
                   @click="cancelEditMinutes"
                   class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50"
                 >
                   Annuler
                 </button>
-                <button
-                  @click="saveMinutes"
-                  class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700"
-                  :disabled="form.processing"
-                >
-                  Enregistrer
-                </button>
-               
+                <button v-if="isSecretary && meeting.status !== 'completed'"
+        @click="saveAll"
+        class="flex items-center px-4 py-2 bg-green-600  text-white rounded-lg shadow-lg hover:bg-green-700 transition-colors"
+        :disabled="form.processing"
+      >
+        <svg v-if="form.processing" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span>Enregistrer</span>
+      </button>
+                <div class="flex flex-wrap gap-2">
+            <MeetingValidationButtons 
+              :meeting="meeting"
+              @meeting-updated="handleMeetingUpdated"
+            />
+             <!-- Reschedule button -->
+             <button
+               v-if="(meeting.status === 'scheduled' || meeting.status === 'planned') && isSecretary && !isSubPrefect"
+               @click="showRescheduleModal = true"
+               class="inline-flex items-center px-4 py-2 bg-white border border-blue-300 text-blue-700 rounded-md text-sm font-medium hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+             >
+               Replanifier
+             </button>
+            <!-- Button to manage attendance list -->
+           
+            
+            <!-- Autres boutons d'action -->
+            <!-- Bouton pour valider -->
+            <button
+              v-if="(isSubPrefect || isAdmin) && meeting.status === 'completed'"
+              @click="showValidationModal = true"
+              class="inline-flex items-center px-4 py-2 bg-white border border-violet-300 text-violet-700 rounded-md text-sm font-medium hover:bg-violet-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500"
+            >
+              Valider
+            </button>
+            <!-- Bouton pour invalider -->
+            <button
+              v-if="(isSubPrefect || isAdmin) && meeting.status === 'validated' && meeting.status !== 'cancelled'"
+              @click="showInvalidationModal = true"
+              class="inline-flex items-center px-4 py-2 bg-white border border-red-300 text-red-700 rounded-md text-sm font-medium hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            >
+              Invalider
+            </button>
+            
+           
+            
+            <!-- Complete button -->
+            <button
+              v-if="(meeting.status === 'scheduled' || meeting.status === 'planned') && isSecretary"
+              @click="completeConfirm"
+              class="inline-flex items-center px-4 py-2 bg-white border border-green-300 text-green-700 rounded-md text-sm font-medium hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+            >
+              Publier
+            </button>
+            
+            <!-- Unpublish button -->
+            <button
+              v-if="meeting.status === 'completed' && isSecretary && !meeting.validated_at && !meeting.invalidated_at"
+              @click="unpublishConfirm"
+              class="inline-flex items-center px-4 py-2 bg-white border border-orange-300 text-orange-700 rounded-md text-sm font-medium hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+            >
+              Dépublier
+            </button>
+         
+          </div>
               </div>
             </div>
             <div v-else>
@@ -878,6 +932,7 @@
         </div>
         
         <div class="mt-6 flex justify-end space-x-3">
+          
           <SecondaryButton @click="closeManageRepresentativesModal">
             Annuler
           </SecondaryButton>
@@ -888,21 +943,7 @@
       </div>
     </Modal>
 
-    <!-- Boutons d'action globaux -->
-    <div v-if="isSecretary" class="fixed bottom-4 right-4 flex space-x-3">
-      <!-- Bouton de sauvegarde
-      <button
-        @click="saveAll"
-        class="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg shadow-lg hover:bg-green-700 transition-colors"
-        :disabled="form.processing"
-      >
-        <svg v-if="form.processing" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-        <span>Enregistrer les modifications</span>
-      </button> -->
-    </div>
+  
 
     <!-- Modal de validation -->
     <Modal :show="showValidationModal" @close="closeValidationModal">
@@ -1022,6 +1063,97 @@
         </div>
       </div>
     </Modal>
+
+    <!-- Modal de replanification -->
+    <Modal :show="showRescheduleModal" @close="closeRescheduleModal">
+      <div class="p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">
+          Replanifier la réunion
+        </h3>
+        <form @submit.prevent="submitReschedule">
+          <div class="space-y-4">
+            <!-- Nouvelle date et heure -->
+            <div>
+              <label for="date" class="block text-sm font-medium text-gray-700 mb-2">
+                Nouvelle date et heure
+              </label>
+              <input
+                id="date"
+                v-model="rescheduleForm.date"
+                type="datetime-local"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </div>
+
+            <!-- Motif du report -->
+            <div>
+              <label for="reason" class="block text-sm font-medium text-gray-700 mb-2">
+                Motif du report
+              </label>
+              <textarea
+                id="reason"
+                v-model="rescheduleForm.reason"
+                rows="4"
+                required
+                placeholder="Expliquez pourquoi cette réunion doit être reportée..."
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="mt-6 flex justify-end space-x-3">
+            <button
+              type="button"
+              @click="closeRescheduleModal"
+              class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Annuler
+            </button>
+            <button
+              type="submit"
+              :disabled="rescheduleLoading"
+              class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+            >
+              <span v-if="rescheduleLoading">Enregistrement...</span>
+              <span v-else>Replanifier</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </Modal>
+
+    <!-- Modal pour afficher les photos de présence -->
+    <Modal :show="photoModalOpen" @close="closePhotoModal">
+      <div class="p-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4">
+          Photo de présence - {{ selectedAttendee?.name }}
+        </h3>
+        
+        <div v-if="selectedAttendee?.presence_photo" class="mb-4">
+          <img 
+            :src="`/storage/${selectedAttendee.presence_photo}`" 
+            alt="Photo de présence" 
+            class="w-full rounded-lg shadow-lg"
+          />
+          <div class="mt-2 text-sm text-gray-600">
+            <p>Photo prise le {{ formatDate(selectedAttendee.presence_timestamp) }}</p>
+            <p>Localisation : {{ formatLocation(selectedAttendee.presence_location) }}</p>
+            <p v-if="selectedAttendee.arrival_time">Arrivé à : {{ formatTime(selectedAttendee.arrival_time) }}</p>
+          </div>
+        </div>
+        
+        <div class="mt-6 flex justify-end">
+          <button
+            type="button"
+            @click="closePhotoModal"
+            class="px-4 py-2 bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200"
+          >
+            Fermer
+          </button>
+        </div>
+      </div>
+    </Modal>
   </AppLayout>
 </template>
 
@@ -1044,16 +1176,19 @@ import {
     CheckCircleIcon,
     XCircleIcon,
     XMarkIcon,
-    UsersIcon
+    UsersIcon,
+    EyeIcon,
+    UserIcon
 } from '@heroicons/vue/24/outline'
 import { router, useForm, usePage } from '@inertiajs/vue3'
 import axios from 'axios'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import draggable from 'vuedraggable/src/vuedraggable'
 import MeetingValidationButtons from '@/Components/MeetingValidationButtons.vue'
 import { getStatusText, getStatusClass, translateRole } from '@/Utils/translations'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
+import GeographicAnalysis from '@/Components/GeographicAnalysis.vue'
 
 interface AgendaItem {
     id: number;
@@ -1422,8 +1557,7 @@ const saveMinutes = async () => {
     editingMinutes.value = false
     toast.success('Compte rendu enregistré avec succès')
 
-    // Mettre à jour le statut de la réunion côté client
-    props.meeting.status = 'completed'
+    // Ne pas changer le statut de la réunion - juste sauvegarder les données
   } catch (error) {
     console.error('Erreur:', error)
     toast.error('Erreur lors de l\'enregistrement du compte rendu')
@@ -1441,8 +1575,7 @@ const publishMinutes = async () => {
     editingMinutes.value = false
     toast.success('Compte rendu publié avec succès')
 
-    // Mettre à jour le statut de la réunion côté client
-    props.meeting.status = 'completed'
+    // Ne pas changer le statut de la réunion - juste publier le compte rendu
   } catch (error) {
     console.error('Erreur:', error)
     toast.error('Erreur lors de la publication du compte rendu')
@@ -1456,15 +1589,32 @@ const cancelEditMinutes = () => {
 }
 
 // Sauvegarde globale
-const saveAll = () => {
-  form.put(route('meetings.update', props.meeting.id), {
-    onSuccess: () => {
-      toast.success('Réunion mise à jour avec succès');
-    },
-    onError: () => {
-      toast.error('Une erreur est survenue');
+const saveAll = async () => {
+  try {
+    // Sauvegarder d'abord le compte rendu s'il y en a un
+    if (form.minutes.content) {
+      if (!props.meeting.minutes) {
+        // Création d'un nouveau compte rendu
+        await axios.post(route('minutes.store', props.meeting.id), {
+          content: form.minutes.content
+        })
+      } else {
+        // Mise à jour d'un compte rendu existant
+        await axios.put(route('minutes.update', props.meeting.minutes.id), {
+          content: form.minutes.content,
+          status: form.minutes.status
+        })
+      }
     }
-  });
+    
+    // Ensuite sauvegarder les autres modifications de la réunion
+    await form.put(route('meetings.update', props.meeting.id))
+    
+    toast.success('Toutes les modifications ont été enregistrées avec succès');
+  } catch (error) {
+    console.error('Erreur lors de la sauvegarde:', error);
+    toast.error('Une erreur est survenue lors de la sauvegarde');
+  }
 };
 
 const showVersionHistory = ref(false)
@@ -1530,7 +1680,7 @@ onMounted(() => {
             })
     }
 
-    if (props.meeting.minutes?.id) {
+   /* if (props.meeting.minutes?.id) {
         axios.get(route('meeting.minutes.versions', props.meeting.minutes.id))
             .then(response => {
                 minutesVersions.value = response.data.versions
@@ -1538,7 +1688,7 @@ onMounted(() => {
             .catch(() => {
                 toast.error('Erreur lors du chargement de l\'historique')
             })
-    }
+    } */
 })
 
 // Récupérer l'utilisateur depuis Inertia
@@ -1723,18 +1873,18 @@ const getAttendanceClass = (rep) => {
   const villageId = rep.locality_id || rep.localite_id
   const repName = rep.name || `${rep.first_name} ${rep.last_name}`
   
-  if (!meetingRepresentatives.value[villageId]) return 'bg-gray-100 text-gray-800'
+  if (!meetingRepresentatives.value[villageId]) return 'bg-slate-100 text-slate-700 border border-slate-200'
   
   const attendee = meetingRepresentatives.value[villageId].find(
     r => r.representative_id === rep.id || r.name === repName
   )
   
-  if (!attendee) return 'bg-gray-100 text-gray-800'
+  if (!attendee) return 'bg-slate-100 text-slate-700 border border-slate-200'
   
   if (props.meeting.status === 'completed') {
-    return attendee.is_present ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+    return attendee.is_present ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' : 'bg-red-100 text-red-700 border border-red-200'
   } else {
-    return attendee.is_expected ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+    return attendee.is_expected ? 'bg-blue-100 text-blue-700 border border-blue-200' : 'bg-slate-100 text-slate-700 border border-slate-200'
   }
 }
 
@@ -1974,24 +2124,7 @@ const sendMinutesByEmail = async () => {
   }
 }
 
-// Prévalider la réunion
-const prevalidateMeeting = async () => {
-  if (!confirm('Êtes-vous sûr de vouloir prévalider cette réunion?')) return
-  
-  try {
-    await axios.post(
-      route('meetings.prevalidate', props.meeting.id)
-    )
-    
-    toast.success('Réunion prévalidée avec succès')
-    window.location.reload()
-  } catch (error) {
-    toast.error(
-      error.response?.data?.message || 
-      'Une erreur est survenue lors de la prévalidation'
-    )
-  }
-}
+
 
 // Valider définitivement la réunion
 const validateMeeting = async () => {
@@ -2059,12 +2192,51 @@ const completeConfirm = async () => {
   if (!confirm('Êtes-vous sûr de vouloir marquer cette réunion comme terminée ?')) return
   
   try {
+    // D'abord sauvegarder toutes les modifications (réunion + compte rendu)
+    if (form.minutes.content) {
+      if (!props.meeting.minutes) {
+        // Création d'un nouveau compte rendu
+        await axios.post(route('minutes.store', props.meeting.id), {
+          content: form.minutes.content
+        })
+      } else {
+        // Mise à jour d'un compte rendu existant
+        await axios.put(route('minutes.update', props.meeting.minutes.id), {
+          content: form.minutes.content,
+          status: form.minutes.status
+        })
+      }
+    }
+    
+    // Sauvegarder les autres modifications de la réunion
+    await form.put(route('meetings.update', props.meeting.id))
+    
+    // Ensuite marquer la réunion comme terminée
     await axios.post(route('meetings.complete', props.meeting.id))
     props.meeting.status = 'completed'
-    toast.success('La réunion a été marquée comme terminée')
+    toast.success('La réunion a été marquée comme terminée et toutes les modifications ont été enregistrées')
     window.location.reload()
   } catch (error) {
+    console.error('Erreur:', error)
     toast.error('Erreur lors de la mise à jour de la réunion')
+  }
+}
+
+const unpublishConfirm = async () => {
+  if (!confirm('Êtes-vous sûr de vouloir dépublier cette réunion ? Elle reviendra à l\'état planifiée.')) return
+  
+  try {
+    await axios.post(route('meetings.unpublish', props.meeting.id))
+    props.meeting.status = 'scheduled'
+    toast.success('La réunion a été dépublicée avec succès')
+    window.location.reload()
+  } catch (error) {
+    console.error('Erreur:', error)
+    if (error.response?.data?.message) {
+      toast.error(error.response.data.message)
+    } else {
+      toast.error('Erreur lors de la dépublication de la réunion')
+    }
   }
 }
 
@@ -2129,6 +2301,169 @@ const handleMeetingUpdated = (updatedMeeting) => {
   // Émettre un événement pour mettre à jour la réunion
   router.reload()
 }
+
+function getAttendanceStatusClass(villageId) {
+  if (!meetingRepresentatives.value[villageId]) return 'bg-slate-100 text-slate-700 border border-slate-200'
+  
+  const attendee = meetingAttendees.value.find(a => a.localite_id === villageId)
+  if (!attendee) return 'bg-slate-100 text-slate-700 border border-slate-200'
+  
+  if (attendee.attendance_status === 'replaced') {
+    return attendee.is_present ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' : 'bg-red-100 text-red-700 border border-red-200'
+  }
+  return attendee.is_expected ? 'bg-blue-100 text-blue-700 border border-blue-200' : 'bg-slate-100 text-slate-700 border border-slate-200'
+}
+
+const showRescheduleModal = ref(false)
+const rescheduleForm = useForm({
+  date: props.meeting.start_datetime ? new Date(props.meeting.start_datetime).toISOString().slice(0, 16) : '',
+  reason: ''
+})
+const rescheduleLoading = ref(false)
+
+const submitReschedule = () => {
+  rescheduleLoading.value = true
+  axios.post(route('meetings.reschedule.submit', props.meeting.id), rescheduleForm.data())
+    .then(response => {
+      toast.success('Réunion replaniée avec succès')
+      showRescheduleModal.value = false
+      rescheduleForm.reset()
+      rescheduleLoading.value = false
+      window.location.reload()
+    })
+    .catch(error => {
+      toast.error('Erreur lors de la réplanification de la réunion')
+      rescheduleLoading.value = false
+    })
+}
+
+const closeRescheduleModal = () => {
+  showRescheduleModal.value = false
+  rescheduleForm.reset()
+  rescheduleLoading.value = false
+}
+
+// Fonctions pour la liste de présence
+const showPhotoModal = (attendee) => {
+  selectedAttendee.value = attendee
+  photoModalOpen.value = true
+}
+
+const closePhotoModal = () => {
+  photoModalOpen.value = false
+  selectedAttendee.value = null
+}
+
+// Fonction pour formater l'heure
+const formatTime = (time) => {
+  if (!time) return ''
+  return new Date(time).toLocaleTimeString('fr-FR', {
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
+
+// Fonction pour formater la localisation
+const formatLocation = (location) => {
+  if (!location) return 'Non disponible'
+  
+  // Vérifier que latitude et longitude sont des nombres valides
+  const lat = parseFloat(location.latitude)
+  const lng = parseFloat(location.longitude)
+  
+  if (isNaN(lat) || isNaN(lng)) {
+    return 'Coordonnées invalides'
+  }
+  
+  return `${lat.toFixed(6)}, ${lng.toFixed(6)}`
+}
+
+// Fonction pour compter les participants par statut
+const getAttendanceCount = (status) => {
+  if (!props.meeting.attendees) return 0
+  return props.meeting.attendees.filter(attendee => attendee.attendance_status === status).length
+}
+
+// Variables pour le modal de photo
+const photoModalOpen = ref(false)
+const selectedAttendee = ref(null)
+
+// Variables pour la pagination et la recherche
+const searchQuery = ref('')
+const statusFilter = ref('')
+const currentPage = ref(1)
+const itemsPerPage = 10
+
+// Computed properties pour la pagination
+const filteredAttendees = computed(() => {
+  if (!props.meeting.attendees) return []
+  
+  return props.meeting.attendees.filter(attendee => {
+    const nameMatch = !searchQuery.value || 
+      attendee.name?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      attendee.replacement_name?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      attendee.role?.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      attendee.village?.name?.toLowerCase().includes(searchQuery.value.toLowerCase())
+    
+    const statusMatch = !statusFilter.value || attendee.attendance_status === statusFilter.value
+    
+    return nameMatch && statusMatch
+  })
+})
+
+const totalPages = computed(() => Math.ceil(filteredAttendees.value.length / itemsPerPage))
+
+const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage)
+
+const endIndex = computed(() => Math.min(startIndex.value + itemsPerPage, filteredAttendees.value.length))
+
+const paginatedAttendees = computed(() => {
+  return filteredAttendees.value.slice(startIndex.value, endIndex.value)
+})
+
+const visiblePages = computed(() => {
+  const pages = []
+  const maxVisible = 5
+  let start = Math.max(1, currentPage.value - Math.floor(maxVisible / 2))
+  let end = Math.min(totalPages.value, start + maxVisible - 1)
+  
+  if (end - start + 1 < maxVisible) {
+    start = Math.max(1, end - maxVisible + 1)
+  }
+  
+  for (let i = start; i <= end; i++) {
+    pages.push(i)
+  }
+  return pages
+})
+
+// Fonctions pour la pagination
+const previousPage = () => {
+  if (currentPage.value > 1) {
+    currentPage.value--
+  }
+}
+
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++
+  }
+}
+
+const goToPage = (page) => {
+  currentPage.value = page
+}
+
+const clearFilters = () => {
+  searchQuery.value = ''
+  statusFilter.value = ''
+  currentPage.value = 1
+}
+
+// Watcher pour réinitialiser la page quand les filtres changent
+watch([searchQuery, statusFilter], () => {
+  currentPage.value = 1
+})
 </script>
 
 <style scoped>

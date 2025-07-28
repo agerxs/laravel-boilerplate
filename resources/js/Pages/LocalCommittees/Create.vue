@@ -1,7 +1,7 @@
 <template>
-  <Head title="Nouveau comité local" />
+  <Head :title="isEditMode ? 'Modifier le comité local' : 'Nouveau comité local'" />
 
-  <AppLayout title="Nouveau comité local">
+  <AppLayout :title="isEditMode ? 'Modifier le comité local' : 'Nouveau comité local'">
     <div class="flex flex-col">
       <!-- Navigation par onglets -->
       <div class="flex bg-gray-100 p-4 rounded-t-lg">
@@ -33,20 +33,17 @@
               Précédent
             </button>
             <button
-              type="button"
-              @click="saveProgress"
-              class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-sm font-medium"
-            >
-              Sauvegarder
-            </button>
-            <button
               v-if="activeStep < steps.length - 1"
               type="button"
               @click="nextStep"
-              class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium"
+              class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium flex items-center"
             >
-              Suivant
+              Suivant <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" stroke-width="2"
+         viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+    </svg>
             </button>
+           
           </div>
 
           <!-- Étape 1: Sélection de la région, département, sous-préfecture -->
@@ -56,7 +53,7 @@
               <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Région -->
                 <div>
-                  <InputLabel for="region" value="Région" />
+                  <InputLabel for="region" value="Région" :isRequired="true" />
                   <select
                     id="region"
                     v-model="selectedRegion"
@@ -75,7 +72,7 @@
                 </div>
                 <!-- Département -->
                 <div>
-                  <InputLabel for="department" value="Département" />
+                  <InputLabel for="department" value="Département" :isRequired="true" />
                   <select
                     id="department"
                     v-model="selectedDepartment"
@@ -94,7 +91,7 @@
                 </div>
                 <!-- Sous-préfecture -->
                 <div>
-                  <InputLabel for="subPrefecture" value="Sous-préfecture" />
+                  <InputLabel for="subPrefecture" value="Sous-préfecture" :isRequired="true" />
                   <select
                     id="subPrefecture"
                     v-model="selectedSubPrefecture"
@@ -115,6 +112,17 @@
               </div>
             </div>
           </form>
+          <div class="flex justify-end space-x-3 mb-4">
+           
+           <!--   <button v-if="!isEditMode"
+              type="button"
+              @click="saveProgress"
+              class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-sm font-medium"
+            >
+              Sauvegarder comme brouillon
+            </button>-->
+         
+          </div>
         </div>
 
         <div v-if="activeStep === 1" class="px-6 py-4">
@@ -124,24 +132,25 @@
               v-if="activeStep > 0"
               type="button"
               @click="previousStep"
-              class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium"
+              class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium flex items-center "
             >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+         viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>
               Précédent
             </button>
-            <button
-              type="button"
-              @click="saveProgress"
-              class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-sm font-medium"
-            >
-              Sauvegarder
-            </button>
+            
             <button
               v-if="activeStep < steps.length - 1"
               type="button"
               @click="nextStep"
-              class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium"
+             class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium flex items-center"
             >
-              Suivant
+              Suivant <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" stroke-width="2"
+         viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+    </svg>
             </button>
           </div>
 
@@ -149,7 +158,7 @@
           <form @submit.prevent="nextStep">
             <div class="px-6 py-4 space-y-6">
               <div>
-                <InputLabel for="decree" value="Arrêté ou Décret de création" />
+                <InputLabel for="decree" value="Arrêté ou Décret de création"  />
                 <div class="flex items-center space-x-2">
                   <div class="flex-grow">
                     <input
@@ -157,7 +166,7 @@
                       id="decree"
                       @change="handleFileChange($event, 'decree')"
                       class="mt-1 block w-full"
-                      required
+                      
                     />
                   </div>
                   <div v-if="form.decree_file" class="flex items-center bg-green-100 text-green-800 px-3 py-1 rounded-md">
@@ -185,6 +194,15 @@
               </div>
             </div>
           </form>
+          <div class="flex justify-end space-x-3 mb-4">
+           <!--   <button v-if="!isEditMode"
+              type="button"
+              @click="saveProgress"
+              class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-sm font-medium"
+            >
+              Sauvegarder comme brouillon
+            </button>-->
+          </div>
         </div>
 
         <div v-if="activeStep === 2" class="px-6 py-4">
@@ -194,24 +212,23 @@
               v-if="activeStep > 0"
               type="button"
               @click="previousStep"
-              class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium"
+              class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium flex items-center "
             >
-              Précédent
-            </button>
-            <button
-              type="button"
-              @click="saveProgress"
-              class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-sm font-medium"
-            >
-              Sauvegarder
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+         viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>Précédent
             </button>
             <button
               v-if="activeStep < steps.length - 1"
               type="button"
               @click="nextStep"
-              class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium"
+              class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md text-sm font-medium flex items-center"
             >
-              Suivant
+              Suivant <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" stroke-width="2"
+         viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+    </svg>
             </button>
           </div>
 
@@ -227,33 +244,25 @@
                       <div>
                         <InputLabel value="Rôle" />
                         <TextInput
-                          value="Président"
+                          :modelValue="'Président'"
                           type="text"
                           class="mt-1 block w-full bg-gray-100"
                           disabled
                         />
                       </div>
                       <div>
-                        <InputLabel for="president" value="Sélectionner le Président" />
-                        <select
-                          id="president"
+                        <InputLabel for="president" value="Sélectionner le Président" :isRequired="true" />
+                        <v-select required
+                          :options="sousPrefets"
+                          label="name"
+                          :reduce="(user: User) => user.id"
                           v-model="permanentMembers.president.user_id"
-                          class="mt-1 block w-full rounded-md border-gray-300"
-                          required
-                          @change="updatePresidentDetails"
-                        >
-                          <option value="">Sélectionner un utilisateur</option>
-                          <option
-                            v-for="user in sousPrefets"
-                            :key="user.id"
-                            :value="user.id"
-                          >
-                            {{ user.name }}
-                          </option>
-                        </select>
+                          placeholder="Sélectionner un utilisateur"
+                          :clearable="false"
+                        />
                       </div>
                       <div>
-                        <InputLabel value="Téléphone" />
+                        <InputLabel value="Téléphone"  />
                         <TextInput
                           :modelValue="presidentDetails.phone"
                           type="text"
@@ -279,30 +288,22 @@
                       <div>
                         <InputLabel value="Rôle" />
                         <TextInput
-                          value="Secrétaire"
+                          :modelValue="'Secrétaire'"
                           type="text"
                           class="mt-1 block w-full bg-gray-100"
                           disabled
                         />
                       </div>
                       <div>
-                        <InputLabel for="secretary" value="Sélectionner le Secrétaire" />
-                        <select
-                          id="secretary"
+                        <InputLabel for="secretary" value="Sélectionner le Secrétaire" :isRequired="true"/>
+                        <v-select required
+                          :options="secretaires"
+                          label="name"
+                          :reduce="(user: User) => user.id"
                           v-model="permanentMembers.secretary.user_id"
-                          class="mt-1 block w-full rounded-md border-gray-300"
-                          required
-                          @change="updateSecretaryDetails"
-                        >
-                          <option value="">Sélectionner un utilisateur</option>
-                          <option
-                            v-for="user in secretaires"
-                            :key="user.id"
-                            :value="user.id"
-                          >
-                            {{ user.name }}
-                          </option>
-                        </select>
+                          placeholder="Sélectionner un utilisateur"
+                          :clearable="false"
+                        />
                       </div>
                       <div>
                         <InputLabel value="Téléphone" />
@@ -330,6 +331,18 @@
               </div>
             </div>
           </form>
+          <div class="flex justify-end space-x-3 mb-4">
+          
+          <!--   <button v-if="!isEditMode"
+              type="button"
+              @click="saveProgress"
+              class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-sm font-medium"
+            >
+              Sauvegarder comme brouillon
+            </button>-->
+           
+            
+          </div>
         </div>
 
         <div v-if="activeStep === 3" class="px-6 py-4">
@@ -339,16 +352,13 @@
               v-if="activeStep > 0"
               type="button"
               @click="previousStep"
-              class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium"
+              class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md text-sm font-medium flex items-center "
             >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" stroke-width="2"
+         viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>
               Précédent
-            </button>
-            <button
-              type="button"
-              @click="saveProgress"
-              class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-sm font-medium"
-            >
-              Sauvegarder
             </button>
             <button
               v-if="activeStep < steps.length - 1"
@@ -364,13 +374,13 @@
           <form @submit.prevent="nextStep">
             <div class="px-6 py-4 space-y-6">
               <div>
-                <InputLabel for="installation_date" value="Date de la réunion d'installation" />
+                <InputLabel for="installation_date" value="Date de la réunion d'installation"  />
                 <input
                   type="date"
                   id="installation_date"
                   v-model="form.installation_date"
                   class="mt-1 block w-full rounded-md border-gray-300"
-                  required
+                  
                 />
               </div>
               <div>
@@ -380,11 +390,11 @@
                   v-model="form.installation_location"
                   type="text"
                   class="mt-1 block w-full"
-                  required
+                  
                 />
               </div>
               <div>
-                <InputLabel for="installation_minutes" value="Compte rendu de la réunion d'installation" />
+                <InputLabel for="installation_minutes" value="Compte rendu de la réunion d'installation"  />
                 <div class="relative">
                   <input
                     type="file"
@@ -437,14 +447,44 @@
               </div>
             </div>
           </form>
+          <div class="flex justify-end space-x-3 mb-4">
+           
+            <!--   <button v-if="!isEditMode"
+              type="button"
+              @click="saveProgress"
+              class="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md text-sm font-medium"
+            >
+              Sauvegarder comme brouillon
+            </button>-->
+            <button
+     type="button"
+     @click="submitAndPublish"
+     class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm font-medium"
+   >
+     Enregistrer
+   </button>
+          
+          </div>
         </div>
       </div>
     </div>
 
     <!-- Ajoutez ceci quelque part dans votre template, généralement à la fin -->
-    <div v-if="showToast" class="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center z-50">
-      <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <div v-if="showToast" 
+         :class="{
+           'fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-lg flex items-center z-50': true,
+           'bg-green-500 text-white': toastType === 'success',
+           'bg-red-500 text-white': toastType === 'error',
+           'bg-yellow-500 text-white': toastType === 'warning'
+         }">
+      <svg v-if="toastType === 'success'" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      </svg>
+      <svg v-if="toastType === 'error'" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+      <svg v-if="toastType === 'warning'" class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
       </svg>
       <span>{{ toastMessage }}</span>
       <button @click="showToast = false" class="ml-2 text-white">
@@ -455,7 +495,7 @@
     </div>
 
     <!-- Ajouter un bouton pour supprimer le brouillon si nécessaire -->
-    <div v-if="props.draft" class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
+    <div v-if="props.draft && !props.isEditMode" class="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
       <div class="flex items-center justify-between">
         <div>
           <p class="text-yellow-800 font-medium">Vous travaillez sur un brouillon</p>
@@ -597,6 +637,9 @@ import InputError from '@/Components/InputError.vue'
 import RepresentativesManager from '@/Components/RepresentativesManager.vue'
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import axios from 'axios'
+// @ts-ignore
+import vSelect from 'vue-select'
+import 'vue-select/dist/vue-select.css'
 
 interface Village {
   id: number;
@@ -646,6 +689,8 @@ interface Props {
   sousPrefets: User[];
   secretaires: User[];
   draft: any;
+  isEditMode: boolean;
+  committeeData?: any;
 }
 
 const props = defineProps<Props>();
@@ -674,14 +719,14 @@ const form = useForm<{
   attendance_list_file: null
 });
 
-// État pour la sélection en cascade
-const selectedRegion = ref(null);
-const selectedDepartment = ref(null);
-const selectedSubPrefecture = ref(null);
+// Définir les types pour les sélections en cascade
+const selectedRegion = ref<number | null>(null);
+const selectedDepartment = ref<number | null>(null);
+const selectedSubPrefecture = ref<number | null>(null);
 
-// État pour la sélection en cascade
-const departments = ref([]);
-const subPrefectures = ref([]);
+// Définir les types pour les listes de localités
+const departments = ref<Locality[]>([]);
+const subPrefectures = ref<Locality[]>([]);
 const villages = ref<Village[]>([]);
 
 // Fonction pour mettre à jour les départements lorsqu'une région est sélectionnée
@@ -758,8 +803,8 @@ const fetchVillages = () => {
 };
 
 const permanentMembers = ref({
-  president: { user_id: null, first_name: 'Sous-Préfet', last_name: '', phone: '' },
-  secretary: { user_id: null, first_name: 'Secrétaire', last_name: '', phone: '' }
+  president: { user_id: null as number | null, first_name: 'Sous-Préfet', last_name: '', phone: '' },
+  secretary: { user_id: null as number | null, first_name: 'Secrétaire', last_name: '', phone: '' }
 });
 
 const presidentDetails = ref({ phone: '', whatsapp: '' });
@@ -790,45 +835,82 @@ const updateSecretaryDetails = () => {
   }
 };
 
-const submit = () => {
-  // Ajoutez les membres permanents au formulaire
-  form.members.push({
-    is_user: true,
-    user_id: permanentMembers.value.president.user_id || undefined,
-    role: 'president',
-    status: 'active',
-    first_name: permanentMembers.value.president.first_name,
-    last_name: permanentMembers.value.president.last_name,
-    phone: presidentDetails.value.phone
-  });
+const submitAndPublish = () => {
+  updateCommitteeName();
+  if (!validateForm()) {
+    showToastMessage('Veuillez remplir tous les champs obligatoires avant de publier', 'error');
+    return;
+  }
 
-  form.members.push({
-    is_user: true,
-    user_id: permanentMembers.value.secretary.user_id || undefined,
-    role: 'secretary',
-    status: 'active',
-    first_name: permanentMembers.value.secretary.first_name,
-    last_name: permanentMembers.value.secretary.last_name,
-    phone: secretaryDetails.value.phone
-  });
+  // Préparer les membres permanents
+  const members = [];
+  if (permanentMembers.value.president.user_id) {
+    members.push({
+      is_user: true,
+      user_id: permanentMembers.value.president.user_id,
+      role: 'president',
+      status: 'active',
+      first_name: permanentMembers.value.president.first_name,
+      last_name: permanentMembers.value.president.last_name,
+      phone: presidentDetails.value.phone
+    });
+  }
+  if (permanentMembers.value.secretary.user_id) {
+    members.push({
+      is_user: true,
+      user_id: permanentMembers.value.secretary.user_id,
+      role: 'secretary',
+      status: 'active',
+      first_name: permanentMembers.value.secretary.first_name,
+      last_name: permanentMembers.value.secretary.last_name,
+      phone: secretaryDetails.value.phone
+    });
+  }
 
-  // Ajoutez les villages et leurs représentants au formulaire
+  // Affecter directement les valeurs aux propriétés du form Inertia
+  form.status = 'active';
+  form.members = members;
   form.villages = addedVillages.value;
+  form.installation_date = form.installation_date;
+  form.installation_location = form.installation_location;
+  form.decree_file = form.decree_file;
+  form.installation_minutes_file = form.installation_minutes_file;
+  form.attendance_list_file = form.attendance_list_file;
 
-  // Ajoutez les informations de la réunion d'installation et de l'arrêté
-  form.installation_date = installationDate.value;
-  form.installation_location = installationLocation.value;
-  form.decree_file = decreeFile.value;
-  form.installation_minutes_file = installationMinutesFile.value;
-  form.attendance_list_file = attendanceListFile.value;
+  if (props.isEditMode) {
+    const options = {
+      preserveScroll: true,
+      preserveState: true,
+      onSuccess: () => {
+        showToastMessage('Comité local enregistré avec succès', 'success');
+      },
+      onError: (errors: Record<string, string>) => {
+        if (Object.keys(errors).length > 0) {
+          showToastMessage('Erreur lors de la publication du comité local', 'error');
+        }
+      }
+    };
 
-  form.post(route('local-committees.store'), {
-    onSuccess: () => {
-      // Affichez un message de succès ou redirigez vers une page de confirmation
-      alert('Comité et représentants enregistrés avec succès.');
-    },
-    forceFormData: true
-  });
+    form.transform((data) => ({
+      ...data,
+      _method: 'PUT'
+    })).post(route('local-committees.update', props.committeeData.id), options);
+  } else {
+    const options = {
+      preserveScroll: true,
+      preserveState: true,
+      onSuccess: () => {
+        showToastMessage('Comité local enregistré avec succès', 'success');
+      },
+      onError: (errors: Record<string, string>) => {
+        if (Object.keys(errors).length > 0) {
+          showToastMessage('Erreur lors de la publication du comité local', 'error');
+        }
+      }
+    };
+
+    form.post(route('local-committees.store'), options);
+  }
 };
 
 // État pour les étapes
@@ -889,7 +971,7 @@ const attendancePreview = ref<string | null>(null);
 
 const decreeFile = ref<File | null>(null);
 
-const isImage = (file) => {
+const isImage = (file: File | null) => {
   return file && file.type.startsWith('image/');
 };
 
@@ -922,10 +1004,12 @@ const handleFileChange = (event:Event,stype: string) =>  {
 // Ajoutez ces variables d'état pour le toast
 const showToast = ref(false);
 const toastMessage = ref('');
+const toastType = ref<'success' | 'error' | 'warning'>('success');
 
 // Fonction pour afficher un toast
-const showToastMessage = (message) => {
+const showToastMessage = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
   toastMessage.value = message;
+  toastType.value = type;
   showToast.value = true;
   setTimeout(() => {
     showToast.value = false;
@@ -939,9 +1023,9 @@ const saveProgress = () => {
   
   // Ajoutez les données du formulaire au FormData
   formData.append('name', form.name);
-  formData.append('locality_id', form.locality_id);
+  formData.append('locality_id', form.locality_id.toString());
   formData.append('status', form.status);
-  formData.append('active_step', activeStep.value);
+  formData.append('active_step', activeStep.value.toString());
   
   // Préparez les membres permanents
   const members = [];
@@ -1002,11 +1086,11 @@ const saveProgress = () => {
     }
   })
   .then(response => {
-    showToastMessage('Progression sauvegardée avec succès');
+    showToastMessage('Progression sauvegardée avec succès', 'success');
   })
   .catch(error => {
     console.error('Erreur lors de la sauvegarde:', error);
-    showToastMessage('Erreur lors de la sauvegarde');
+    showToastMessage('Erreur lors de la sauvegarde', 'error');
   });
 };
 
@@ -1022,7 +1106,7 @@ const loadDraftData = () => {
     // Si une localité est définie, nous devons mettre à jour la cascade de sélection
     if (props.draft.locality_id) {
       // Trouver la localité dans la hiérarchie
-      const findLocalityInHierarchy = (localities, targetId) => {
+      const findLocalityInHierarchy = (localities: Locality[], targetId: number) => {
         for (const region of localities) {
           if (region.id === targetId) {
             return { region: region, department: null, subPrefecture: null };
@@ -1105,13 +1189,17 @@ const loadDraftData = () => {
       // Charger les membres
       if (formData.members && formData.members.length > 0) {
         console.log('Membres trouvés:', formData.members);
-        formData.members.forEach(member => {
+        formData.members.forEach((member: Member) => {
           if (member.role === 'president') {
-            permanentMembers.value.president.user_id = member.user_id;
-            updatePresidentDetails();
+            if (member.user_id !== undefined) {
+              permanentMembers.value.president.user_id = member.user_id;
+              updatePresidentDetails();
+            }
           } else if (member.role === 'secretary') {
-            permanentMembers.value.secretary.user_id = member.user_id;
-            updateSecretaryDetails();
+            if (member.user_id !== undefined) {
+              permanentMembers.value.secretary.user_id = member.user_id;
+              updateSecretaryDetails();
+            }
           }
         });
       }
@@ -1138,17 +1226,17 @@ const loadDraftData = () => {
       
       if (files.decree_file) {
         decreePreview.value = `/storage/${files.decree_file}`;
-        form.decree_file = { name: files.decree_file.split('/').pop() };
+        form.decree_file = new File([], files.decree_file.split('/').pop() || '');
       }
       
       if (files.installation_minutes_file) {
         minutesPreview.value = `/storage/${files.installation_minutes_file}`;
-        form.installation_minutes_file = { name: files.installation_minutes_file.split('/').pop() };
+        form.installation_minutes_file = new File([], files.installation_minutes_file.split('/').pop() || '');
       }
       
       if (files.attendance_list_file) {
         attendancePreview.value = `/storage/${files.attendance_list_file}`;
-        form.attendance_list_file = { name: files.attendance_list_file.split('/').pop() };
+        form.attendance_list_file = new File([], files.attendance_list_file.split('/').pop() || '');
       }
     }
   }
@@ -1158,12 +1246,89 @@ const loadDraftData = () => {
 onMounted(() => {
   console.log('Composant monté, props.draft:', props.draft);
   loadDraftData();
-  checkForDrafts();
+
+  // Ne pas vérifier les brouillons si nous sommes en mode édition
+  if (!props.isEditMode) {
+    checkForDrafts();
+  }
+
+  // Si nous sommes en mode édition, charger les données du comité
+  if (props.isEditMode && props.committeeData) {
+    form.name = props.committeeData.name;
+    form.locality_id = props.committeeData.locality_id;
+    form.status = props.committeeData.status;
+    form.members = props.committeeData.members;
+    form.villages = props.committeeData.villages;
+    form.installation_date = props.committeeData.installation_date
+      ? props.committeeData.installation_date.substring(0, 10)
+      : '';
+    form.installation_location = props.committeeData.installation_location;
+    form.decree_file = props.committeeData.decree_file;
+    form.installation_minutes_file = props.committeeData.installation_minutes_file;
+    form.attendance_list_file = props.committeeData.attendance_list_file;
+
+    // Précharger l'aperçu du fichier Arrêté ou Décret de création
+    if (props.committeeData.decree_file) {
+      decreePreview.value = `/storage/${props.committeeData.decree_file}`;
+    }
+
+    // Précharger les membres permanents
+    props.committeeData.members.forEach((member: Member) => {
+      if (member.role === 'president') {
+        permanentMembers.value.president.user_id = member.user_id || null;
+        updatePresidentDetails();
+      } else if (member.role === 'secretary') {
+        permanentMembers.value.secretary.user_id = member.user_id || null;
+        updateSecretaryDetails();
+      }
+    });
+
+    // Mettre à jour les sélections de localité
+    const result = findLocalityInHierarchy(props.localities, props.committeeData.locality_id);
+    if (result) {
+      if (result.region) {
+        selectedRegion.value = result.region.id;
+        nextTick(() => {
+          if (departments.value.length === 0) {
+            departments.value = result.region.children || [];
+          }
+          if (result.department) {
+            selectedDepartment.value = result.department.id;
+            nextTick(() => {
+              if (subPrefectures.value.length === 0) {
+                subPrefectures.value = result.department.children || [];
+              }
+              if (result.subPrefecture) {
+                selectedSubPrefecture.value = result.subPrefecture.id;
+                form.locality_id = result.subPrefecture.id;
+              } else {
+                form.locality_id = result.department.id;
+              }
+              if (form.locality_id) {
+                fetchVillages();
+              }
+            });
+          } else {
+            form.locality_id = result.region.id;
+          }
+        });
+      }
+    }
+
+    // Précharger l'aperçu du fichier Compte rendu de la réunion d'installation
+    if (props.committeeData.installation_minutes_file) {
+      minutesPreview.value = `/storage/${props.committeeData.installation_minutes_file}`;
+    }
+    // Précharger l'aperçu du fichier Liste de présence
+    if (props.committeeData.attendance_list_file) {
+      attendancePreview.value = `/storage/${props.committeeData.attendance_list_file}`;
+    }
+  }
 });
 
 // Vérifier s'il y a des brouillons disponibles au chargement
 const checkForDrafts = () => {
-  if (!props.draft) {
+  if (props.draft) {
     axios.get(route('local-committees.drafts'))
       .then(response => {
         if (response.data.draft) {
@@ -1184,108 +1349,15 @@ const deleteDraft = () => {
   if (confirm('Êtes-vous sûr de vouloir supprimer ce brouillon? Cette action est irréversible.')) {
     axios.delete(route('local-committees.delete-draft', props.draft.id))
       .then(response => {
-        showToastMessage('Brouillon supprimé avec succès');
+        showToastMessage('Brouillon supprimé avec succès', 'success');
         // Rediriger vers la page de création sans brouillon
         window.location.href = route('local-committees.create');
       })
       .catch(error => {
         console.error('Erreur lors de la suppression du brouillon:', error);
-        showToastMessage('Erreur lors de la suppression du brouillon');
+        showToastMessage('Erreur lors de la suppression du brouillon', 'error');
       });
   }
-};
-
-// Ajoutez cette fonction pour soumettre et publier le comité local
-const submitAndPublish = () => {
-  updateCommitteeName();
-  // Vérifier que toutes les informations nécessaires sont présentes
-  if (!validateForm()) {
-    showToastMessage('Veuillez remplir tous les champs obligatoires avant de publier');
-    return;
-  }
-  
-  // Préparer les données pour la soumission
-  const formData = new FormData();
-  
-  // Ajouter les données de base
-  formData.append('name', form.name);
-  formData.append('locality_id', form.locality_id);
-  formData.append('status', 'active'); // Définir le statut comme actif pour la publication
-  
-  // Ajouter les membres permanents
-  const members = [];
-  
-  // Ajouter le président
-  if (permanentMembers.value.president.user_id) {
-    members.push({
-      is_user: true,
-      user_id: permanentMembers.value.president.user_id,
-      role: 'president',
-      status: 'active',
-      first_name: permanentMembers.value.president.first_name,
-      last_name: permanentMembers.value.president.last_name,
-      phone: presidentDetails.value.phone
-    });
-  }
-  
-  // Ajouter le secrétaire
-  if (permanentMembers.value.secretary.user_id) {
-    members.push({
-      is_user: true,
-      user_id: permanentMembers.value.secretary.user_id,
-      role: 'secretary',
-      status: 'active',
-      first_name: permanentMembers.value.secretary.first_name,
-      last_name: permanentMembers.value.secretary.last_name,
-      phone: secretaryDetails.value.phone
-    });
-  }
-  
-  // Ajouter les membres au FormData
-  formData.append('members', JSON.stringify(members));
-  
-  // Ajouter les villages et leurs représentants
-  formData.append('villages', JSON.stringify(addedVillages.value));
-  
-  // Ajoutez les informations de la réunion d'installation
-  formData.append('installation_date', form.installation_date);
-  formData.append('installation_location', form.installation_location);
-  
-  // Ajouter les fichiers
-  if (form.decree_file instanceof File) {
-    formData.append('decree_file', form.decree_file);
-  }
-  
-  if (form.installation_minutes_file instanceof File) {
-    formData.append('installation_minutes_file', form.installation_minutes_file);
-  }
-  
-  if (form.attendance_list_file instanceof File) {
-    formData.append('attendance_list_file', form.attendance_list_file);
-  }
-  
-  // Soumettre le formulaire
-  axios.post(route('local-committees.store'), formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-  })
-  .then(response => {
-    // Si le brouillon existe, le supprimer après la publication réussie
-    if (props.draft && props.draft.id) {
-      axios.delete(route('local-committees.delete-draft', props.draft.id))
-        .catch(error => {
-          console.error('Erreur lors de la suppression du brouillon:', error);
-        });
-    }
-    
-    // Rediriger vers la page de détails du comité local créé
-    window.location.href = route('local-committees.show', response.data.id);
-  })
-  .catch(error => {
-    console.error('Erreur lors de la publication:', error);
-    showToastMessage('Erreur lors de la publication du comité local');
-  });
 };
 
 // Fonction pour valider le formulaire avant la soumission
@@ -1328,26 +1400,16 @@ const validateForm = () => {
 const showRepresentativeModal = ref(false);
 
 // Fonction pour ouvrir le modal des représentants
-const openRepresentativeModal = (village) => {
-  selectedVillage.value = village;
-  
-  // Vérifier si ce village a déjà des représentants dans addedVillages
-  const existingVillage = addedVillages.value.find(v => v.id === village.id);
-  
-  if (existingVillage && existingVillage.representatives) {
-    // Utiliser les représentants existants
-    villageRepresentatives.value = [...existingVillage.representatives];
-  } else {
-    // Initialiser avec un représentant vide
-    villageRepresentatives.value = [{
-      first_name: '',
-      last_name: '',
-      phone: '',
-      role: ''
-    }];
+const openRepresentativeModal = (village: Village) => {
+  if (selectedVillage.value) {
+    selectedVillage.value = village;
+    if (village.representatives) {
+      villageRepresentatives.value = [...village.representatives];
+    } else {
+      villageRepresentatives.value = [];
+    }
+    showRepresentativeModal.value = true;
   }
-  
-  showRepresentativeModal.value = true;
 };
 
 // Fonction pour fermer le modal
@@ -1368,7 +1430,7 @@ const addRepresentative = () => {
 };
 
 // Fonction pour supprimer un représentant
-const removeRepresentative = (index) => {
+const removeRepresentative = (index: number) => {
   villageRepresentatives.value.splice(index, 1);
   
   // S'assurer qu'il y a toujours au moins un représentant
@@ -1394,7 +1456,7 @@ const saveRepresentatives = () => {
   }
   
   // Trouver si ce village existe déjà dans addedVillages
-  const existingIndex = addedVillages.value.findIndex(v => v.id === selectedVillage.value.id);
+  const existingIndex = addedVillages.value.findIndex(v => v.id === selectedVillage.value!.id);
   
   if (existingIndex >= 0) {
     // Mettre à jour les représentants du village existant
@@ -1413,21 +1475,41 @@ const saveRepresentatives = () => {
 };
 
 // Ajoutez ces fonctions pour vérifier si un village est déjà ajouté et obtenir le nombre de représentants
-const isVillageAdded = (villageId) => {
+const isVillageAdded = (villageId: number) => {
   return addedVillages.value.some(v => v.id === villageId);
 };
 
-const getRepresentativesCount = (villageId) => {
+const getRepresentativesCount = (villageId: number) => {
   const village = addedVillages.value.find(v => v.id === villageId);
   return village && village.representatives ? village.representatives.length : 0;
 };
 
 // Ajoutez cette fonction pour éditer les représentants d'un village
-const editVillageRepresentatives = (village) => {
-  // Ouvrir le modal avec les représentants existants du village
-  selectedVillage.value = village;
-  villageRepresentatives.value = [...village.representatives];
-  showRepresentativeModal.value = true;
+const editVillageRepresentatives = (village: Village) => {
+  if (village && village.representatives) {
+    selectedVillage.value = village;
+    villageRepresentatives.value = [...village.representatives];
+    showRepresentativeModal.value = true;
+  }
+};
+
+const findLocalityInHierarchy = (localities: Locality[], targetId: number) => {
+  for (const region of localities) {
+    if (region.id === targetId) {
+      return { region: region, department: null, subPrefecture: null };
+    }
+    for (const department of region.children || []) {
+      if (department.id === targetId) {
+        return { region: region, department: department, subPrefecture: null };
+      }
+      for (const subPrefecture of department.children || []) {
+        if (subPrefecture.id === targetId) {
+          return { region: region, department: department, subPrefecture: subPrefecture };
+        }
+      }
+    }
+  }
+  return null;
 };
 </script>
 

@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use App\Models\User;
 use App\Models\PaymentRate;
+use Filament\Facades\Filament;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,6 +31,8 @@ class AppServiceProvider extends ServiceProvider
             return $user->isSuperAdmin() ? true: null;
         });
         
+     
+        
         // Observateur pour PaymentRate
         PaymentRate::creating(function ($paymentRate) {
             // Si ce taux est actif, désactiver les autres taux pour ce rôle
@@ -47,5 +52,11 @@ class AppServiceProvider extends ServiceProvider
                     ->update(['is_active' => false]);
             }
         });
+
+        Filament::registerNavigationGroups([
+            'Gestion des utilisateurs',
+            'Rôles et Permissions',
+            'Configuration',
+        ]);
     }
 }

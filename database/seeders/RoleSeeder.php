@@ -27,8 +27,7 @@ class RoleSeeder extends Seeder
         $roles = [
             'admin',
             'sous-prefet',
-            'secretaire',
-            'prefet'
+            'secretaire'
         ];
 
         $createdRoles = [];
