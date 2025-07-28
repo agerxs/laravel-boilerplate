@@ -52,29 +52,33 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/offline/status', [OfflineController::class, 'getSyncStatus']);
     Route::post('/offline/conflicts/resolve', [OfflineController::class, 'resolveConflict']);
     Route::get('/offline/data', [OfflineController::class, 'getLocalData']);
-});
 
-Route::get('/meetings/create', [MeetingController::class, 'create'])->name('meetings.create');
-Route::post('/meetings', [MeetingController::class, 'store'])->name('meetings.store');
-Route::get('/meetings/{meeting}/edit', [MeetingController::class, 'edit'])->name('meetings.edit');
-Route::put('/meetings/{meeting}', [MeetingController::class, 'update'])->name('meetings.update');
-Route::put('/meetings/{meeting}/reschedule', [MeetingController::class, 'reschedule'])->name('meetings.reschedule');
-Route::get('/meetings/{meeting}/reschedule', [MeetingController::class, 'showRescheduleForm'])->name('meetings.reschedule.form');
+    // Meeting route
+    Route::prefix('meetings')->name('api.meetings.')->group(function () {
+        Route::post('/', [MeetingController::class, 'store'])->name('store');
+        Route::get('/create', [MeetingController::class, 'create'])->name('create');
 
-// Routes pour les localités
-Route::prefix('localities')->group(function () {
-    Route::get('/', [LocalityController::class, 'index']);
-    Route::get('/{locality}', [LocalityController::class, 'show']);
-    Route::put('/{locality}', [LocalityController::class, 'update']);
-    Route::get('/{locality}/children', [LocalityController::class, 'children']);
-});
+        Route::put('/{meeting}', [MeetingController::class, 'update'])->name('update');
+        Route::get('/{meeting}/edit', [MeetingController::class, 'edit'])->name('edit');
+        Route::put('/{meeting}/reschedule', [MeetingController::class, 'reschedule'])->name('reschedule');
+        Route::get('/{meeting}/reschedule', [MeetingController::class, 'showRescheduleForm'])->name('form');
+    });
 
-// Routes pour les types de localités
-Route::prefix('locality-types')->group(function () {
-    Route::get('/', [LocalityTypeController::class, 'index']);
-    Route::get('/{type}', [LocalityTypeController::class, 'show']);
-    Route::post('/', [LocalityTypeController::class, 'store']);
-    Route::put('/{type}', [LocalityTypeController::class, 'update']);
-    Route::delete('/{type}', [LocalityTypeController::class, 'destroy']);
-    Route::get('/{type}/localities', [LocalityTypeController::class, 'localities']);
+    // Routes pour les localités
+    Route::prefix('localities')->group(function () {
+        Route::get('/', [LocalityController::class, 'index']);
+        Route::get('/{locality}', [LocalityController::class, 'show']);
+        Route::put('/{locality}', [LocalityController::class, 'update']);
+        Route::get('/{locality}/children', [LocalityController::class, 'children']);
+    });
+
+    // Routes pour les types de localités
+    Route::prefix('locality-types')->group(function () {
+        Route::get('/', [LocalityTypeController::class, 'index']);
+        Route::get('/{type}', [LocalityTypeController::class, 'show']);
+        Route::post('/', [LocalityTypeController::class, 'store']);
+        Route::put('/{type}', [LocalityTypeController::class, 'update']);
+        Route::delete('/{type}', [LocalityTypeController::class, 'destroy']);
+        Route::get('/{type}/localities', [LocalityTypeController::class, 'localities']);
+    });
 });

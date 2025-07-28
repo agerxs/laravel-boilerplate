@@ -145,7 +145,7 @@
 
         <div class="mt-6">
           <InputLabel for="rejection_reason" value="Raison du rejet" />
-          <Textarea
+          <TextArea
             id="rejection_reason"
             v-model="rejectionForm.rejection_reason"
             class="mt-1 block w-full"
@@ -181,7 +181,7 @@ import { Link, useForm, router } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Modal from '@/Components/Modal.vue';
 import InputLabel from '@/Components/InputLabel.vue';
-import Textarea from '@/Components/Textarea.vue';
+import TextArea from '@/Components/TextArea.vue';
 import InputError from '@/Components/InputError.vue';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';

@@ -12,7 +12,7 @@ use App\Http\Controllers\MeetingCommentController;
 use App\Http\Controllers\LocalCommitteeController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\VillageRepresentativesController;
+//use App\Http\Controllers\VillageRepresentativesController;
 use App\Http\Controllers\PaymentRateController;
 use App\Http\Controllers\MeetingPaymentController;
 use App\Http\Controllers\AttendanceController;
@@ -154,7 +154,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('meetings.invalidate')
         ->middleware('role:sous-prefet|Sous-prefet|admin|Admin'); // Sous-préfets et admins peuvent invalider
 
-    Route::get('/village-representatives', [VillageRepresentativesController::class, 'index'])->name('village-representatives.index');
+    //Route::get('/village-representatives', [VillageRepresentativesController::class, 'index'])->name('village-representatives.index');
 
     Route::post('/local-committees/{committeeId}/save-villages', [LocalCommitteeController::class, 'saveVillages'])->name('local-committees.save-villages');
 
