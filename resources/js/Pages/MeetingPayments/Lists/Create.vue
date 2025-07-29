@@ -133,7 +133,7 @@ function formatDate(date) {
 function translateRole(role) {
   const translations = {
     'prefet': 'Préfet',
-    'sous_prefet': 'Sous-préfet',
+    'sous_prefet': 'Président',
     'secretaire': 'Secrétaire',
     'representant': 'Représentant'
   }

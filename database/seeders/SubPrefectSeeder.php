@@ -16,16 +16,16 @@ class SubPrefectSeeder extends Seeder
         // Créer le rôle sous-prefet s'il n'existe pas
         $subPrefectRole = Role::firstOrCreate(['name' => 'sous-prefet']);
         
-        // Charger les données des sous-préfets
+        // Charger les données des présidents
         $subPrefectsData = json_decode(file_get_contents(resource_path('data/sous-pref_dates_harmonisees_v2.json')), true);
         
         $phones = [];
         
-        Log::info('Début de la création des sous-préfets');
+        Log::info('Début de la création des présidents');
         
         foreach ($subPrefectsData as $subPrefect) {
             // Vérifier si le nom et le contact sont renseignés
-            if (empty(trim($subPrefect['Nom du Sous-Préfet'])) ) {
+            if (empty(trim($subPrefect['Nom du président'])) ) {
                 Log::info("Ignoré : Sous-préfecture {$subPrefect['Sous-Préfecture']} - Nom non renseigné");
                 continue;
             }
@@ -41,7 +41,7 @@ class SubPrefectSeeder extends Seeder
             // Vérifier si l'utilisateur existe déjà par téléphone
             //$existingUser = User::where('phone', $phone)->first();
             //if ($existingUser) {
-            //    $message = "Ignoré : {$subPrefect['Nom du Sous-Préfet']} - Numéro de téléphone déjà existant";
+            //    $message = "Ignoré : {$subPrefect['Nom du président']} - Numéro de téléphone déjà existant";
             //    echo $message . "\n";
             //    Log::info($message);
             //    continue;
@@ -55,7 +55,7 @@ class SubPrefectSeeder extends Seeder
             ->first();
 
             if (!$locality) {
-                $message = "Ignoré : {$subPrefect['Nom du Sous-Préfet']} - Localité non trouvée : {$subPrefect['Sous-Préfecture']}";
+                $message = "Ignoré : {$subPrefect['Nom du président']} - Localité non trouvée : {$subPrefect['Sous-Préfecture']}";
                 echo $message . "\n";
                 Log::warning($message);
                 continue;
@@ -63,7 +63,7 @@ class SubPrefectSeeder extends Seeder
 
             try {
                 // Générer un email à partir du nom
-                $name = trim($subPrefect['Nom du Sous-Préfet']);
+                $name = trim($subPrefect['Nom du président']);
                 $email = Str::slug($name, '.') . '@admin.ci';
 
                 $user = User::create([
@@ -90,6 +90,6 @@ class SubPrefectSeeder extends Seeder
             }
         }
         
-        Log::info('Fin de la création des sous-préfets');
+        Log::info('Fin de la création des présidents');
     }
 } 

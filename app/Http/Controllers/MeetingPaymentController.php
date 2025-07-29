@@ -76,7 +76,7 @@ class MeetingPaymentController extends Controller
         
         
         
-        // Ajouter le sous-préfet
+        // Ajouter le président
         if ($sousPrefet && $paymentRates['sous_prefet']) {
             $paymentData[] = $this->preparePaymentData($meeting, $sousPrefet, 'sous_prefet', $paymentRates['sous_prefet']);
         }

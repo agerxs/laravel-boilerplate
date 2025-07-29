@@ -81,7 +81,7 @@ class PaymentRateController extends Controller
     public function create()
     {
         $roles = [
-            'sous_prefet' => 'Sous-préfet',
+            'sous_prefet' => 'Président',
             'secretaire' => 'Secrétaire',
             'representant' => 'Représentant'
         ];
@@ -126,7 +126,7 @@ class PaymentRateController extends Controller
     public function edit(PaymentRate $paymentRate)
     {
         $roles = [
-            'sous_prefet' => 'Sous-préfet',
+            'sous_prefet' => 'Président',
             'secretaire' => 'Secrétaire',
             'representant' => 'Représentant'
         ];

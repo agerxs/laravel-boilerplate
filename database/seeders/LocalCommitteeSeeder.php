@@ -59,7 +59,7 @@ class LocalCommitteeSeeder extends Seeder
                     'president_id' => $sousprefet ? $sousprefet->id : null,
                     'installation_date' => $this->parseDate($data['Date de planification de la tenue de la reunion_d\'installation du COLOC']),
                     'ano_validation_date' => $this->parseDate($data['Date de validation de l\'ANO']),
-                    'fund_transmission_date' => $this->parseDate($data['Date de transmission des fonds au Sous-Préfet']),
+                    'fund_transmission_date' => $this->parseDate($data['Date de transmission des fonds au président']),
                     'villages_count' => $data['Nombre de villages'] ? intval($data['Nombre de villages']) : null,
                     'population_rgph' => $data['Population de la Sous-Préfecture au RGPH 21'] ? intval($data['Population de la Sous-Préfecture au RGPH 21']) : null,
                     'population_to_enroll' => $data['Population à enrôlées '] ? intval($data['Population à enrôlées ']) : null,

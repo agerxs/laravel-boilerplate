@@ -22,7 +22,7 @@ class ExecutivePaymentService
         Log::info("Comité local: {$meeting->localCommittee->name}");
         Log::info("Localité ID: {$meeting->localCommittee->locality_id}");
         
-        // Récupérer les rôles de secrétaire et sous-préfet
+        // Récupérer les rôles de secrétaire et président
         $executiveRoles = Role::whereIn('name', ['secretaire', 'sous-prefet'])->get();
         Log::info("Rôles recherchés: secretaire, sous-prefet");
         Log::info("Rôles trouvés: " . $executiveRoles->pluck('name')->join(', '));

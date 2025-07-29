@@ -44,7 +44,7 @@ class MeetingController extends Controller
         
         // Filtrer par localité si l'utilisateur est un préfet ou un secrétaire
         if ($user->hasRole(['sous-prefet', 'Sous-prefet', 'secretaire', 'Secrétaire'])) {
-            // Pour les autres (sous-préfets et secrétaires), montrer uniquement les réunions de leur localité
+            // Pour les autres (présidents et secrétaires), montrer uniquement les réunions de leur localité
             $query->whereHas('localCommittee', function($q) use ($user) {
                 $q->where('locality_id', $user->locality_id);
             });
@@ -109,7 +109,7 @@ class MeetingController extends Controller
                   ->orWhere('parent_id', $user->locality_id);
             });
         } elseif ($user->hasRole(['sous-prefet', 'Sous-prefet', 'secretaire', 'Secrétaire'])) {
-            // Pour les sous-préfets et secrétaires, montrer uniquement les comités de leur localité
+            // Pour les présidents et secrétaires, montrer uniquement les comités de leur localité
             $query->where('locality_id', $user->locality_id);
         }
 
@@ -132,7 +132,7 @@ class MeetingController extends Controller
                   ->orWhere('parent_id', $user->locality_id);
             });
         } elseif ($user->hasRole(['sous-prefet', 'Sous-prefet', 'secretaire', 'Secrétaire'])) {
-            // Pour les sous-préfets et secrétaires, montrer uniquement les comités de leur localité
+            // Pour les présidents et secrétaires, montrer uniquement les comités de leur localité
             $query->where('locality_id', $user->locality_id);
         }
 
@@ -178,7 +178,7 @@ class MeetingController extends Controller
                 $committee->locality->children = [];
             }
             
-            // Récupérer le sous-préfet associé à cette localité avec son profil complet
+            // Récupérer le président associé à cette localité avec son profil complet
             $sousPrefet = User::role('sous-prefet')
                 ->where('locality_id', $committee->locality_id)
                 ->first();
@@ -188,14 +188,14 @@ class MeetingController extends Controller
                 ->where('locality_id', $committee->locality_id)
                 ->first();
             
-            // Débogage - Vérifier si le sous-préfet existe pour cette localité
-            \Log::info('Sous-préfet pour locality_id ' . $committee->locality_id, [
+            // Débogage - Vérifier si le président existe pour cette localité
+            \Log::info('Président pour locality_id ' . $committee->locality_id, [
                 'exists' => $sousPrefet ? 'oui' : 'non',
                 'id' => $sousPrefet ? $sousPrefet->id : null,
                 'name' => $sousPrefet ? $sousPrefet->name : null,
             ]);
             
-            // Vérifier si le sous-préfet et le secrétaire existent déjà dans les membres du comité
+            // Vérifier si le président et le secrétaire existent déjà dans les membres du comité
             $hasSousPrefet = false;
             $hasSecretaire = false;
             
@@ -779,11 +779,11 @@ class MeetingController extends Controller
     }
 
     /**
-     * Valider une réunion (réservé aux sous-préfets)
+     * Valider une réunion (réservé aux présidents)
      */
     public function validateMeeting(Meeting $meeting)
     {
-        // Vérifier si l'utilisateur est un sous-préfet ou admin
+        // Vérifier si l'utilisateur est un président ou admin
         if (!Auth::user()->hasRole(['sous-prefet', 'Sous-prefet', 'admin', 'Admin'])) {
             return response()->json([
                 'message' => 'Vous n\'avez pas les droits pour valider cette réunion.'
@@ -827,7 +827,7 @@ class MeetingController extends Controller
             // Vérifier si c'est la 2ème réunion validée
             $isSecondValidatedMeeting = ($validatedMeetingsCount % 2) === 0;
             
-            // Ajouter le sous-préfet s'il existe et si c'est la 2ème réunion validée
+            // Ajouter le président s'il existe et si c'est la 2ème réunion validée
             if ($isSecondValidatedMeeting) {
                 $sousPrefet = User::role(['sous-prefet', 'Sous-prefet'])
                     ->where('locality_id', $localCommittee->locality_id)
@@ -916,13 +916,13 @@ class MeetingController extends Controller
     }
 
     /**
-     * Invalider une réunion (réservé aux sous-préfets)
+     * Invalider une réunion (réservé aux présidents)
      */
     public function invalidate(Meeting $meeting)
     {
-        // Permettre aux administrateurs ainsi qu'aux sous-préfets d'invalider
+        // Permettre aux administrateurs ainsi qu'aux présidents d'invalider
         if (Auth::user()->role !== 'sous-prefet' && !Auth::user()->hasRole('admin')) {
-            abort(403, 'Seuls les sous-préfets et les administrateurs peuvent invalider les réunions');
+            abort(403, 'Seuls les présidents et les administrateurs peuvent invalider les réunions');
         }
 
         if (!in_array($meeting->status, ['prevalidated', 'validated'])) {
@@ -969,9 +969,9 @@ class MeetingController extends Controller
             return back()->with('error', 'Seules les réunions publiées peuvent être dépublicées.');
         }
         
-        // Vérifier que la réunion n'a pas encore été validée ou invalidée par le sous-préfet
+        // Vérifier que la réunion n'a pas encore été validée ou invalidée par le président
         if ($meeting->validated_at || $meeting->invalidated_at) {
-            return back()->with('error', 'Cette réunion ne peut plus être dépublicée car elle a déjà été validée ou invalidée par le sous-préfet.');
+            return back()->with('error', 'Cette réunion ne peut plus être dépublicée car elle a déjà été validée ou invalidée par le président.');
         }
         
         $meeting->update([

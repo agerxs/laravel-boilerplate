@@ -38,10 +38,10 @@ export const STATUS_ATTENDANCE = {
 }
 
 export const ROLES = {
-  sous_prefet: 'Sous-préfet',
+  sous_prefet: 'Président',
   secretaire: 'Secrétaire',
   representant: 'Représentant',
-  gestionnaire: 'Gestionnaire',
+  gestionnaire: 'Trésorier',
   member: 'Membre',
   guest: 'Invité',
   observer: 'Observateur'

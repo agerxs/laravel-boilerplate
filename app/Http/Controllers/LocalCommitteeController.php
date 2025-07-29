@@ -39,7 +39,7 @@ class LocalCommitteeController extends Controller
                       in_array('Sous-prefet', $user->roles->pluck('name')->toArray()) ||
                       in_array('secretaire', $user->roles->pluck('name')->toArray()) ||
                       in_array('Secrétaire', $user->roles->pluck('name')->toArray())) {
-                // Pour les autres (sous-préfets et secrétaires), montrer uniquement les comités de leur localité
+                // Pour les autres (présidents et secrétaires), montrer uniquement les comités de leur localité
                 $query->where('locality_id', $user->locality_id);
             }
         }
@@ -75,7 +75,7 @@ class LocalCommitteeController extends Controller
 
     public function create()
     {
-        // Récupérer les utilisateurs avec le rôle "Sous-préfet"
+        // Récupérer les utilisateurs avec le rôle "président"
         $sousPrefets = User::role('Sous-prefet')
             ->with('locality')
             ->get()
@@ -529,7 +529,7 @@ class LocalCommitteeController extends Controller
             'files' => $draft->files // Assurez-vous que ceci est déjà décodé grâce au cast dans le modèle
         ];
         
-        // Récupérer les utilisateurs avec le rôle "Sous-préfet"
+        // Récupérer les utilisateurs avec le rôle "président"
         $sousPrefets = User::role('Sous-prefet')
             ->with('locality')
             ->get()

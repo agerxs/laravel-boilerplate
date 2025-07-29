@@ -23,7 +23,7 @@ if (!$department) {
     exit(1);
 }
 
-// Créer un utilisateur sous-préfet de test
+// Créer un utilisateur président de test
 $subPrefet = new \App\Models\User([
     'name' => 'Sous Prefet Test',
     'email' => 'sousprefet@test.com',
@@ -34,7 +34,7 @@ $subPrefet = new \App\Models\User([
 ]);
 $subPrefet->save();
 
-// Créer un rôle sous-préfet si nécessaire
+// Créer un rôle président si nécessaire
 $role = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'sous-prefet']);
 $subPrefet->assignRole('sous-prefet');
 
@@ -56,6 +56,6 @@ $roleSecretaire = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'secr
 $secretaire->assignRole('secretaire');
 
 echo "Utilisateurs de test créés avec succès!\n";
-echo "Sous-préfet: sousprefet@test.com / password123\n";
+echo "Président: sousprefet@test.com / password123\n";
 echo "Préfet: prefet@test.com / password123\n";
 echo "Secrétaire: secretaire@test.com / password123\n"; 

@@ -58,7 +58,7 @@
                 :href="route('meeting-payments.lists.index', { role: 'sous_prefet' })"
                 class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 hover:bg-gray-50 transition-colors duration-200"
               >
-                <h3 class="text-sm font-medium text-gray-500">Paiements Sous-préfets</h3>
+                <h3 class="text-sm font-medium text-gray-500">Paiements présidents</h3>
                 <p class="mt-2 text-2xl font-bold text-blue-600">{{ formatCurrency(stats.sub_prefet_payments) }}</p>
                 <p class="mt-2 text-xs text-gray-500">50.000 FCFA par 2 réunions</p>
               </Link>

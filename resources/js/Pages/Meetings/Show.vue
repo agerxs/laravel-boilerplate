@@ -593,7 +593,7 @@
                 
                 <!-- Si validé, afficher qui a validé et quand -->
                 <div v-if="meeting.minutes.status === 'validated'" class="text-sm text-gray-600 mb-3">
-                  Validé par {{ meeting.minutes.validator?.name || 'Un sous-préfet' }} 
+                  Validé par {{ meeting.minutes.validator?.name || 'Un président' }} 
                   le {{ formatDate(meeting.minutes.validated_at) }}
                 </div>
                 
@@ -1185,7 +1185,7 @@ import axios from 'axios'
 import { computed, onMounted, ref, watch } from 'vue'
 import draggable from 'vuedraggable/src/vuedraggable'
 import MeetingValidationButtons from '@/Components/MeetingValidationButtons.vue'
-import { getStatusText, getStatusClass, translateRole } from '@/Utils/translations'
+import { getStatusText, getStatusClass, translateRole } from '@/utils/translations'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import GeographicAnalysis from '@/Components/GeographicAnalysis.vue'

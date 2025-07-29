@@ -30,7 +30,7 @@ class MeetingMinutes extends Model
     }
 
     /**
-     * L'utilisateur qui a validé le compte-rendu (sous-préfet)
+     * L'utilisateur qui a validé le compte-rendu (président)
      */
     public function validator(): BelongsTo
     {

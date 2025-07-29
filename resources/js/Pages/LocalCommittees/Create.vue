@@ -154,7 +154,7 @@
             </button>
           </div>
 
-          <!-- Étape 2: Ajouter un fichier joint -->
+          <!-- Étape 2: Ajouter arrêté -->
           <form @submit.prevent="nextStep">
             <div class="px-6 py-4 space-y-6">
               <div>
@@ -232,12 +232,12 @@
             </button>
           </div>
 
-          <!-- Étape 3: Renseigner les membres permanents -->
+          <!-- Étape 3: Renseigner les responsables -->
           <form @submit.prevent="nextStep">
             <div class="px-6 py-4 space-y-6">
-              <!-- Ajout des membres permanents -->
+              <!-- Ajout des responsable -->
               <div class="mt-8">
-                <h3 class="text-lg font-medium text-gray-900">Membres permanents</h3>
+                <h3 class="text-lg font-medium text-gray-900">Responsables</h3>
                 <div class="space-y-4">
                   <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -370,7 +370,7 @@
             </button>
           </div>
 
-          <!-- Étape 4: Renseigner les membres permanents -->
+          <!-- Étape 4: Renseigner les responsables -->
           <form @submit.prevent="nextStep">
             <div class="px-6 py-4 space-y-6">
               <div>
@@ -803,7 +803,7 @@ const fetchVillages = () => {
 };
 
 const permanentMembers = ref({
-  president: { user_id: null as number | null, first_name: 'Sous-Préfet', last_name: '', phone: '' },
+  president: { user_id: null as number | null, first_name: 'Président', last_name: '', phone: '' },
   secretary: { user_id: null as number | null, first_name: 'Secrétaire', last_name: '', phone: '' }
 });
 
@@ -842,7 +842,7 @@ const submitAndPublish = () => {
     return;
   }
 
-  // Préparer les membres permanents
+  // Préparer les responsables
   const members = [];
   if (permanentMembers.value.president.user_id) {
     members.push({
@@ -916,9 +916,9 @@ const submitAndPublish = () => {
 // État pour les étapes
 const activeStep = ref(0);
 const steps = [
-  { label: 'Sélection de la région' },
-  { label: 'Ajouter un fichier joint' },
-  { label: 'Membres permanents' },
+  { label: 'Sélection de la sous-préfecture' },
+  { label: 'Ajouter arrêté' },
+  { label: 'Responsables' },
   { label: 'Réunion d\'installation' }
 ];
 
@@ -1016,7 +1016,7 @@ const showToastMessage = (message: string, type: 'success' | 'error' | 'warning'
   }, 3000); // Le toast disparaît après 3 secondes
 };
 
-// Modifiez la fonction saveProgress pour inclure les membres permanents et les représentants par village
+// Modifiez la fonction saveProgress pour inclure les responsables et les représentants par village
 const saveProgress = () => {
   // Créez un FormData pour envoyer les fichiers
   const formData = new FormData();
@@ -1027,7 +1027,7 @@ const saveProgress = () => {
   formData.append('status', form.status);
   formData.append('active_step', activeStep.value.toString());
   
-  // Préparez les membres permanents
+  // Préparez les responsables
   const members = [];
   
   // Ajoutez le président s'il est sélectionné
@@ -1272,7 +1272,7 @@ onMounted(() => {
       decreePreview.value = `/storage/${props.committeeData.decree_file}`;
     }
 
-    // Précharger les membres permanents
+    // Précharger les responsables
     props.committeeData.members.forEach((member: Member) => {
       if (member.role === 'president') {
         permanentMembers.value.president.user_id = member.user_id || null;

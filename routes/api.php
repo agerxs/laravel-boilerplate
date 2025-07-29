@@ -85,13 +85,13 @@ Route::put('/meetings/{meeting}', [MeetingController::class, 'update'])->name('m
 Route::put('/meetings/{meeting}/reschedule', [MeetingController::class, 'reschedule'])->name('meetings.reschedule');
 Route::get('/meetings/{meeting}/reschedule', [MeetingController::class, 'showRescheduleForm'])->name('meetings.reschedule.form');
 
-// Routes pour les localités
-Route::prefix('localities')->group(function () {
-    Route::get('/', [LocalityController::class, 'index']);
-    Route::get('/{locality}', [LocalityController::class, 'show']);
-    Route::put('/{locality}', [LocalityController::class, 'update']);
-    Route::get('/{locality}/children', [LocalityController::class, 'children']);
-});
+    // Routes pour les localités
+    Route::prefix('localities')->group(function () {
+        Route::get('/', [LocalityController::class, 'index']);
+        Route::get('/{locality}', [LocalityController::class, 'show']);
+        Route::put('/{locality}', [LocalityController::class, 'update']);
+        Route::get('/{locality}/children', [LocalityController::class, 'children']);
+    });
 
 // Routes pour les types de localités
 Route::prefix('locality-types')->group(function () {

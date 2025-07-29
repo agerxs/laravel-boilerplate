@@ -136,7 +136,7 @@
                             <!-- Notes générales -->
                             <div class="mb-6">
                                 <InputLabel for="notes" value="Notes générales" />
-                                <Textarea
+                                <TextArea
                                     id="notes"
                                     v-model="form.notes"
                                     class="mt-1 block w-full"
@@ -168,7 +168,7 @@ import { Link, useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
-import Textarea from '@/Components/Textarea.vue';
+import TextArea from '@/Components/TextArea.vue';
 import Checkbox from '@/Components/Checkbox.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { format } from 'date-fns';
@@ -205,7 +205,7 @@ function formatCurrency(amount) {
 
 function translateRole(role) {
     const translations = {
-        'sous_prefet': 'Sous-préfet',
+        'sous_prefet': 'Président',
         'secretaire': 'Secrétaire',
         'representant': 'Représentant'
     };
