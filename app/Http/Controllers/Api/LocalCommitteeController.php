@@ -21,7 +21,7 @@ class LocalCommitteeController extends Controller
                       in_array('Sous-prefet', $user->roles->pluck('name')->toArray()) ||
                       in_array('secretaire', $user->roles->pluck('name')->toArray()) ||
                       in_array('Secrétaire', $user->roles->pluck('name')->toArray())) {
-                // Pour les autres (sous-préfets et secrétaires), montrer uniquement les comités de leur localité
+                // Pour les autres (présidents et secrétaires), montrer uniquement les comités de leur localité
                 $query->where('locality_id', $user->locality_id);
             }
         }

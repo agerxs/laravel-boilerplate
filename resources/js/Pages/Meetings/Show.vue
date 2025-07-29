@@ -593,7 +593,7 @@
                 
                 <!-- Si validé, afficher qui a validé et quand -->
                 <div v-if="meeting.minutes.status === 'validated'" class="text-sm text-gray-600 mb-3">
-                  Validé par {{ meeting.minutes.validator?.name || 'Un sous-préfet' }} 
+                  Validé par {{ meeting.minutes.validator?.name || 'Un président' }} 
                   le {{ formatDate(meeting.minutes.validated_at) }}
                 </div>
                 

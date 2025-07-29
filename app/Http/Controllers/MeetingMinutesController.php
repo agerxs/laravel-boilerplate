@@ -51,7 +51,7 @@ class MeetingMinutesController extends Controller
     }
 
     /**
-     * Demander la validation d'un compte-rendu par le sous-préfet
+     * Demander la validation d'un compte-rendu par le président
      */
     public function requestValidation(Request $request, MeetingMinutes $minutes)
     {
@@ -76,7 +76,7 @@ class MeetingMinutesController extends Controller
             'validation_requested_at' => now()
         ]);
 
-        // TODO: Notifier le sous-préfet qu'un compte-rendu est en attente de validation
+        // TODO: Notifier le président qu'un compte-rendu est en attente de validation
 
         return response()->json([
             'message' => 'Demande de validation envoyée avec succès',
@@ -85,11 +85,11 @@ class MeetingMinutesController extends Controller
     }
 
     /**
-     * Valider un compte-rendu (réservé aux sous-préfets)
+     * Valider un compte-rendu (réservé aux présidents)
      */
     public function validates(Request $request, MeetingMinutes $minutes)
     {
-        // Vérifier si l'utilisateur est un sous-préfet
+        // Vérifier si l'utilisateur est un président
         if (!Auth::user()->hasRole(['sous-prefet', 'Sous-prefet'])) {
             return response()->json([
                 'message' => 'Vous n\'êtes pas autorisé à valider ce compte-rendu'

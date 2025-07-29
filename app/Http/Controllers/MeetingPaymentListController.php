@@ -158,7 +158,7 @@ class MeetingPaymentListController extends Controller
             'submitted_at' => now(),
         ]);
 
-        // TODO: Envoyer une notification au sous-préfet
+        // TODO: Envoyer une notification au président
 
         return redirect()->back()->with('success', 'Liste de paiement soumise pour validation.');
     }
@@ -507,7 +507,7 @@ class MeetingPaymentListController extends Controller
     private function translateRole($role)
     {
         $translations = [
-            'sous_prefet' => 'Sous-préfet',
+            'sous_prefet' => 'Président',
             'secretaire' => 'Secrétaire',
             'participant' => 'Participant'
         ];

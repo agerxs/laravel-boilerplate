@@ -22,12 +22,12 @@ import { router } from '@inertiajs/vue3';
 
 const quickUsers = ref([
     {
-        name: 'Gestionnaire',
+        name: 'Trésorier',
         email: 'gestionnaire@example.com',
         password: 'password'
     },
     {
-        name: 'Sous-préfet',
+        name: 'Président',
         email: 'sous-prefet@example.com',
         password: 'password'
     },

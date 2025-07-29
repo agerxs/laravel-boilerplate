@@ -236,7 +236,7 @@ function formatCurrency(amount) {
 
 function translateRole(role) {
   const translations = {
-    'sous_prefet': 'Sous-préfet',
+    'sous_prefet': 'Président',
     'secretaire': 'Secrétaire',
     'representant': 'Représentant'
   };

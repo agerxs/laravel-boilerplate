@@ -113,9 +113,9 @@
                     </p>
                   </div>
 
-                  <!-- Ajout des membres permanents -->
+                  <!-- Ajout des responsables -->
                   <div class="mt-8">
-                    <h3 class="text-lg font-medium text-gray-900">Membres permanents</h3>
+                    <h3 class="text-lg font-medium text-gray-900">Responsables</h3>
                     <div class="space-y-4">
                       <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -439,9 +439,9 @@ const updateCommitteeName = () => {
 // État pour les onglets
 const activeTab = ref('committee');
 
-// Logique pour les membres permanents
+// Logique pour les responsables
 const permanentMembers = ref({
-  president: { user_id: null, first_name: 'Sous-Préfet', last_name: '', phone: '' },
+  president: { user_id: null, first_name: 'Président', last_name: '', phone: '' },
   secretary: { user_id: null, first_name: 'Secrétaire', last_name: '', phone: '' }
 });
 

@@ -76,7 +76,7 @@ const getStatusText = (status) => {
                 <div class="grid grid-cols-1 gap-6 mb-6 sm:grid-cols-2">
                     <!-- Sous-préfets -->
                     <div class="p-6 bg-white rounded-lg shadow">
-                        <h3 class="text-lg font-medium text-gray-900">Paiements des sous-préfets</h3>
+                        <h3 class="text-lg font-medium text-gray-900">Paiements des présidents</h3>
                         <div class="mt-4 space-y-4">
                             <div>
                                 <p class="text-sm text-gray-500">Total payé</p>

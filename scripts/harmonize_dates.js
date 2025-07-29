@@ -191,7 +191,7 @@ const champsDatesSousPref = [
   "Date de réception de l'arrêté /Décision",
   "Date de planification de la tenue de la reunion_d'installation du COLOC",
   "Date de validation de l'ANO",
-  "Date de transmission des fonds au Sous-Préfet",
+  "Date de transmission des fonds au président",
   "reunion_1",
   "reunion_2",
   "reunion_3",

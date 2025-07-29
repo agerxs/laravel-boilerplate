@@ -35,7 +35,7 @@ class DashboardController extends Controller
                    in_array('Sous-prefet', $user->roles->pluck('name')->toArray()) ||
                    in_array('secretaire', $user->roles->pluck('name')->toArray()) ||
                    in_array('Secrétaire', $user->roles->pluck('name')->toArray())) {
-            // Pour les sous-préfets et secrétaires, montrer uniquement les données de leur localité
+            // Pour les présidents et secrétaires, montrer uniquement les données de leur localité
             $query->whereHas('localCommittee.locality', function ($q) use ($user) {
                 $q->where('id', $user->locality_id);
             });
@@ -95,7 +95,7 @@ class DashboardController extends Controller
             $stats['draft_payments'] = MeetingPaymentList::where('status', 'draft')->count();
             $stats['validated_payments'] = MeetingPaymentList::where('status', 'validated')->count();
             
-            // Statistiques des paiements des sous-préfets
+            // Statistiques des paiements des présidents
             $stats['sub_prefet_payments'] = MeetingPaymentList::whereHas('paymentItems', function($query) {
                 $query->where('role', 'sous-prefet')
                       ->where('payment_status', 'validated');

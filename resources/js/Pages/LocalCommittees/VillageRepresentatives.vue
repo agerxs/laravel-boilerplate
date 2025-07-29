@@ -8,9 +8,9 @@
       <!-- Afficher le nom du comité -->
       <h2 class="text-2xl font-semibold mb-4 text-indigo-600">Comité: {{ committee.name }}</h2>
 
-      <!-- Afficher les membres permanents -->
+      <!-- Afficher les responsable -->
       <div class="mb-8">
-        <h3 class="text-xl font-medium text-gray-800">Membres permanents</h3>
+        <h3 class="text-xl font-medium text-gray-800">Responsables</h3>
         <ul class="list-disc list-inside mt-2">
           <li v-for="member in permanentMembers" :key="member.id" class="text-sm text-gray-700">
             {{ member.user.name }} - <span class="font-semibold">{{ member.role }}</span>
