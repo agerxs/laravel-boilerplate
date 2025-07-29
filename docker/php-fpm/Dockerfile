@@ -52,6 +52,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libzip-dev \
     libfcgi-bin \
     procps \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd \
     && apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Download and install php-fpm health check script
@@ -71,12 +76,6 @@ COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions
 COPY --from=builder /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
 COPY --from=builder /usr/local/bin/docker-php-ext-* /usr/local/bin/
 
-# Use the recommended production PHP configuration
-# -----------------------------------------------------------
-# PHP provides development and production configurations.
-# Here, we replace the default php.ini with the production
-# version to apply settings optimized for performance and
-# security in a live environment.
 # -----------------------------------------------------------
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 

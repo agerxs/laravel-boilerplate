@@ -33,6 +33,7 @@ class User extends Authenticatable
         'contract_type_id',
         'assignment_location_id',
         'cni_number',
+        'cnam_number',
         'phone',
     ];
 
