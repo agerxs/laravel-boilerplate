@@ -8,6 +8,7 @@ use App\Models\MeetingPaymentList;
 use App\Models\MeetingPaymentItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -20,11 +21,21 @@ class AttendanceController extends Controller
     private function formatAttendee(MeetingAttendee $attendee)
     {
         // Recharger l'attendee avec les relations
-        $attendee->load('village');
+        $attendee->load('village', 'representative');
+
+        // Debug: Vérifier les données
+        Log::info('Attendee debug:', [
+            'id' => $attendee->id,
+            'name' => $attendee->name,
+            'representative_name' => $attendee->representative ? $attendee->representative->name : 'NULL',
+            'localite_id' => $attendee->localite_id,
+            'village_relation' => $attendee->village,
+            'village_name' => $attendee->village ? $attendee->village->name : 'NULL'
+        ]);
 
         return [
             'id' => $attendee->id,
-            'name' => $attendee->name,
+            'name' => $attendee->representative ? $attendee->representative->name : ($attendee->name ?: 'Nom non défini'),
             'phone' => $attendee->phone,
             'role' => $attendee->role,
             'village' => [
@@ -62,7 +73,7 @@ class AttendanceController extends Controller
         
         // Récupérer les participants
         $attendees = $meeting->attendees()
-            ->with('village')
+            ->with('village', 'representative')
             ->get()
             ->map(function ($attendee) {
                 return $this->formatAttendee($attendee);

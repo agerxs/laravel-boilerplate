@@ -5,7 +5,7 @@
     <div class="flex">
       <!-- Main content -->
       <div class="w-3/4 p-6">
-        <div class="max-w-7xl mx-auto py-6">
+        <div class="max-w-10xl mx-auto py-6">
           <div class="bg-white shadow rounded-lg">
             <!-- Onglets -->
             <div class="flex border-b border-gray-200">

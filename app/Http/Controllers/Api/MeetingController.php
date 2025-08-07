@@ -7,6 +7,7 @@ use App\Models\Meeting;
 use Illuminate\Http\Request;
 use App\Http\Utils\Constants;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class MeetingController extends Controller
 {
@@ -15,7 +16,13 @@ class MeetingController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Meeting::with(['localCommittee.locality', 'attendees','attachments'])
+        $query = Meeting::with([
+            'localCommittee.locality', 
+            'attendees',
+            'attachments',
+            'subMeetings.attendees', // Ajouter les sous-réunions avec leurs participants
+            'subMeetings.localCommittee.locality' // Ajouter les comités des sous-réunions
+        ])
             ->when($request->status, function ($q, $status) {
                 return $q->where('status', $status);
             })
@@ -30,7 +37,7 @@ class MeetingController extends Controller
             })
             ->orderBy('scheduled_date', 'desc');
 
-        $meetings = $query->paginate($request->per_page ?? 10);
+        $meetings = $query->paginate($request->per_page ?? 30);
 
         return $this->format(Constants::JSON_STATUS_SUCCESS, 200, 'Liste des réunions récupérée avec succès', [
             'meetings' => $meetings,
@@ -69,9 +76,9 @@ class MeetingController extends Controller
     {
         $request->validate([
             'attendee_id' => 'required|exists:meeting_attendees,id',
-            'status' => 'required|in:present,absent',
+            'status' => 'required|in:expected,present,absent,replaced',
             'arrival_time' => 'required_if:status,present|nullable|date',
-            'replacement_name' => 'required_if:status,absent|nullable|string|max:255',
+            'replacement_name' => 'required_if:status,replaced|nullable|string|max:255',
             'replacement_phone' => 'nullable|string|max:20',
             'replacement_role' => 'nullable|string|max:255',
             'comments' => 'nullable|string'
@@ -81,15 +88,14 @@ class MeetingController extends Controller
 
         if ($request->status === 'present') {
             $attendee->markAsPresent($request->arrival_time);
+        } elseif ($request->status === 'replaced') {
+            $attendee->setReplacement(
+                $request->replacement_name,
+                $request->replacement_phone,
+                $request->replacement_role
+            );
         } else {
             $attendee->markAsAbsent();
-            if ($request->replacement_name) {
-                $attendee->setReplacement(
-                    $request->replacement_name,
-                    $request->replacement_phone,
-                    $request->replacement_role
-                );
-            }
         }
 
         if ($request->comments) {
@@ -387,6 +393,398 @@ class MeetingController extends Controller
 
         return $this->format(\App\Http\Utils\Constants::JSON_STATUS_SUCCESS, 200, 'Réunion mise à jour avec succès', [
             'meeting' => $meeting
+        ]);
+    }
+
+    /**
+     * Confirmer une réunion (pour les secrétaires)
+     */
+    public function confirm(Meeting $meeting)
+    {
+        $user = Auth::user();
+        if (!$user || !in_array($user->role, ['secretaire', 'admin'])) {
+            return $this->format(Constants::JSON_STATUS_ERROR, 403, 'Accès non autorisé');
+        }
+
+        $meeting->update([
+            'status' => 'confirmed',
+            'confirmed_at' => now(),
+            'confirmed_by' => Auth::id(),
+        ]);
+
+        return $this->format(Constants::JSON_STATUS_SUCCESS, 200, 'Réunion confirmée avec succès', [
+            'meeting' => $meeting->fresh()
+        ]);
+    }
+
+    /**
+     * Prévalider une réunion (pour les secrétaires)
+     */
+    public function prevalidate(Meeting $meeting)
+    {
+        $user = Auth::user();
+        if (!$user || !in_array($user->role, ['secretaire', 'admin'])) {
+            return $this->format(Constants::JSON_STATUS_ERROR, 403, 'Accès non autorisé');
+        }
+
+        $meeting->update([
+            'status' => 'prevalidated',
+            'prevalidated_at' => now(),
+            'prevalidated_by' => Auth::id(),
+        ]);
+
+        return $this->format(Constants::JSON_STATUS_SUCCESS, 200, 'Réunion prévalidée avec succès', [
+            'meeting' => $meeting->fresh()
+        ]);
+    }
+
+    /**
+     * Valider une réunion (pour les sous-préfets)
+     */
+    public function validateMeeting(Meeting $meeting)
+    {
+        $user = Auth::user();
+        if (!$user || !in_array($user->role, ['sous_prefet', 'admin'])) {
+            return $this->format(Constants::JSON_STATUS_ERROR, 403, 'Accès non autorisé');
+        }
+
+        $meeting->update([
+            'status' => 'validated',
+            'validated_at' => now(),
+            'validated_by' => Auth::id(),
+        ]);
+
+        return $this->format(Constants::JSON_STATUS_SUCCESS, 200, 'Réunion validée avec succès', [
+            'meeting' => $meeting->fresh()
+        ]);
+    }
+
+    /**
+     * Annuler une réunion
+     */
+    public function cancel(Meeting $meeting)
+    {
+        $user = Auth::user();
+        if (!$user || !in_array($user->role, ['secretaire', 'admin'])) {
+            return $this->format(Constants::JSON_STATUS_ERROR, 403, 'Accès non autorisé');
+        }
+
+        $meeting->update([
+            'status' => 'cancelled',
+            'cancelled_at' => now(),
+            'cancelled_by' => Auth::id(),
+        ]);
+
+        return $this->format(Constants::JSON_STATUS_SUCCESS, 200, 'Réunion annulée avec succès', [
+            'meeting' => $meeting->fresh()
+        ]);
+    }
+
+    /**
+     * Reporter une réunion
+     */
+    public function reschedule(Request $request, Meeting $meeting)
+    {
+        $request->validate([
+            'scheduled_date' => 'required|date|after:now',
+            'reason' => 'nullable|string|max:500',
+        ]);
+
+        $meeting->update([
+            'scheduled_date' => $request->scheduled_date,
+            'rescheduled_at' => now(),
+            'rescheduled_by' => Auth::id(),
+            'reschedule_reason' => $request->reason,
+        ]);
+
+        return $this->format(Constants::JSON_STATUS_SUCCESS, 200, 'Réunion reportée avec succès', [
+            'meeting' => $meeting->fresh()
+        ]);
+    }
+
+    /**
+     * Finaliser une réunion
+     */
+    public function finalize(Meeting $meeting)
+    {
+        $user = Auth::user();
+        if (!$user || !in_array($user->role, ['secretaire', 'admin'])) {
+            return $this->format(Constants::JSON_STATUS_ERROR, 403, 'Accès non autorisé');
+        }
+
+        $meeting->update([
+            'status' => 'completed',
+            'completed_at' => now(),
+            'completed_by' => Auth::id(),
+        ]);
+
+        return $this->format(Constants::JSON_STATUS_SUCCESS, 200, 'Réunion finalisée avec succès', [
+            'meeting' => $meeting->fresh()
+        ]);
+    }
+
+    /**
+     * Soumettre une liste de présence
+     */
+    public function submitAttendanceList(Request $request, Meeting $meeting)
+    {
+        info('=== SOUMISSION SANS PHOTOS DÉBUT ===');
+        info('Meeting ID: ' . $meeting->id);
+        info('User ID: ' . Auth::id());
+        info('Request method: ' . $request->method());
+        info('Request URL: ' . $request->fullUrl());
+        info('Toutes les données reçues: ' . json_encode($request->all()));
+        
+        $request->validate([
+            'attendances' => 'required|array',
+            'attendances.*.attendee_id' => 'required|exists:meeting_attendees,id',
+            'attendances.*.status' => 'required|in:expected,present,absent,replaced',
+            'attendances.*.comments' => 'nullable|string',
+        ]);
+
+        info('Validation passée avec succès');
+
+        foreach ($request->attendances as $index => $attendanceData) {
+            info("=== TRAITEMENT ATTENDANCE $index ===");
+            info('Données attendance: ' . json_encode($attendanceData));
+            
+            $attendee = $meeting->attendees()->findOrFail($attendanceData['attendee_id']);
+            info('Attendee trouvé: ID ' . $attendee->id . ', Nom: ' . $attendee->name);
+            
+            $attendee->update([
+                'attendance_status' => $attendanceData['status'],
+                'comments' => $attendanceData['comments'] ?? null,
+                'submitted_at' => now(),
+                'submitted_by' => Auth::id(),
+            ]);
+            
+            info('Attendee mis à jour avec succès');
+        }
+
+        // Mettre à jour le statut de la liste de présence du meeting
+        try {
+            $meeting->update([
+                'attendance_status' => 'submitted',
+                'attendance_submitted_at' => now(),
+                'attendance_submitted_by' => Auth::id(),
+            ]);
+            info('Statut de la liste de présence du meeting mis à jour: submitted');
+        } catch (\Exception $e) {
+            info('Erreur lors de la mise à jour du statut du meeting: ' . $e->getMessage());
+        }
+
+        info('=== SOUMISSION SANS PHOTOS TERMINÉE ===');
+        return $this->format(Constants::JSON_STATUS_SUCCESS, 200, 'Liste de présence soumise avec succès');
+    }
+
+    /**
+     * Soumettre une liste de présence avec photos
+     */
+    public function submitAttendanceListWithPhotos(Request $request, Meeting $meeting)
+    {
+        info('=== SOUMISSION AVEC PHOTOS DÉBUT ===');
+        info('Meeting ID: ' . $meeting->id);
+        info('User ID: ' . Auth::id());
+        info('Request method: ' . $request->method());
+        info('Request URL: ' . $request->fullUrl());
+        
+        // Log des headers
+        info('Content-Type: ' . $request->header('Content-Type'));
+        info('Content-Length: ' . $request->header('Content-Length'));
+        
+        // Log des données reçues
+        info('Toutes les données reçues: ' . json_encode($request->all()));
+        info('Fichiers reçus: ' . json_encode($request->allFiles()));
+        
+        $request->validate([
+            'attendances' => 'required|string', // JSON string
+            'photos.*' => 'nullable|image|max:10240', // Max 10MB par photo
+        ]);
+
+        info('Validation passée avec succès');
+
+        // Décoder les données JSON des attendances
+        $attendancesData = json_decode($request->attendances, true);
+        
+        info('Données JSON décodées: ' . json_encode($attendancesData));
+        
+        if (!$attendancesData || !is_array($attendancesData)) {
+            info('Format des données invalide');
+            return $this->format(Constants::JSON_STATUS_ERROR, 422, 'Format des données invalide');
+        }
+
+        info('Nombre d\'attendances à traiter: ' . count($attendancesData));
+
+        // Valider chaque attendance
+        foreach ($attendancesData as $index => $attendanceData) {
+            info("=== TRAITEMENT ATTENDANCE $index ===");
+            info('Données attendance: ' . json_encode($attendanceData));
+            
+            if (!isset($attendanceData['attendee_id']) || !isset($attendanceData['status'])) {
+                info('Données d\'attendance incomplètes pour index ' . $index);
+                return $this->format(Constants::JSON_STATUS_ERROR, 422, 'Données d\'attendance incomplètes');
+            }
+            
+            $attendee = $meeting->attendees()->findOrFail($attendanceData['attendee_id']);
+            info('Attendee trouvé: ID ' . $attendee->id . ', Nom: ' . $attendee->name);
+            
+            // Préparer les données de mise à jour
+            $updateData = [
+                'attendance_status' => $attendanceData['status'],
+                'comments' => $attendanceData['comments'] ?? null,
+                'submitted_at' => now(),
+                'submitted_by' => Auth::id(),
+            ];
+
+            // Ajouter les données de géolocalisation si disponibles
+            if (isset($attendanceData['presence_location']) && is_array($attendanceData['presence_location'])) {
+                $updateData['presence_location'] = $attendanceData['presence_location'];
+                info('Géolocalisation ajoutée: ' . json_encode($attendanceData['presence_location']));
+            }
+            
+            if (isset($attendanceData['presence_timestamp'])) {
+                $updateData['presence_timestamp'] = $attendanceData['presence_timestamp'];
+                info('Timestamp ajouté: ' . $attendanceData['presence_timestamp']);
+            }
+
+            // Vérifier et traiter la photo
+            info('Has photo flag: ' . ($attendanceData['has_photo'] ?? 'non défini'));
+            info('Tous les fichiers reçus: ' . json_encode($request->allFiles()));
+            
+            $photoFound = false;
+            
+            // Essayer de trouver la photo avec différentes approches
+            $photo = null;
+            
+            // Méthode 1: Essayer avec la clé indexée
+            $photoKey = "photos[$index]";
+            info('Recherche de photo avec clé: ' . $photoKey);
+            
+            if ($request->hasFile($photoKey)) {
+                $photo = $request->file($photoKey);
+                info('Photo trouvée avec clé indexée: ' . $photoKey);
+            } else {
+                // Méthode 2: Essayer d'accéder directement au tableau photos
+                $allFiles = $request->allFiles();
+                if (isset($allFiles['photos']) && is_array($allFiles['photos']) && isset($allFiles['photos'][$index])) {
+                    $photo = $allFiles['photos'][$index];
+                    info('Photo trouvée dans le tableau photos à l\'index ' . $index);
+                } else {
+                    info('Aucune photo trouvée avec les méthodes standard');
+                }
+            }
+            
+            if ($photo) {
+                info('Photo trouvée pour ' . $attendee->name);
+                info('Nom original: ' . $photo->getClientOriginalName());
+                info('Taille: ' . $photo->getSize() . ' bytes');
+                info('Type MIME: ' . $photo->getMimeType());
+                info('Extension: ' . $photo->getClientOriginalExtension());
+                
+                try {
+                    // Créer le dossier s'il n'existe pas
+                    $storagePath = storage_path('app/public/presence-photos');
+                    if (!file_exists($storagePath)) {
+                        mkdir($storagePath, 0755, true);
+                        info('Dossier créé: ' . $storagePath);
+                    }
+                    
+                    $photoPath = $photo->store('presence-photos', 'public');
+                    $updateData['presence_photo'] = $photoPath;
+                    info('Photo sauvegardée avec succès: ' . $photoPath);
+                    $photoFound = true;
+                } catch (\Exception $e) {
+                    info('Erreur lors de la sauvegarde de la photo: ' . $e->getMessage());
+                }
+            } else {
+                info('Aucune photo trouvée pour cet attendance');
+            }
+            
+            if (!$photoFound) {
+                info('Aucune photo trouvée pour cet attendance avec aucune des clés');
+            }
+            
+            if (!$photoFound) {
+                info('Aucune photo trouvée pour cet attendance');
+            }
+
+            info('Données de mise à jour: ' . json_encode($updateData));
+            
+            try {
+                $attendee->update($updateData);
+                info('Attendee mis à jour avec succès');
+            } catch (\Exception $e) {
+                info('Erreur lors de la mise à jour de l\'attendee: ' . $e->getMessage());
+            }
+        }
+
+        // Mettre à jour le statut de la liste de présence du meeting
+        try {
+            $meeting->update([
+                'attendance_status' => 'submitted',
+                'attendance_submitted_at' => now(),
+                'attendance_submitted_by' => Auth::id(),
+            ]);
+            info('Statut de la liste de présence du meeting mis à jour: submitted');
+        } catch (\Exception $e) {
+            info('Erreur lors de la mise à jour du statut du meeting: ' . $e->getMessage());
+        }
+
+        info('=== SOUMISSION AVEC PHOTOS TERMINÉE ===');
+        return $this->format(Constants::JSON_STATUS_SUCCESS, 200, 'Liste de présence avec photos soumise avec succès');
+    }
+
+    /**
+     * Valider une liste de présence (pour les sous-préfets)
+     */
+    public function validateAttendance(Request $request, Meeting $meeting)
+    {
+        $user = Auth::user();
+        if (!$user || !in_array($user->role, ['sous_prefet', 'admin'])) {
+            return $this->format(Constants::JSON_STATUS_ERROR, 403, 'Accès non autorisé');
+        }
+
+        $meeting->update([
+            'attendance_status' => 'validated',
+            'attendance_validated_at' => now(),
+            'attendance_validated_by' => Auth::id(),
+        ]);
+
+        return $this->format(Constants::JSON_STATUS_SUCCESS, 200, 'Liste de présence validée avec succès');
+    }
+
+    /**
+     * Rejeter une liste de présence
+     */
+    public function rejectAttendanceList(Request $request, Meeting $meeting)
+    {
+        $user = Auth::user();
+        if (!$user || !in_array($user->role, ['sous_prefet', 'admin'])) {
+            return $this->format(Constants::JSON_STATUS_ERROR, 403, 'Accès non autorisé');
+        }
+
+        $request->validate([
+            'reason' => 'required|string|max:500',
+        ]);
+
+        $meeting->update([
+            'attendance_status' => 'rejected',
+            'attendance_rejected_at' => now(),
+            'attendance_rejected_by' => Auth::id(),
+            'attendance_rejection_reason' => $request->reason,
+        ]);
+
+        return $this->format(Constants::JSON_STATUS_SUCCESS, 200, 'Liste de présence rejetée');
+    }
+
+    /**
+     * Exporter la liste de présence en PDF
+     */
+    public function exportAttendancePDF(Meeting $meeting)
+    {
+        // TODO: Implémenter l'export PDF
+        return $this->format(Constants::JSON_STATUS_SUCCESS, 200, 'Export PDF', [
+            'pdf_url' => '/exports/attendance-' . $meeting->id . '.pdf'
         ]);
     }
 } 

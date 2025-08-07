@@ -3,7 +3,7 @@
 
   <AppLayout title="Créer plusieurs réunions">
     <div class="py-12">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+      <div class="max-w-10xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
           <div class="mb-6">
             <h2 class="text-lg font-semibold text-gray-900 mb-2">Planification de réunions multiples</h2>

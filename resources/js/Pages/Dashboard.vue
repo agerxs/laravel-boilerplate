@@ -50,7 +50,7 @@ const getStatusText = (status) => {
         </template>
 
         <div class="py-12">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-10xl sm:px-6 lg:px-8">
                 <!-- Statistiques -->
                 <div class="grid grid-cols-1 gap-6 mb-6 sm:grid-cols-2 lg:grid-cols-4">
                     <div class="p-6 bg-white rounded-lg shadow">

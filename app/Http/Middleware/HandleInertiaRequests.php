@@ -29,25 +29,29 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
+        
         return array_merge(parent::share($request), [
             'auth' => [
-                'user' => $request->user() ? [
-                    'id' => $request->user()->id,
-                    'name' => $request->user()->name,
-                    'email' => $request->user()->email,
-                    'roles' => $request->user()->roles->map(function($role) {
+                'user' => $user ? [
+                    'id' => $user->id,
+                    'name' => $user->name ?? '',
+                    'email' => $user->email ?? '',
+                    'roles' => $user->roles ? $user->roles->map(function($role) {
                         return [
-                            'id' => $role->id,
-                            'name' => $role->name,
-                            'guard_name' => $role->guard_name,
+                            'id' => $role->id ?? 0,
+                            'name' => $role->name ?? '',
+                            'guard_name' => $role->guard_name ?? '',
                         ];
-                    }),
-                    'locality_id' => $request->user()->locality_id,
+                    }) : [],
+                    'locality_id' => $user->locality_id ?? null,
                 ] : null,
             ],
             'flash' => [
-                'message' => fn () => $request->session()->get('message'),
-                'type' => fn () => $request->session()->get('type'),
+                'message' => fn () => $request->session()->get('message') ?? null,
+                'type' => fn () => $request->session()->get('type') ?? null,
+                'success' => fn () => $request->session()->get('success') ?? null,
+                'error' => fn () => $request->session()->get('error') ?? null,
             ],
         ]);
     }

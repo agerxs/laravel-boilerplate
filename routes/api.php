@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\RepresentativeController as ApiRepresentativeContro
 use App\Http\Controllers\RepresentativeController;
 use App\Http\Controllers\Api\PaymentListController;
 use App\Http\Controllers\AttachmentController;
+use App\Http\Controllers\Api\MeetingSplitController;
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
@@ -33,9 +34,36 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // Routes pour les réunions
     Route::get('/meetings', [MeetingController::class, 'index']);
     Route::get('/meetings/{meeting}', [MeetingController::class, 'show']);
+    Route::post('/meetings', [MeetingController::class, 'store']);
+    Route::put('/meetings/{meeting}', [MeetingController::class, 'update']);
+    Route::delete('/meetings/{meeting}', [MeetingController::class, 'destroy']);
+    
+    // Actions sur les réunions
+    Route::post('/meetings/{meeting}/confirm', [MeetingController::class, 'confirm']);
+    Route::post('/meetings/{meeting}/prevalidate', [MeetingController::class, 'prevalidate']);
+    Route::post('/meetings/{meeting}/validate', [MeetingController::class, 'validateMeeting']);
+    Route::post('/meetings/{meeting}/cancel', [MeetingController::class, 'cancel']);
+    Route::post('/meetings/{meeting}/reschedule', [MeetingController::class, 'reschedule']);
+    Route::post('/meetings/{meeting}/finalize', [MeetingController::class, 'finalize']);
+    
+    // Gestion des présences
     Route::post('/meetings/{meeting}/attendance', [MeetingController::class, 'markAttendance']);
+    Route::post('/meetings/{meeting}/attendances/submit', [MeetingController::class, 'submitAttendanceList']);
+    Route::post('/meetings/{meeting}/attendances/submit-with-photos', [MeetingController::class, 'submitAttendanceListWithPhotos']);
+    Route::post('/meetings/{meeting}/attendances/validate', [MeetingController::class, 'validateAttendance']);
+    Route::post('/meetings/{meeting}/attendances/reject', [MeetingController::class, 'rejectAttendanceList']);
+    Route::get('/meetings/{meeting}/attendances/export', [MeetingController::class, 'exportAttendancePDF']);
+    
     Route::post('/meetings/{meeting}/enroll', [MeetingController::class, 'enroll']);
     Route::post('/meetings/{meeting}/unenroll', [MeetingController::class, 'unenroll']);
+
+    // Routes pour l'éclatement des réunions
+    Route::prefix('meetings/{meeting}/split')->group(function () {
+        Route::get('/villages', [MeetingSplitController::class, 'getAvailableVillages'])->name('api.meetings.split.villages');
+        Route::post('/', [MeetingSplitController::class, 'splitMeeting'])->name('api.meetings.split');
+        Route::post('/consolidate', [MeetingSplitController::class, 'consolidateResults'])->name('api.meetings.split.consolidate');
+        Route::get('/details', [MeetingSplitController::class, 'getMeetingWithSubMeetings'])->name('api.meetings.split.details');
+    });
 
     Route::post('/attachments/upload', [AttachmentController::class, 'upload']);
     Route::resource('attachments', AttachmentController::class);
@@ -54,6 +82,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/sub-prefectures', [SubPrefectureController::class, 'index']);
     Route::get('/local-committees', [ApiLocalCommitteeController::class, 'index']);
     Route::get('/local-committees/{localCommittee}', [ApiLocalCommitteeController::class, 'show']);
+    
+    // Routes pour l'import en lot
+    Route::post('/bulk-imports', [\App\Http\Controllers\Api\BulkImportController::class, 'store']);
+    Route::get('/bulk-imports', [\App\Http\Controllers\Api\BulkImportController::class, 'index']);
+    Route::get('/bulk-imports/{bulkImport}', [\App\Http\Controllers\Api\BulkImportController::class, 'show']);
+    Route::post('/bulk-imports/{bulkImport}/process', [\App\Http\Controllers\Api\BulkImportController::class, 'process']);
+    Route::get('/bulk-imports/{bulkImport}/download', [\App\Http\Controllers\Api\BulkImportController::class, 'download']);
 
     // Routes pour le mode hors ligne
     Route::post('/offline/queue', [OfflineController::class, 'queueOperation']);
@@ -76,12 +111,20 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     // Endpoint villages pour l'utilisateur connecté
     Route::get('/localities/villages', [LocalityController::class, 'villages']);
+    
+    // Routes pour les résultats des villages
+    Route::prefix('meetings/{meeting}/village-results')->group(function () {
+        Route::get('/', [App\Http\Controllers\VillageResultController::class, 'index'])->name('api.village-results.index');
+        Route::get('/{village}', [App\Http\Controllers\VillageResultController::class, 'show'])->name('api.village-results.show');
+        Route::post('/{village}', [App\Http\Controllers\VillageResultController::class, 'store'])->name('api.village-results.store');
+        Route::post('/{village}/submit', [App\Http\Controllers\VillageResultController::class, 'submit'])->name('api.village-results.submit');
+        Route::post('/{village}/validate', [App\Http\Controllers\VillageResultController::class, 'validateResults'])->name('api.village-results.validate');
+        Route::delete('/{village}', [App\Http\Controllers\VillageResultController::class, 'destroy'])->name('api.village-results.destroy');
+    });
 });
 
 Route::get('/meetings/create', [MeetingController::class, 'create'])->name('meetings.create');
-Route::post('/meetings', [MeetingController::class, 'store'])->name('meetings.store');
 Route::get('/meetings/{meeting}/edit', [MeetingController::class, 'edit'])->name('meetings.edit');
-Route::put('/meetings/{meeting}', [MeetingController::class, 'update'])->name('meetings.update');
 Route::put('/meetings/{meeting}/reschedule', [MeetingController::class, 'reschedule'])->name('meetings.reschedule');
 Route::get('/meetings/{meeting}/reschedule', [MeetingController::class, 'showRescheduleForm'])->name('meetings.reschedule.form');
 

@@ -3,7 +3,7 @@
 
   <AppLayout title="Gestion des Réunions">
     <div class="py-12">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+      <div class="max-w-10xl mx-auto sm:px-6 lg:px-8">
         
         <div v-if="page.props.flash.success" class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
           {{ page.props.flash.success }}
@@ -50,6 +50,15 @@
                   <option v-for="status in meetingStatuses" :key="status.value" :value="status.value">{{ status.label }}</option>
                 </select>
               </div>
+              <div>
+                <label for="hierarchy" class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                <select id="hierarchy" v-model="filters.hierarchy" class="w-full border-gray-300 rounded-md shadow-sm">
+                  <option value="">Toutes</option>
+                  <option value="parent">Réunions parent uniquement</option>
+                  <option value="sub">Sous-réunions uniquement</option>
+                  <option value="normal">Réunions normales uniquement</option>
+                </select>
+              </div>
               <div class="lg:col-span-2">
                 <label for="committee" class="block text-sm font-medium text-gray-700 mb-1">Comité Local</label>
                 <select id="committee" v-model="filters.local_committee_id" class="w-full border-gray-300 rounded-md shadow-sm">
@@ -80,6 +89,7 @@
                     <th @click="sortBy('title')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Titre</th>
                     <th @click="sortBy('scheduled_date')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Date</th>
                     <th @click="sortBy('status')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Statut</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Présences</th>
                     <th @click="sortBy('local_committee')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Comité Local</th>
                     <th @click="sortBy('updated_at')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Date de modification</th>
                     <th class="relative px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -89,27 +99,122 @@
                  <tr v-if="meetings.data.length === 0">
                   <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">Aucune réunion trouvée.</td>
                 </tr>
-                <tr v-for="meeting in meetings.data" :key="meeting.id">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      <Link :href="route('meetings.show', { meeting: meeting.id })" class="text-blue-700 hover:underline">
-                        {{ meeting.title }}
-                      </Link>
+                <template v-for="meeting in meetings.data" :key="meeting.id">
+                  <!-- Réunion principale (ne montrer que les réunions parent ou normales) -->
+                  <tr v-if="!meeting.parent_meeting_id" :class="getMeetingRowClass(meeting)">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 max-w-xs">
+                      <div class="flex items-center">
+                        <!-- Bouton expand/collapse pour les réunions parent -->
+                        <button 
+                          v-if="meeting.sub_meetings_count && meeting.sub_meetings_count > 0"
+                          @click="toggleSubMeetings(meeting.id)"
+                          class="mr-2 text-blue-500 hover:text-blue-700 transition-colors"
+                          :title="expandedMeetings.includes(meeting.id) ? 'Réduire' : 'Développer'"
+                        >
+                          <svg 
+                            class="h-4 w-4 transition-transform" 
+                            :class="{ 'rotate-90': expandedMeetings.includes(meeting.id) }"
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                          >
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                          </svg>
+                        </button>
+                        <div v-else class="mr-2 w-4"></div>
+                        
+                        <Link 
+                          :href="route('meetings.show', { meeting: meeting.id })" 
+                          class="text-blue-700 hover:underline"
+                          :title="meeting.title"
+                        >
+                          {{ meeting.title }}
+                        </Link>
+                        
+                        <!-- Badge pour indiquer le type -->
+                        <span v-if="meeting.parent_meeting_id" class="ml-2 px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">
+                          Sous-réunion
+                        </span>
+                        <span v-else-if="meeting.sub_meetings_count && meeting.sub_meetings_count > 0" class="ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-600 rounded">
+                          Sous-réunions ({{ meeting.sub_meetings_count }})
+                        </span>
+                      </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(meeting.scheduled_date) }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <MeetingStatusBadge :status="meeting.status" :scheduled-date="meeting.scheduled_date" />
                     </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <!-- Affichage direct du statut -->
+                        <div class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border"
+                             :class="{
+                               'bg-gray-100 text-gray-700 border-gray-200': meeting.attendance_status === 'draft' || !meeting.attendance_status,
+                               'bg-blue-100 text-blue-700 border-blue-200': meeting.attendance_status === 'submitted',
+                               'bg-green-100 text-green-700 border-green-200': meeting.attendance_status === 'validated'
+                             }">
+                          {{ meeting.attendance_status === 'submitted' ? 'Soumis' : meeting.attendance_status === 'validated' ? 'Validé' : 'Brouillon' }}
+                        </div>
+                    </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ meeting.locality_name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDateTime(meeting.updated_at) }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div class="flex items-center justify-end space-x-2">
-                             <Link :href="route('meetings.show', { meeting: meeting.id })" class="flex items-center justify-center w-8 h-8 text-blue-600 hover:text-blue-900 rounded transition-colors" title="Voir"><EyeIcon class="h-5 w-5" /></Link>
-                             <button v-if="isSecretary && !isSubPrefect && (meeting.status === 'scheduled' || meeting.status === 'planned')" @click="cancelMeeting(meeting)" class="flex items-center justify-center w-8 h-8 text-red-600 hover:text-red-900 rounded transition-colors" title="Annuler"><XCircleIcon class="h-5 w-5" /></button>
-                             <Link v-if="isSecretary && !isSubPrefect && (meeting.status === 'scheduled' || meeting.status === 'planned')" :href="route('meetings.reschedule', meeting.id)" class="flex items-center justify-center w-8 h-8 text-yellow-600 hover:text-yellow-900 rounded transition-colors" title="Reporter"><ClockIcon class="h-5 w-5" /></Link>
+                             <Link :href="route('meetings.show', { meeting: meeting.id })" class="flex items-center justify-center w-8 h-8 text-blue-600 hover:text-blue-900 rounded transition-colors hover:bg-blue-50" title="Voir"><EyeIcon class="h-5 w-5" /></Link>
+                             <button v-if="isSecretary && !isSubPrefect && (meeting.status === 'scheduled' || meeting.status === 'planned')" @click="cancelMeeting(meeting)" class="flex items-center justify-center w-8 h-8 text-red-600 hover:text-red-900 rounded transition-colors hover:bg-red-50" title="Annuler"><XCircleIcon class="h-5 w-5" /></button>
+                             <Link v-if="isSecretary && !isSubPrefect && (meeting.status === 'scheduled' || meeting.status === 'planned')" :href="route('meetings.reschedule', meeting.id)" class="flex items-center justify-center w-8 h-8 text-yellow-600 hover:text-yellow-900 rounded transition-colors hover:bg-yellow-50" title="Reporter"><ClockIcon class="h-5 w-5" /></Link>
+                             <button v-if="canSplitMeeting(meeting)" @click="splitMeeting(meeting)" class="flex items-center justify-center w-8 h-8 text-purple-600 hover:text-purple-900 rounded transition-colors hover:bg-purple-50" title="Éclater la réunion"><Squares2X2Icon class="h-5 w-5" /></button>
                              <MeetingValidationButtons :meeting="meeting" />
                         </div>
                     </td>
-                </tr>
+                  </tr>
+                  
+                  <!-- Sous-réunions (si développées) -->
+                  <template v-if="expandedMeetings.includes(meeting.id) && meeting.sub_meetings">
+                    <tr v-for="subMeeting in meeting.sub_meetings" :key="subMeeting.id" class="bg-gray-50">
+                      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 max-w-xs">
+                        <div class="flex items-center min-w-0">
+                          <div class="mr-6 w-4 flex-shrink-0"></div> <!-- Espace pour l'alignement -->
+                          <div class="mr-2 w-4 flex-shrink-0"></div> <!-- Espace vide pour l'alignement -->
+                          <Link 
+                            :href="route('meetings.show', { meeting: subMeeting.id })" 
+                            class="text-blue-700 hover:underline truncate flex-1 min-w-0"
+                            :title="subMeeting.title"
+                          >
+                            {{ subMeeting.title }}
+                          </Link>
+                          <span class="ml-2 px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded flex-shrink-0">
+                            Sous-réunion
+                          </span>
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(subMeeting.scheduled_date) }}</td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                          <MeetingStatusBadge :status="subMeeting.status" :scheduled-date="subMeeting.scheduled_date" />
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                          <!-- Affichage direct du statut -->
+                          <div class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border"
+                               :class="{
+                                 'bg-gray-100 text-gray-700 border-gray-200': subMeeting.attendance_status === 'draft' || !subMeeting.attendance_status,
+                                 'bg-blue-100 text-blue-700 border-blue-200': subMeeting.attendance_status === 'submitted',
+                                 'bg-green-100 text-green-700 border-green-200': subMeeting.attendance_status === 'validated'
+                               }">
+                            {{ subMeeting.attendance_status === 'submitted' ? 'Soumis' : subMeeting.attendance_status === 'validated' ? 'Validé' : 'Brouillon' }}
+                          </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ subMeeting.locality_name }}</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDateTime(subMeeting.updated_at) }}</td>
+                      <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <div class="flex items-center justify-end space-x-2">
+                               <Link :href="route('meetings.show', { meeting: subMeeting.id })" class="flex items-center justify-center w-8 h-8 text-blue-600 hover:text-blue-900 rounded transition-colors hover:bg-blue-50" title="Voir"><EyeIcon class="h-5 w-5" /></Link>
+                               <button v-if="isSecretary && !isSubPrefect && (subMeeting.status === 'scheduled' || subMeeting.status === 'planned')" @click="cancelMeeting(subMeeting)" class="flex items-center justify-center w-8 h-8 text-red-600 hover:text-red-900 rounded transition-colors hover:bg-red-50" title="Annuler"><XCircleIcon class="h-5 w-5" /></button>
+                               <Link v-if="isSecretary && !isSubPrefect && (subMeeting.status === 'scheduled' || subMeeting.status === 'planned')" :href="route('meetings.reschedule', subMeeting.id)" class="flex items-center justify-center w-8 h-8 text-yellow-600 hover:text-yellow-900 rounded transition-colors hover:bg-yellow-50" title="Reporter"><ClockIcon class="h-5 w-5" /></Link>
+                               <MeetingValidationButtons :meeting="subMeeting" />
+                          </div>
+                      </td>
+                    </tr>
+                  </template>
+                </template>
               </tbody>
             </table>
           </div>
@@ -130,7 +235,8 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
 import MeetingStatusBadge from '@/Components/MeetingStatusBadge.vue';
 import MeetingValidationButtons from '@/Components/MeetingValidationButtons.vue';
-import { PlusIcon, EyeIcon, XCircleIcon, ClockIcon } from '@heroicons/vue/24/outline';
+import AttendanceStatusBadge from '@/Components/AttendanceStatusBadge.vue';
+import { PlusIcon, EyeIcon, XCircleIcon, ClockIcon, Squares2X2Icon } from '@heroicons/vue/24/outline';
 import { useToast } from '@/Composables/useToast';
 import { hasRole } from '@/utils/authUtils';
 
@@ -141,6 +247,11 @@ interface Meeting {
   status: string;
   locality_name: string;
   updated_at: string;
+  parent_meeting_id?: number;
+  sub_meetings_count?: number;
+  sub_meetings?: Meeting[];
+  attendance_status?: string;
+  attendance_validated_at?: string;
 }
 
 interface LocalCommittee {
@@ -164,6 +275,7 @@ interface Props {
     local_committee_id: string;
     date_from: string;
     date_to: string;
+    hierarchy?: string;
     sort?: string;
     direction?: string;
   };
@@ -186,6 +298,7 @@ const filters = reactive({
   local_committee_id: props.filters.local_committee_id || '',
   date_from: props.filters.date_from || '',
   date_to: props.filters.date_to || '',
+  hierarchy: props.filters.hierarchy || '',
 });
 
 const sortColumn = ref(props.filters.sort || 'scheduled_date');
@@ -227,6 +340,7 @@ const clearFilters = () => {
   filters.local_committee_id = '';
   filters.date_from = '';
   filters.date_to = '';
+  filters.hierarchy = '';
   applyFilters();
 };
 
@@ -257,6 +371,38 @@ const cancelMeeting = (meeting: Meeting) => {
 
 const isSecretary = computed(() => hasRole(props.auth.user.roles, 'secretaire') || hasRole(props.auth.user.roles, 'Secrétaire'));
 const isSubPrefect = computed(() => hasRole(props.auth.user.roles, 'sous-prefet') || hasRole(props.auth.user.roles, 'Sous-prefet'));
+
+const expandedMeetings = ref<number[]>([]);
+
+const getMeetingRowClass = (meeting: Meeting) => {
+  if (meeting.parent_meeting_id) {
+    return 'bg-gray-50'; // Sous-réunion
+  } else if (meeting.sub_meetings_count && meeting.sub_meetings_count > 0) {
+    return 'bg-blue-50'; // Réunion parent
+  }
+  return ''; // Réunion normale
+};
+
+const toggleSubMeetings = (meetingId: number) => {
+  const index = expandedMeetings.value.indexOf(meetingId);
+  if (index > -1) {
+    expandedMeetings.value.splice(index, 1);
+  } else {
+    expandedMeetings.value.push(meetingId);
+  }
+};
+
+const canSplitMeeting = (meeting: Meeting) => {
+  // Peut éclater si c'est une réunion parent (pas une sous-réunion) et si le statut le permet
+  return !meeting.parent_meeting_id && 
+         (meeting.status === 'planned' || meeting.status === 'scheduled') &&
+         isSecretary.value;
+};
+
+const splitMeeting = (meeting: Meeting) => {
+  // Rediriger vers la page d'éclatement
+  window.location.href = route('meetings.split', meeting.id);
+};
 </script>
 
 <style>

@@ -103,12 +103,12 @@ const navigation: NavigationItem[] = [
     icon: DocumentIcon,
     roles: ['gestionnaire', 'admin']
   },
- /* { 
+  { 
     name: 'Gestion des APKs', 
     href: route('admin.app_versions.index'), 
     icon: DocumentIcon, 
     roles: ['admin']
-  },*/
+  },
   {
     name: 'Paramétrage',
     href: '/admin',
@@ -127,7 +127,7 @@ const filteredNavigation = computed(() => {
     const userRoles = user.value?.roles || [];
     console.log('User roles objects:', userRoles);
 
-    const userRoleNames = userRoles.map(role => role.name.toLowerCase());
+    const userRoleNames = userRoles.map(role => role?.name?.toLowerCase() || '').filter(name => name);
     console.log('User role names (lowercase):', userRoleNames);
     
     return navigation.filter((item: NavigationItem) => {
@@ -381,7 +381,7 @@ const { toasts } = useToast();
 
             <main class="flex-1">
                 <div class="py-6">
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
+                    <div class="max-w-10xl mx-auto px-4 sm:px-6 md:px-8">
                         <slot />
                     </div>
                 </div>

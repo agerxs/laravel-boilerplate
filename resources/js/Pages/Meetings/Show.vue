@@ -16,7 +16,7 @@
       </div>
 
       <!-- Contenu principal existant -->
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+      <div class="max-w-10xl mx-auto sm:px-6 lg:px-8 space-y-6">
         <!-- Informations sur la validation -->
         <div v-if="meeting.status === 'validated'" class="bg-white shadow sm:rounded-lg">
           <div class="px-4 py-5 sm:p-6"> 
@@ -34,9 +34,174 @@
             </div>
           </div>
         </div>
+        
+        <!-- Section des sous-réunions -->
+        <div v-if="meeting.sub_meetings && meeting.sub_meetings.length > 0" class="bg-white shadow sm:rounded-lg">
+          <div class="px-4 py-5 sm:p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-medium text-gray-900">
+                Sous-réunions ({{ meeting.sub_meetings.length }})
+              </h3>
+              <div class="flex items-center space-x-2">
+                <span class="text-sm text-gray-500">
+                  Total attendus: {{ getTotalExpectedAttendees() }} | 
+                  Total présents: {{ getTotalPresentAttendees() }}
+                </span>
+              </div>
+            </div>
+            
+            <!-- Message informatif -->
+            <div class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div class="flex items-center">
+                <svg class="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <p class="text-sm text-blue-700">
+                  <strong>Réunion éclatée :</strong> Cette réunion a été divisée en sous-réunions. 
+                  La gestion des listes de présence et des comptes rendus se fait au niveau de chaque sous-réunion.
+                </p>
+              </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div 
+                v-for="subMeeting in meeting.sub_meetings" 
+                :key="subMeeting.id"
+                class="border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer hover:bg-gray-50"
+                @click="goToSubMeeting(subMeeting.id)"
+              >
+                <div class="flex items-center justify-between mb-2">
+                  <h4 class="font-medium text-gray-900">{{ subMeeting.title }}</h4>
+                  <span 
+                    :class="[getStatusClass(subMeeting.status), 'px-2 py-1 text-xs font-medium rounded-full']"
+                  >
+                    {{ getStatusText(subMeeting.status, 'meeting') }}
+                  </span>
+                </div>
+                
+                <div class="space-y-2 text-sm text-gray-600">
+                  <p>
+                    <span class="font-medium">Lieu :</span> {{ subMeeting.location }}
+                  </p>
+                  <p>
+                    <span class="font-medium">Date :</span> {{ formatDateTime(subMeeting.scheduled_date) }}
+                  </p>
+                  <p>
+                    <span class="font-medium">Participants :</span> 
+                    {{ subMeeting.actual_enrollments }}/{{ subMeeting.target_enrollments }}
+                  </p>
+                </div>
+                
+                <div class="mt-3 flex justify-end items-center space-x-3">
+                  <button
+                    @click.stop="goToSubMeeting(subMeeting.id)"
+                    class="text-sm text-blue-600 hover:text-blue-800 font-medium px-3 py-1.5 rounded hover:bg-blue-50 transition-colors border border-transparent hover:border-blue-200"
+                  >
+                    Voir les détails →
+                  </button>
+                  
+                  <!-- Bouton de suppression (seulement pour les secrétaires et si la sous-réunion n'est pas terminée) -->
+                  <button
+                    v-if="isSecretary && !isSubPrefect && subMeeting.status !== 'completed' && subMeeting.status !== 'validated'"
+                    @click.stop="deleteSubMeeting(subMeeting)"
+                    class="text-sm text-red-600 hover:text-red-800 font-medium px-3 py-1.5 rounded hover:bg-red-50 transition-colors border border-transparent hover:border-red-200"
+                    title="Supprimer cette sous-réunion"
+                  >
+                    Supprimer
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Boutons d'action (toujours visibles) -->
+        <div class="bg-white shadow sm:rounded-lg">
+          <div class="px-4 py-5 sm:p-6">
+            <div class="flex flex-wrap gap-2">
+              <MeetingValidationButtons 
+                :meeting="meeting"
+                @meeting-updated="handleMeetingUpdated"
+              />
+              
+              <AttendanceValidationButtons 
+                :meeting="meeting"
+                :user="user"
+                @attendance-validated="handleAttendanceValidated"
+                @attendance-invalidated="handleAttendanceInvalidated"
+              />
+              
+              <AttendanceSubmissionButtons 
+                :meeting="meeting"
+                :user="user"
+                @attendance-submitted="handleAttendanceSubmitted"
+                @attendance-submission-cancelled="handleAttendanceSubmissionCancelled"
+              />
+              
+              <!-- Reschedule button -->
+              <button
+                v-if="(meeting.status === 'scheduled' || meeting.status === 'planned') && isSecretary && !isSubPrefect"
+                @click="showRescheduleModal = true"
+                class="inline-flex items-center px-4 py-2 bg-white border border-blue-300 text-blue-700 rounded-md text-sm font-medium hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Replanifier
+              </button>
+              
+
+              
+              <!-- Bouton pour éclater la réunion -->
+              <button
+                v-if="canBeSplit && isSecretary"
+                @click="splitMeeting"
+                class="inline-flex items-center px-4 py-2 bg-white border border-purple-300 text-purple-700 rounded-md text-sm font-medium hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+              >
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                </svg>
+                Éclater la réunion
+              </button>
+              
+              <!-- Bouton pour valider -->
+              <button
+                v-if="(isSubPrefect || isAdmin) && meeting.status === 'completed'"
+                @click="showValidationModal = true"
+                class="inline-flex items-center px-4 py-2 bg-white border border-violet-300 text-violet-700 rounded-md text-sm font-medium hover:bg-violet-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500"
+              >
+                Valider
+              </button>
+              
+              <!-- Bouton pour invalider -->
+              <button
+                v-if="(isSubPrefect || isAdmin) && meeting.status === 'validated' && meeting.status !== 'cancelled'"
+                @click="showInvalidationModal = true"
+                class="inline-flex items-center px-4 py-2 bg-white border border-red-300 text-red-700 rounded-md text-sm font-medium hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              >
+                Invalider
+              </button>
+              
+              <!-- Complete button -->
+              <button
+                v-if="(meeting.status === 'scheduled' || meeting.status === 'planned') && isSecretary"
+                @click="completeConfirm"
+                class="inline-flex items-center px-4 py-2 bg-white border border-green-300 text-green-700 rounded-md text-sm font-medium hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              >
+                Publier
+              </button>
+              
+              <!-- Unpublish button -->
+              <button
+                v-if="meeting.status === 'completed' && isSecretary && !meeting.validated_at && !meeting.invalidated_at"
+                @click="unpublishConfirm"
+                class="inline-flex items-center px-4 py-2 bg-white border border-orange-300 text-orange-700 rounded-md text-sm font-medium hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+              >
+                Dépublier
+              </button>
+            </div>
+          </div>
+        </div>
        
         <!-- Informations de la réunion -->
-        <div class="bg-white shadow sm:rounded-lg">
+        <div v-if="!meeting.sub_meetings || meeting.sub_meetings.length === 0" class="bg-white shadow sm:rounded-lg">
           <div class="px-4 py-5 sm:p-6">
             <div class="grid grid-cols-2 gap-4">
               <div>
@@ -70,6 +235,47 @@
                       {{ meeting.actual_enrollments }}/{{ meeting.target_enrollments }}
                     </span>
                   </p>
+                  
+                  <!-- Informations sur les sous-réunions -->
+                  <div v-if="meeting.sub_meetings && meeting.sub_meetings.length > 0" class="mt-4 pt-4 border-t border-gray-200">
+                    <p class="text-sm text-gray-600">
+                      <span class="font-medium">Sous-réunions :</span>
+                      {{ meeting.sub_meetings.length }} créées
+                    </p>
+                    
+                    <!-- Barre de progression pour l'éclatement -->
+                    <div class="mt-3">
+                      <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium text-gray-700">Progression de l'éclatement</span>
+                        <span class="text-sm text-gray-500">{{ getAssignedVillagesCount() }}/{{ getTotalVillagesCount() }} villages assignés</span>
+                      </div>
+                      <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div 
+                          class="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                          :style="{ width: getSplitProgressPercentage() + '%' }"
+                        ></div>
+                      </div>
+                      <div class="mt-2 text-xs text-gray-500">
+                        <span v-if="getAvailableVillagesCount() > 0">
+                          {{ getAvailableVillagesCount() }} villages restants disponibles
+                        </span>
+                        <span v-else class="text-green-600 font-medium">
+                          ✓ Tous les villages ont été assignés
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <p class="text-sm text-gray-600 mt-3">
+                      <span class="font-medium">Total participants attendus :</span>
+                      {{ getTotalExpectedAttendees() }}
+                    </p>
+                    <p class="text-sm text-gray-600">
+                      <span class="font-medium">Total participants présents :</span>
+                      {{ getTotalPresentAttendees() }}
+                    </p>
+                  </div>
+                </div>
+              </div>
                   
                   <!-- Formulaire pour mettre à jour les enrôlements -->
                   <div v-if="isSecretary && ['scheduled', 'planned', 'prevalidated', 'validated'].includes(meeting.status)" class="mt-4 border-t pt-4">
@@ -124,7 +330,7 @@
         </div>
 
         <!-- Liste de Présence -->
-        <div class="bg-white shadow sm:rounded-lg">
+        <div v-if="!meeting.sub_meetings || meeting.sub_meetings.length === 0" class="bg-white shadow sm:rounded-lg">
           <div class="px-4 py-5 sm:p-6">
             <div class="flex justify-between items-center">
               <h3 class="text-lg font-medium text-gray-900">Liste de Présence</h3>
@@ -223,16 +429,27 @@
                       </div>
                       
                       <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-gray-900">
-                          {{ attendee.name }}
-                          <span v-if="attendee.replacement_name" class="text-xs text-yellow-600 ml-2">
-                            (Remplacé par {{ attendee.replacement_name }})
+                        <!-- Nom du représentant et village -->
+                        <div class="flex items-center space-x-2 mb-1">
+                          <p class="text-base font-semibold text-gray-900">
+                            {{ attendee.name }}
+                          </p>
+                          <span v-if="attendee.village?.name" class="text-sm font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                            🏘️ {{ attendee.village.name }}
                           </span>
+                        </div>
+                        
+                        <!-- Remplaçant si applicable -->
+                        <p v-if="attendee.replacement_name" class="text-xs text-yellow-600 mb-1">
+                          🔄 Remplacé par {{ attendee.replacement_name }}
                         </p>
-                        <p class="text-sm text-gray-500">
+                        
+                        <!-- Rôle du représentant -->
+                        <p class="text-sm text-gray-600 mb-1">
                           {{ attendee.role || 'Pas de rôle défini' }}
-                          <span v-if="attendee.village?.name" class="ml-2">• {{ attendee.village.name }}</span>
                         </p>
+                        
+                        <!-- Téléphone -->
                         <p v-if="attendee.phone" class="text-sm text-gray-500">
                           📞 {{ attendee.phone }}
                         </p>
@@ -353,7 +570,7 @@
         </div>
 
         <!-- Pièces jointes -->
-        <div class="bg-white shadow sm:rounded-lg">
+        <div v-if="!meeting.sub_meetings || meeting.sub_meetings.length === 0" class="bg-white shadow sm:rounded-lg">
           <div class="px-4 py-5 sm:p-6">
             <div class="flex justify-between items-center">
               <h3 class="text-lg font-medium text-gray-900">Pièces jointes</h3>
@@ -482,18 +699,46 @@
           </div>
         </div>
 
+        <!-- Total des résultats des villages -->
+        
+
         <!-- Compte rendu -->
-        <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <div v-if="!meeting.sub_meetings || meeting.sub_meetings.length === 0" class="bg-white rounded-lg shadow p-6 mb-6">
           <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-semibold">Compte rendu</h3>
+            <h3 class="text-lg font-semibold">Difficultés et recommandations</h3>
             
           </div>
           <div>
             <div v-if="editingMinutes">
-              <RichTextEditor
-                v-model="form.minutes.content"
-                placeholder="Rédigez le compte rendu ici..."
-              />
+             
+              
+              <!-- Difficultés rencontrées -->
+              <div class="mt-6">
+                <label for="difficulties" class="block text-sm font-medium text-gray-700 mb-2">
+                  Difficultés rencontrées
+                </label>
+                <textarea
+                  id="difficulties"
+                  v-model="form.minutes.difficulties"
+                  rows="4"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Décrivez les difficultés rencontrées pendant la réunion..."
+                ></textarea>
+              </div>
+
+              <!-- Recommandations -->
+              <div class="mt-6">
+                <label for="recommendations" class="block text-sm font-medium text-gray-700 mb-2">
+                  Recommandations
+                </label>
+                <textarea
+                  id="recommendations"
+                  v-model="form.minutes.recommendations"
+                  rows="4"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Formulez vos recommandations et suggestions d'amélioration..."
+                ></textarea>
+              </div>
 
               
               <div class="mt-4 flex justify-end space-x-3">
@@ -533,6 +778,33 @@
            
             
             <!-- Autres boutons d'action -->
+            <!-- Lien vers les résultats des villages -->
+            <button
+              @click="router.visit(route('village-results.index', meeting.id))"
+              class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md text-sm font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+            >
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+              Résultats des villages
+            </button>
+            
+            
+            
+            <!-- Bouton pour éclater la réunion -->
+            <button
+              v-if="canBeSplit && isSecretary"
+              @click="splitMeeting"
+              class="inline-flex items-center px-4 py-2 bg-white border border-blue-300 text-blue-700 rounded-md text-sm font-medium hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+              </svg>
+              Éclater la réunion
+            </button>
+            
+
+            
             <!-- Bouton pour valider -->
             <button
               v-if="(isSubPrefect || isAdmin) && meeting.status === 'completed'"
@@ -574,6 +846,12 @@
               </div>
             </div>
             <div v-else>
+              <!-- Affichage des résultats des villages -->
+              <VillageResultsDisplay
+                v-if="meeting.minutes"
+                :minutes="meeting.minutes"
+              />
+              
               <!-- Afficher le statut du compte-rendu -->
               <div v-if="meeting.minutes" class="mb-4">
                 <div class="flex items-center space-x-2 mb-3">
@@ -604,7 +882,21 @@
                 </div>
               </div>
               
-              <div class="prose max-w-none" v-html="form.minutes.content || 'Aucun compte rendu'" />
+              <!-- Difficultés rencontrées -->
+              <div v-if="form.minutes.difficulties" class="mt-6">
+                <h4 class="text-lg font-semibold text-gray-900 mb-3">Difficultés rencontrées</h4>
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                  <div class="text-sm text-gray-700 whitespace-pre-wrap">{{ form.minutes.difficulties }}</div>
+                </div>
+              </div>
+
+              <!-- Recommandations -->
+              <div v-if="form.minutes.recommendations" class="mt-6">
+                <h4 class="text-lg font-semibold text-gray-900 mb-3">Recommandations</h4>
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div class="text-sm text-gray-700 whitespace-pre-wrap">{{ form.minutes.recommendations }}</div>
+                </div>
+              </div>
 
               <!-- Boutons d'action selon le rôle et le statut -->
               <div class="flex justify-end space-x-3 mt-4">
@@ -649,10 +941,6 @@
             </div>
           </div>
         </div>
-
-    
-      </div>
-    </div>
 
     <!-- Modal pour ajouter/éditer un point d'ordre du jour -->
     <Modal :show="showNewAgendaItemModal" @close="closeAgendaItemModal">
@@ -1185,6 +1473,11 @@ import axios from 'axios'
 import { computed, onMounted, ref, watch } from 'vue'
 import draggable from 'vuedraggable/src/vuedraggable'
 import MeetingValidationButtons from '@/Components/MeetingValidationButtons.vue'
+import AttendanceValidationButtons from '@/Components/AttendanceValidationButtons.vue'
+import AttendanceSubmissionButtons from '@/Components/AttendanceSubmissionButtons.vue'
+import VillageResultsForm from '@/Components/VillageResultsForm.vue'
+import VillageResultsDisplay from '@/Components/VillageResultsDisplay.vue'
+import VillageResultsManager from '@/Components/VillageResultsManager.vue'
 import { getStatusText, getStatusClass, translateRole } from '@/utils/translations'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
@@ -1209,6 +1502,33 @@ interface Comment {
         name: string;
     };
     created_at: string;
+}
+
+interface MeetingData {
+    id: number;
+    title: string;
+    scheduled_date: string;
+    status: string;
+    location: string;
+    target_enrollments?: number;
+    actual_enrollments?: number;
+    validated_at?: string;
+    invalidated_at?: string;
+    validation_comments?: string;
+    validator?: {
+        name: string;
+    };
+    local_committee?: {
+        id: number;
+        name: string;
+        locality?: {
+            id: number;
+            name: string;
+        };
+    };
+    attendees?: any[];
+    sub_meetings?: any[];
+    available_villages_count?: number;
 }
 
 interface MinutesVersion {
@@ -1288,7 +1608,7 @@ interface Meeting {
 }
 
 interface Props {
-  meeting: Meeting
+  meeting: MeetingData
   user: User
 }
 
@@ -1337,7 +1657,14 @@ const form = useForm({
     })) || [],
     minutes: {
         content: props.meeting.minutes?.content || '',
-        status: props.meeting.minutes?.status || 'draft'
+        status: props.meeting.minutes?.status || 'draft',
+        // Nouveaux champs pour les résultats des villages
+        people_to_enroll_count: props.meeting.minutes?.people_to_enroll_count || null,
+        people_enrolled_count: props.meeting.minutes?.people_enrolled_count || null,
+        cmu_cards_available_count: props.meeting.minutes?.cmu_cards_available_count || null,
+        cmu_cards_distributed_count: props.meeting.minutes?.cmu_cards_distributed_count || null,
+        complaints_received_count: props.meeting.minutes?.complaints_received_count || null,
+        complaints_processed_count: props.meeting.minutes?.complaints_processed_count || null,
     },
     attachments: props.meeting.attachments || []
 });
@@ -1544,13 +1871,25 @@ const saveMinutes = async () => {
     if (!props.meeting.minutes) {
       // Création d'un nouveau compte rendu
       await axios.post(route('minutes.store', props.meeting.id), {
-        content: form.minutes.content
+        content: form.minutes.content,
+        people_to_enroll_count: form.minutes.people_to_enroll_count,
+        people_enrolled_count: form.minutes.people_enrolled_count,
+        cmu_cards_available_count: form.minutes.cmu_cards_available_count,
+        cmu_cards_distributed_count: form.minutes.cmu_cards_distributed_count,
+        complaints_received_count: form.minutes.complaints_received_count,
+        complaints_processed_count: form.minutes.complaints_processed_count,
       })
     } else {
       // Mise à jour d'un compte rendu existant
       await axios.put(route('minutes.update', props.meeting.minutes.id), {
         content: form.minutes.content,
-        status: form.minutes.status
+        status: form.minutes.status,
+        people_to_enroll_count: form.minutes.people_to_enroll_count,
+        people_enrolled_count: form.minutes.people_enrolled_count,
+        cmu_cards_available_count: form.minutes.cmu_cards_available_count,
+        cmu_cards_distributed_count: form.minutes.cmu_cards_distributed_count,
+        complaints_received_count: form.minutes.complaints_received_count,
+        complaints_processed_count: form.minutes.complaints_processed_count,
       })
     }
 
@@ -1585,24 +1924,48 @@ const publishMinutes = async () => {
 const cancelEditMinutes = () => {
   editingMinutes.value = false
   form.reset()
-  form.minutes.content = props.meeting.minutes.content
+  form.minutes.difficulties = props.meeting.minutes?.difficulties || ''
+  form.minutes.recommendations = props.meeting.minutes?.recommendations || ''
+}
+
+const handleValidationError = (errors) => {
+  toast.error('Erreurs de validation détectées')
+  console.error('Erreurs de validation:', errors)
+}
+
+const handleResultsUpdated = () => {
+  toast.success('Résultats mis à jour avec succès')
 }
 
 // Sauvegarde globale
 const saveAll = async () => {
   try {
-    // Sauvegarder d'abord le compte rendu s'il y en a un
-    if (form.minutes.content) {
+    // Sauvegarder les difficultés et recommandations s'il y en a
+    if (form.minutes.difficulties || form.minutes.recommendations) {
       if (!props.meeting.minutes) {
         // Création d'un nouveau compte rendu
         await axios.post(route('minutes.store', props.meeting.id), {
-          content: form.minutes.content
+          difficulties: form.minutes.difficulties,
+          recommendations: form.minutes.recommendations,
+          people_to_enroll_count: form.minutes.people_to_enroll_count,
+          people_enrolled_count: form.minutes.people_enrolled_count,
+          cmu_cards_available_count: form.minutes.cmu_cards_available_count,
+          cmu_cards_distributed_count: form.minutes.cmu_cards_distributed_count,
+          complaints_received_count: form.minutes.complaints_received_count,
+          complaints_processed_count: form.minutes.complaints_processed_count,
         })
       } else {
         // Mise à jour d'un compte rendu existant
         await axios.put(route('minutes.update', props.meeting.minutes.id), {
-          content: form.minutes.content,
-          status: form.minutes.status
+          status: form.minutes.status,
+          difficulties: form.minutes.difficulties,
+          recommendations: form.minutes.recommendations,
+          people_to_enroll_count: form.minutes.people_to_enroll_count,
+          people_enrolled_count: form.minutes.people_enrolled_count,
+          cmu_cards_available_count: form.minutes.cmu_cards_available_count,
+          cmu_cards_distributed_count: form.minutes.cmu_cards_distributed_count,
+          complaints_received_count: form.minutes.complaints_received_count,
+          complaints_processed_count: form.minutes.complaints_processed_count,
         })
       }
     }
@@ -1679,6 +2042,8 @@ onMounted(() => {
                 toast.error('Erreur lors du chargement des commentaires')
             })
     }
+
+    // Les données des résultats des villages sont maintenant dans props.meeting.village_results
 
    /* if (props.meeting.minutes?.id) {
         axios.get(route('meeting.minutes.versions', props.meeting.minutes.id))
@@ -2302,6 +2667,26 @@ const handleMeetingUpdated = (updatedMeeting) => {
   router.reload()
 }
 
+const handleAttendanceValidated = () => {
+  // Recharger la page pour mettre à jour les données
+  window.location.reload()
+}
+
+const handleAttendanceInvalidated = () => {
+  // Recharger la page pour mettre à jour les données
+  router.reload()
+}
+
+const handleAttendanceSubmitted = () => {
+  // Rediriger vers la liste des réunions pour voir la mise à jour
+  router.visit(route('meetings.index'))
+}
+
+const handleAttendanceSubmissionCancelled = () => {
+  // Rediriger vers la liste des réunions pour voir la mise à jour
+  router.visit(route('meetings.index'))
+}
+
 function getAttendanceStatusClass(villageId) {
   if (!meetingRepresentatives.value[villageId]) return 'bg-slate-100 text-slate-700 border border-slate-200'
   
@@ -2384,6 +2769,21 @@ const getAttendanceCount = (status) => {
   return props.meeting.attendees.filter(attendee => attendee.attendance_status === status).length
 }
 
+// Fonctions pour les sous-réunions
+const getTotalExpectedAttendees = () => {
+  if (!props.meeting.sub_meetings) return 0
+  return props.meeting.sub_meetings.reduce((total, subMeeting) => {
+    return total + (subMeeting.target_enrollments || 0)
+  }, 0)
+}
+
+const getTotalPresentAttendees = () => {
+  if (!props.meeting.sub_meetings) return 0
+  return props.meeting.sub_meetings.reduce((total, subMeeting) => {
+    return total + (subMeeting.actual_enrollments || 0)
+  }, 0)
+}
+
 // Variables pour le modal de photo
 const photoModalOpen = ref(false)
 const selectedAttendee = ref(null)
@@ -2410,6 +2810,63 @@ const filteredAttendees = computed(() => {
     return nameMatch && statusMatch
   })
 })
+
+// Computed property pour vérifier si la réunion peut être éclatée
+const canBeSplit = computed(() => {
+  // Vérifier le statut
+  const validStatus = props.meeting.status === 'planned' || props.meeting.status === 'scheduled'
+  
+  // Si le statut n'est pas valide, pas besoin de vérifier les villages
+  if (!validStatus) {
+    return false
+  }
+  
+  // Vérifier s'il reste des villages disponibles
+  const hasAvailableVillages = props.meeting.available_villages_count > 0
+  
+  // Si c'est une réunion parent qui a déjà des sous-réunions, 
+  // on vérifie s'il reste des villages non assignés
+  if (props.meeting.sub_meetings && props.meeting.sub_meetings.length > 0) {
+    // On permet l'éclatement seulement s'il reste des villages disponibles
+    return hasAvailableVillages
+  }
+  
+  // Pour les réunions normales, on permet l'éclatement si le statut est valide
+  // et qu'il y a des villages disponibles
+  return hasAvailableVillages
+})
+
+// Fonction pour éclater la réunion
+const splitMeeting = () => {
+  console.log('splitMeeting appelé')
+  console.log('meeting.id:', props.meeting.id)
+  console.log('canBeSplit:', canBeSplit.value)
+  console.log('isSecretary:', isSecretary.value)
+  
+  // Rediriger vers la page d'éclatement
+  const url = route('meetings.split', props.meeting.id)
+  console.log('URL de redirection:', url)
+  
+  // Utiliser directement window.location.href pour la redirection
+  window.location.href = url
+}
+
+const deleteSubMeeting = (subMeeting) => {
+  if (confirm('Êtes-vous sûr de vouloir supprimer cette sous-réunion ? Cette action est irréversible.')) {
+    router.delete(route('meetings.sub-meetings.destroy', { meeting: props.meeting.id, subMeeting: subMeeting.id }), {
+      onSuccess: () => {
+        toast.success('Sous-réunion supprimée avec succès')
+      },
+      onError: () => {
+        toast.error('Erreur lors de la suppression de la sous-réunion')
+      }
+    })
+  }
+}
+
+const goToSubMeeting = (subMeetingId) => {
+  router.visit(route('meetings.show', subMeetingId))
+}
 
 const totalPages = computed(() => Math.ceil(filteredAttendees.value.length / itemsPerPage))
 
@@ -2464,6 +2921,118 @@ const clearFilters = () => {
 watch([searchQuery, statusFilter], () => {
   currentPage.value = 1
 })
+
+// Les données des résultats des villages sont maintenant dans props.meeting.village_results
+
+// Fonctions pour la barre de progression de l'éclatement
+const getAssignedVillagesCount = () => {
+  if (!props.meeting.sub_meetings || props.meeting.sub_meetings.length === 0) {
+    return 0
+  }
+  
+  let assignedCount = 0
+  props.meeting.sub_meetings.forEach(subMeeting => {
+    // Extraire les noms des villages du titre de la sous-réunion
+    // Le titre est au format: "Titre Réunion - Village1, Village2, Village3"
+    const title = subMeeting.title
+    if (title && title.includes(' - ')) {
+      const villagePart = title.split(' - ')[1]
+      if (villagePart) {
+        const villageNames = villagePart.split(', ')
+        assignedCount += villageNames.length
+      }
+    }
+  })
+  
+  return assignedCount
+}
+
+const getTotalVillagesCount = () => {
+  return getAssignedVillagesCount() + (props.meeting.available_villages_count || 0)
+}
+
+const getAvailableVillagesCount = () => {
+  return props.meeting.available_villages_count || 0
+}
+
+const getSplitProgressPercentage = () => {
+  const total = getTotalVillagesCount()
+  if (total === 0) return 0
+  
+  const assigned = getAssignedVillagesCount()
+  return Math.round((assigned / total) * 100)
+}
+
+// Computed properties pour les totaux des résultats des villages
+const villageResultsSummary = computed(() => {
+  console.log('Calcul villageResultsSummary - attendees:', props.meeting.attendees)
+  console.log('Calcul villageResultsSummary - village_results:', props.meeting.village_results)
+  
+  if (!props.meeting.attendees) {
+    console.log('Pas d\'attendees, retour valeurs par défaut')
+    return {
+      enrollment_rate: 0,
+      cmu_distribution_rate: 0,
+      complaint_processing_rate: 0,
+      total_to_enroll: 0,
+      total_enrolled: 0,
+      total_available: 0,
+      total_distributed: 0,
+      total_received: 0,
+      total_processed: 0
+    }
+  }
+
+  let totalToEnroll = 0
+  let totalEnrolled = 0
+  let totalAvailable = 0
+  let totalDistributed = 0
+  let totalReceived = 0
+  let totalProcessed = 0
+
+  props.meeting.attendees.forEach(attendee => {
+    const result = getVillageResult(attendee.id)
+    console.log(`Calcul pour attendee ${attendee.id}:`, result)
+    if (result) {
+      totalToEnroll += result.people_to_enroll_count || 0
+      totalEnrolled += result.people_enrolled_count || 0
+      totalAvailable += result.cmu_cards_available_count || 0
+      totalDistributed += result.cmu_cards_distributed_count || 0
+      totalReceived += result.complaints_received_count || 0
+      totalProcessed += result.complaints_processed_count || 0
+    }
+  })
+
+  const enrollmentRate = totalToEnroll > 0 ? Math.round((totalEnrolled / totalToEnroll) * 100 * 10) / 10 : 0
+  const cmuDistributionRate = totalAvailable > 0 ? Math.round((totalDistributed / totalAvailable) * 100 * 10) / 10 : 0
+  const complaintProcessingRate = totalReceived > 0 ? Math.round((totalProcessed / totalReceived) * 100 * 10) / 10 : 0
+
+  const summary = {
+    enrollment_rate: enrollmentRate,
+    cmu_distribution_rate: cmuDistributionRate,
+    complaint_processing_rate: complaintProcessingRate,
+    total_to_enroll: totalToEnroll,
+    total_enrolled: totalEnrolled,
+    total_available: totalAvailable,
+    total_distributed: totalDistributed,
+    total_received: totalReceived,
+    total_processed: totalProcessed
+  }
+  
+  console.log('Résumé calculé:', summary)
+  return summary
+})
+
+// Fonction pour obtenir les résultats d'un village
+const getVillageResult = (attendeeId) => {
+  // Récupérer les résultats depuis les données passées par le contrôleur
+  const result = props.meeting.village_results?.find(result => result.localite_id === attendeeId) || {}
+  console.log(`getVillageResult pour attendeeId ${attendeeId}:`, result)
+  return result
+}
+
+// Données des résultats des villages (depuis les props)
+const villageResultsData = computed(() => props.meeting.village_results || [])
 </script>
 
 <style scoped>

@@ -110,14 +110,14 @@ const isSecretary = computed(() => {
   console.log(userRoles.value);
   //return true;
   return userRoles.value.some((role: Role) => 
-    ['secretaire', 'Secrétaire', 'admin', 'Admin'].includes(role.name)
+    role?.name && ['secretaire', 'Secrétaire', 'admin', 'Admin'].includes(role.name)
   )
 })
 
 // Vérifier si l'utilisateur est un sous-préfet
 const isSubPrefect = computed(() => {
   return userRoles.value.some((role: Role) => 
-    ['sous-prefet', 'Sous-prefet'].includes(role.name)
+    role?.name && ['sous-prefet', 'Sous-prefet'].includes(role.name)
   )
 })
 

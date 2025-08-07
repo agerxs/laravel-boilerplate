@@ -7,7 +7,7 @@
     </template>
 
     <div class="py-12">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+      <div class="max-w-10xl mx-auto sm:px-6 lg:px-8">
         <!-- Section Gestionnaire -->
         <template v-if="user?.roles?.includes('gestionnaire')">
           <div class="mb-8">
@@ -270,7 +270,18 @@ interface LocalCommittee {
 }
 
 interface Meeting {
-  local_committees: LocalCommittee[];
+  id: number;
+  title: string;
+  scheduled_date: string;
+  status: string;
+  local_committee: {
+    id: number;
+    name: string;
+    locality: {
+      id: number;
+      name: string;
+    };
+  };
 }
 
 const props = defineProps<{
@@ -300,6 +311,7 @@ const props = defineProps<{
     locality_id: number
   }
   usersByRole: { name: string; count: number }[]
+  subPrefectures: any[]
 }>()
 
 const chartData = computed(() => ({
@@ -343,16 +355,16 @@ const formatDateTime = (datetime: string) => {
   })
 }
 
-const formatDate = (date) => {
+const formatDate = (date: string | Date) => {
   if (!date) return ''
   return format(new Date(date), 'dd MMMM yyyy', { locale: fr })
 }
 
-const formatCurrency = (amount) => {
+const formatCurrency = (amount: number) => {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XOF' }).format(amount)
 }
 
-const subPrefectures = ref([])
+const subPrefectures = ref(props.subPrefectures || [])
 const selectedSubPrefecture = ref(null)
 const villages = ref([])
 
@@ -368,17 +380,4 @@ const fetchVillages = () => {
       })
   }
 }
-
-const fetchSubPrefectures = () => {
-  fetch('/api/sub-prefectures')
-    .then(response => response.json())
-    .then(data => {
-      subPrefectures.value = data
-    })
-    .catch(error => {
-      console.error('Erreur lors de la récupération des sous-préfectures:', error)
-    })
-}
-
-fetchSubPrefectures()
 </script> 

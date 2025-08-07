@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { Link } from '@inertiajs/vue3';
+
 defineProps<{
     links: {
-        url?: string;
+        url?: string | null;
         label: string;
         active: boolean;
     }[];
@@ -9,10 +11,10 @@ defineProps<{
 </script>
 
 <template>
-    <div v-if="links.length > 3" class="flex flex-wrap -mb-1">
+    <div v-if="links && links.length > 3" class="flex flex-wrap -mb-1">
         <template v-for="(link, key) in links" :key="key">
             <div
-                v-if="link.url === null"
+                v-if="!link.url || link.url === null"
                 class="mr-1 mb-1 px-4 py-2 text-sm text-gray-500 border rounded"
                 v-html="link.label"
             />
@@ -28,14 +30,4 @@ defineProps<{
             />
         </template>
     </div>
-</template>
-
-<script lang="ts">
-import { Link } from '@inertiajs/vue3';
-
-export default {
-    components: {
-        Link,
-    },
-};
-</script> 
+</template> 

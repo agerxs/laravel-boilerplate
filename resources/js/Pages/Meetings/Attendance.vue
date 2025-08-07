@@ -39,7 +39,7 @@
     </template>
 
     <div class="py-12">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+      <div class="max-w-10xl mx-auto sm:px-6 lg:px-8 space-y-6">
         <!-- Afficher un message si la réunion est déjà terminée -->
         <div v-if="meeting.is_completed" class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
           <div class="flex">
@@ -171,16 +171,21 @@
                         />
                       </div>
                       <div>
-                        <div class="text-sm font-medium text-gray-900">{{ attendee.name }}</div>
+                        <!-- Nom du représentant -->
+                        <div class="text-base font-semibold text-gray-900">{{ attendee.name }}</div>
+                        <!-- Village du représentant -->
+                        <div v-if="attendee.village?.name" class="text-sm font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full inline-block mt-1">
+                          🏘️ {{ attendee.village.name }}
+                        </div>
                       </div>
                     </div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">{{ attendee.village?.name || '-' }}</div>
+                    <div class="text-sm text-gray-500">-</div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">{{ attendee.role || '-' }}</div>
-                    <div v-if="attendee.phone" class="text-xs text-gray-500">📞 {{ attendee.phone }}</div>
+                    <div class="text-sm font-medium text-gray-700">{{ attendee.role || '-' }}</div>
+                    <div v-if="attendee.phone" class="text-xs text-gray-500 mt-1">📞 {{ attendee.phone }}</div>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
                     <StatusBadge :status="attendee.attendance_status" />
@@ -560,22 +565,22 @@ const localAttendees = ref([...props.attendees])
 
 // Détecter les rôles de l'utilisateur
 const isSubPrefect = computed(() => {
-  const user = usePage().props.auth.user
+  const user = usePage().props.auth?.user
   console.log('Debug - User:', user)
   console.log('Debug - User roles:', user?.roles)
   if (!user || !user.roles) return false
-  return user.roles.some(role => ['sous-prefet', 'Sous-prefet'].includes(role.name))
+  return user.roles.some(role => role?.name && ['sous-prefet', 'Sous-prefet'].includes(role.name))
 })
 
 const isSecretary = computed(() => {
-  const user = usePage().props.auth.user
+  const user = usePage().props.auth?.user
   console.log('Debug - User for secretary check:', user)
   console.log('Debug - User roles for secretary check:', user?.roles)
   if (!user || !user.roles) {
     console.log('Debug - No user or no roles found')
     return false
   }
-  const hasSecretaryRole = user.roles.some(role => ['secretaire', 'Secrétaire', 'admin', 'Admin'].includes(role.name))
+  const hasSecretaryRole = user.roles.some(role => role?.name && ['secretaire', 'Secrétaire', 'admin', 'Admin'].includes(role.name))
   console.log('Debug - Has secretary role:', hasSecretaryRole)
   return hasSecretaryRole
 })

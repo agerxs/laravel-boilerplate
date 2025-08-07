@@ -1,7 +1,7 @@
 <template>
   <AppLayout :title="`Liste de paiement - ${paymentList.meeting?.title || 'Réunion'}`">
     <div class="py-6">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+      <div class="max-w-10xl mx-auto sm:px-6 lg:px-8">
         <!-- En-tête -->
         <div class="bg-white shadow sm:rounded-lg mb-6">
           <div class="px-4 py-5 sm:p-6">

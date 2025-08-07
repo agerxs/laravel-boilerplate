@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\AgendaItemController;
 use App\Http\Controllers\MeetingController;
+use App\Http\Controllers\AttendanceValidationController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\MeetingMinutesController;
 use App\Http\Controllers\MeetingCommentController;
@@ -80,6 +81,29 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('meetings.show')
         ->middleware('check.locality');
     
+    // Routes pour l'éclatement des réunions
+    Route::get('/meetings/{meeting}/split', [MeetingController::class, 'showSplitForm'])
+        ->name('meetings.split')
+        ->middleware('check.locality');
+    Route::post('/meetings/{meeting}/split', [MeetingController::class, 'splitMeeting'])
+        ->name('meetings.split.store')
+        ->middleware('check.locality');
+    
+    // Routes API pour l'éclatement (accessibles depuis le web)
+    Route::get('/api/meetings/{meeting}/split/villages', [MeetingController::class, 'getAvailableVillagesForSplit'])
+        ->name('api.meetings.split.villages')
+        ->middleware('check.locality');
+    Route::post('/api/meetings/{meeting}/split', [MeetingController::class, 'splitMeetingApi'])
+        ->name('api.meetings.split')
+        ->middleware('check.locality');
+    
+    // Route pour supprimer une sous-réunion
+    Route::delete('/meetings/{meeting}/sub-meetings/{subMeeting}', [MeetingController::class, 'deleteSubMeeting'])
+        ->name('meetings.sub-meetings.destroy')
+        ->middleware('check.locality');
+    
+
+    
     // Routes pour les points d'ordre du jour
     Route::post('/meetings/{meeting}/agenda', [AgendaItemController::class, 'store'])
         ->name('agenda-items.store')
@@ -116,6 +140,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/minutes/{minutes}/validate', [MeetingMinutesController::class, 'validates'])
         ->name('minutes.validate')
         ->middleware('role:sous-prefet|Sous-prefet|admin|Admin'); // Sous-préfets et admins peuvent valider
+
+    // Routes pour les résultats des villages
+    Route::prefix('meetings/{meeting}/village-results')->name('village-results.')->middleware('check.locality')->group(function () {
+        Route::get('/', [App\Http\Controllers\VillageResultController::class, 'index'])->name('index');
+        Route::get('/{village}', [App\Http\Controllers\VillageResultController::class, 'show'])->name('show');
+        Route::post('/{village}', [App\Http\Controllers\VillageResultController::class, 'store'])->name('store');
+        Route::post('/{village}/submit', [App\Http\Controllers\VillageResultController::class, 'submit'])->name('submit');
+        Route::post('/{village}/validate', [App\Http\Controllers\VillageResultController::class, 'validateResults'])
+            ->name('validate')
+            ->middleware('role:sous-prefet|Sous-prefet|admin|Admin'); // Seuls les superviseurs peuvent valider
+        Route::delete('/{village}', [App\Http\Controllers\VillageResultController::class, 'destroy'])->name('destroy');
+    });
 
     Route::get('/meetings/{meeting}/export', [MeetingController::class, 'export'])
         ->name('meetings.export')
@@ -268,11 +304,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/{meeting}/confirm', [MeetingController::class, 'confirm'])->name('confirm');
         Route::post('/{meeting}/prevalidate', [MeetingController::class, 'prevalidate'])->name('prevalidate');
         Route::post('/{meeting}/validate', [MeetingController::class, 'validateMeeting'])->name('validate');
+Route::post('/{meeting}/validate-attendance', [MeetingController::class, 'validateAttendance'])->name('validate-attendance');
+Route::post('/{meeting}/invalidate-attendance', [MeetingController::class, 'invalidateAttendance'])->name('invalidate-attendance');
+Route::post('/{meeting}/submit-attendance', [MeetingController::class, 'submitAttendance'])->name('submit-attendance');
+Route::post('/{meeting}/cancel-attendance-submission', [MeetingController::class, 'cancelAttendanceSubmission'])->name('cancel-attendance-submission');
         // ... other meeting routes ...
     });
 
     Route::resource('representatives', RepresentativeController::class);
 });
+
+// Routes pour la validation par lien magique (en dehors du groupe meetings)
+Route::get('/attendance/validate/{token}', [AttendanceValidationController::class, 'showValidationPage'])->name('attendance.validate-by-token');
+Route::post('/attendance/validate/{token}', [AttendanceValidationController::class, 'validateByToken'])->name('attendance.validate-by-token.post');
+Route::get('/attendance/validation/success/{token}', [AttendanceValidationController::class, 'showValidationPage'])->name('attendance.validation.success');
+Route::get('/attendance/validation/error/{token}', [AttendanceValidationController::class, 'showValidationPage'])->name('attendance.validation.error');
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
     // ... existing routes ...

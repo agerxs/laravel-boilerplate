@@ -2,7 +2,7 @@
   <Head title="Ajouter des représentants pour les villages" />
 
   <AppLayout title="Ajouter des représentants pour les villages">
-    <div class="max-w-7xl mx-auto py-6">
+    <div class="max-w-10xl mx-auto py-6">
       <h1 class="text-3xl font-extrabold mb-6 text-gray-900">Ajouter des représentants pour les villages</h1>
       
       <!-- Afficher le nom du comité -->

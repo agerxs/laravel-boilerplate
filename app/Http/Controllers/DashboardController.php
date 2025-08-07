@@ -6,6 +6,7 @@ use Inertia\Inertia;
 use App\Models\Meeting;
 use App\Models\User;
 use App\Models\LocalCommittee;
+use App\Models\Locality;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -87,7 +88,8 @@ class DashboardController extends Controller
             ->pluck('count', 'status')
             ->toArray();
 
-        if (in_array('gestionnaire', $user->roles->pluck('name')->toArray()) || in_array('Gestionnaire', $user->roles->pluck('name')->toArray())) {
+        $userRoles = $user->roles ? $user->roles->pluck('name')->toArray() : [];
+        if (in_array('gestionnaire', $userRoles) || in_array('Gestionnaire', $userRoles)) {
             // Statistiques des paiements
             $stats['total_payments'] = MeetingPaymentList::where('status', 'validated')->sum('total_amount');
             $stats['pending_payments'] = MeetingPaymentList::where('status', 'submitted')->count();
@@ -163,6 +165,11 @@ class DashboardController extends Controller
             ];
         });
 
+        // Récupérer les sous-préfectures pour éviter l'appel API non authentifié
+        $subPrefectures = Locality::whereHas('type', function($query) {
+            $query->where('name', 'sub_prefecture');
+        })->get();
+
         return Inertia::render('Dashboard/Index', [
             'stats' => $stats,
             'upcomingMeetings' => $upcomingMeetings,
@@ -170,12 +177,13 @@ class DashboardController extends Controller
             'meetingsByStatus' => $meetingsByStatus,
             'user' => [
                 'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'roles' => $user->roles->pluck('name')->toArray(),
-                'locality_id' => $user->locality_id
+                'name' => $user->name ?? '',
+                'email' => $user->email ?? '',
+                'roles' => $user->roles ? $user->roles->pluck('name')->toArray() : [],
+                'locality_id' => $user->locality_id ?? null
             ],
             'usersByRole' => $usersByRole,
+            'subPrefectures' => $subPrefectures,
         ]);
     }
 } 

@@ -2,7 +2,7 @@
   <Head :title="committee.name" />
 
   <AppLayout :title="committee.name">
-    <div class="max-w-7xl mx-auto py-6">
+    <div class="max-w-10xl mx-auto py-6">
       <h1 class="text-3xl font-extrabold mb-6 text-gray-900">
         {{ committee.name }} <span class="text-lg text-gray-500">({{ committee.locality?.children.length || 0 }} villages)</span>
       </h1>

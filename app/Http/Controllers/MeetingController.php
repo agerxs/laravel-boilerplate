@@ -26,6 +26,7 @@ use App\Imports\MeetingsImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use App\Models\BulkImport;
+use App\Services\MeetingSplitService;
 
 class MeetingController extends Controller
 {
@@ -50,10 +51,38 @@ class MeetingController extends Controller
             });
         }
         
+        // Par défaut, ne montrer que les réunions parent (pas les sous-réunions)
+        // Sauf si on filtre spécifiquement pour les sous-réunions
+        if (!$request->has('hierarchy') || $request->input('hierarchy') !== 'sub') {
+            $query->whereNull('parent_meeting_id');
+        }
+        
         // Appliquer la recherche si elle existe
         if ($request->has('search')) {
             $search = $request->input('search');
             $query->where('title', 'like', "%{$search}%");
+        }
+        
+        // Appliquer le filtre de hiérarchie
+        if ($request->has('hierarchy') && $request->input('hierarchy')) {
+            $hierarchy = $request->input('hierarchy');
+            
+            switch ($hierarchy) {
+                case 'parent':
+                    // Réunions parent uniquement (qui ont des sous-réunions)
+                    $query->whereNull('parent_meeting_id')
+                          ->whereHas('subMeetings');
+                    break;
+                case 'sub':
+                    // Sous-réunions uniquement
+                    $query->whereNotNull('parent_meeting_id');
+                    break;
+                case 'normal':
+                    // Réunions normales uniquement (ni parent ni sous-réunion)
+                    $query->whereNull('parent_meeting_id')
+                          ->whereDoesntHave('subMeetings');
+                    break;
+            }
         }
         
         // Appliquer le tri
@@ -76,24 +105,88 @@ class MeetingController extends Controller
         $meetings = $query->paginate(10)
             ->withQueryString()
             ->through(function ($meeting) {
-                return [
+                $meetingData = [
                     'id' => $meeting->id,
                     'title' => $meeting->title,
                     'scheduled_date' => $meeting->scheduled_date,
                     'status' => $meeting->status,
-                    'locality_name' => $meeting->localCommittee->locality->name ?? 'Non défini',
+                    'locality_name' => $meeting->localCommittee?->locality?->name ?? 'Non défini',
                     'updated_at' => $meeting->updated_at,
+                    'parent_meeting_id' => $meeting->parent_meeting_id,
+                    'sub_meetings_count' => $meeting->subMeetings()->count(),
+                    'attendance_status' => $meeting->attendance_status,
+                    'attendance_validated_at' => $meeting->attendance_validated_at,
                 ];
+                
+
+                
+                // Ajouter les sous-réunions si c'est une réunion parent
+                if ($meeting->subMeetings()->count() > 0) {
+                    // Recharger les sous-réunions depuis la base pour avoir les données à jour
+                    $subMeetings = Meeting::where('parent_meeting_id', $meeting->id)
+                        ->with('localCommittee.locality')
+                        ->get();
+                    
+                    $meetingData['sub_meetings'] = $subMeetings->map(function ($subMeeting) {
+                        
+                        return [
+                            'id' => $subMeeting->id,
+                            'title' => $subMeeting->title,
+                            'scheduled_date' => $subMeeting->scheduled_date,
+                            'status' => $subMeeting->status,
+                            'locality_name' => $subMeeting->localCommittee?->locality?->name ?? 'Non défini',
+                            'updated_at' => $subMeeting->updated_at,
+                            'parent_meeting_id' => $subMeeting->parent_meeting_id,
+                            'attendance_status' => $subMeeting->attendance_status,
+                            'attendance_validated_at' => $subMeeting->attendance_validated_at,
+                        ];
+                    })->toArray();
+                }
+                
+                return $meetingData;
             });
         
          
+        // Récupérer les comités locaux pour les filtres
+        $user = auth()->user();
+        $committeeQuery = LocalCommittee::query();
+
+        if ($user->hasRole(['prefet', 'Prefet'])) {
+            // Pour les préfets, montrer les comités de leur département et sous-préfectures
+            $committeeQuery->whereHas('locality', function ($q) use ($user) {
+                $q->where('id', $user->locality_id)
+                  ->orWhere('parent_id', $user->locality_id);
+            });
+        } elseif ($user->hasRole(['sous-prefet', 'Sous-prefet', 'secretaire', 'Secrétaire'])) {
+            // Pour les présidents et secrétaires, montrer uniquement les comités de leur localité
+            $committeeQuery->where('locality_id', $user->locality_id);
+        }
+
+        $localCommittees = $committeeQuery->get();
+
+        // Définir les statuts de réunion disponibles
+        $meetingStatuses = [
+            ['value' => 'planned', 'label' => 'Planifiée'],
+            ['value' => 'scheduled', 'label' => 'Programmée'],
+            ['value' => 'completed', 'label' => 'Terminée'],
+            ['value' => 'cancelled', 'label' => 'Annulée'],
+            ['value' => 'rescheduled', 'label' => 'Reportée'],
+        ];
+
         return Inertia::render('Meetings/Index', [
             'meetings' => $meetings,
             'filters' => [
-                'search' => $request->input('search', ''),
-                'sort' => $sortColumn,
-                'direction' => $direction
-            ]
+                'search' => $request->input('search', '') ?? '',
+                'status' => $request->input('status', '') ?? '',
+                'local_committee_id' => $request->input('local_committee_id', '') ?? '',
+                'date_from' => $request->input('date_from', '') ?? '',
+                'date_to' => $request->input('date_to', '') ?? '',
+                'hierarchy' => $request->input('hierarchy', '') ?? '',
+                'sort' => $sortColumn ?? 'scheduled_date',
+                'direction' => $direction ?? 'desc'
+            ],
+            'localCommittees' => $localCommittees,
+            'meetingStatuses' => $meetingStatuses,
         ]);
     }
 
@@ -152,7 +245,18 @@ class MeetingController extends Controller
     {
         // Charger la relation localCommittee avec sa localité et les villages associés
         // Charger également les relations prevalidator et validator
-        $meeting->load(['localCommittee.locality', 'prevalidator', 'validator', 'minutes', 'attachments']);
+        $meeting->load([
+            'localCommittee.locality', 
+            'prevalidator', 
+            'validator', 
+            'minutes', 
+            'attachments',
+            'attendees.village',
+            'attendees.representative',
+            'subMeetings.attendees.locality',
+            'subMeetings.attendees.representative',
+            'villageResults'
+        ]);
         
         // Charger l'utilisateur avec ses rôles
         $user = auth()->user()->load('roles');
@@ -229,6 +333,13 @@ class MeetingController extends Controller
 
         
         
+        // Vérifier s'il reste des villages disponibles pour l'éclatement
+        $availableVillages = [];
+        if (in_array($meeting->status, ['planned', 'scheduled'])) {
+            $splitService = app(MeetingSplitService::class);
+            $availableVillages = $splitService->getAvailableVillages($meeting);
+        }
+        
         return Inertia::render('Meetings/Show', [
             'meeting' => [
                 'id' => $meeting->id,
@@ -238,7 +349,30 @@ class MeetingController extends Controller
                 'locality_name' => $meeting->localCommittee?->locality?->name ?? 'Non défini',
                 'local_committee_id' => $meeting->local_committee_id,
                 'local_committee' => $committee,
-                'attendees' => $meeting->attendees,
+                'attendees' => $meeting->attendees->map(function ($attendee) {
+                    return [
+                        'id' => $attendee->id,
+                        'name' => $attendee->representative ? $attendee->representative->name : ($attendee->name ?: 'Nom non défini'),
+                        'phone' => $attendee->phone,
+                        'role' => $attendee->role,
+                        'village' => [
+                            'id' => $attendee->localite_id,
+                            'name' => $attendee->village ? $attendee->village->name : ($attendee->localite_id ? 'Village à identifier' : 'Pas de village associé')
+                        ],
+                        'is_expected' => $attendee->is_expected,
+                        'is_present' => $attendee->is_present,
+                        'attendance_status' => $attendee->attendance_status,
+                        'replacement_name' => $attendee->replacement_name,
+                        'replacement_phone' => $attendee->replacement_phone,
+                        'replacement_role' => $attendee->replacement_role,
+                        'arrival_time' => $attendee->arrival_time,
+                        'comments' => $attendee->comments,
+                        'payment_status' => $attendee->payment_status,
+                        'presence_photo' => $attendee->presence_photo,
+                        'presence_location' => $attendee->presence_location,
+                        'presence_timestamp' => $attendee->presence_timestamp
+                    ];
+                }),
                 'prevalidated_at' => $meeting->prevalidated_at,
                 'prevalidated_by' => $meeting->prevalidated_by,
                 'prevalidator' => $meeting->prevalidator,
@@ -246,11 +380,46 @@ class MeetingController extends Controller
                 'validated_by' => $meeting->validated_by,
                 'validator' => $meeting->validator,
                 'validation_comments' => $meeting->validation_comments,
+                'attendance_validated_at' => $meeting->attendance_validated_at,
+                'attendance_validated_by' => $meeting->attendance_validated_by,
+                'attendance_status' => $meeting->attendance_status,
+                'attendance_submitted_at' => $meeting->attendance_submitted_at,
+                'attendance_submitted_by' => $meeting->attendance_submitted_by,
                 'location' => $meeting->location,
                 'minutes' => $meeting->minutes,
                 'attachments' => $meeting->attachments,
                 'target_enrollments' => $meeting->target_enrollments,
-                'actual_enrollments' => $meeting->actual_enrollments
+                'actual_enrollments' => $meeting->actual_enrollments,
+                'sub_meetings' => $meeting->subMeetings->map(function ($subMeeting) {
+                    return [
+                        'id' => $subMeeting->id,
+                        'title' => $subMeeting->title,
+                        'scheduled_date' => $subMeeting->scheduled_date,
+                        'location' => $subMeeting->location,
+                        'status' => $subMeeting->status,
+                        'target_enrollments' => $subMeeting->target_enrollments,
+                        'actual_enrollments' => $subMeeting->actual_enrollments,
+                        'attendees_count' => $subMeeting->attendees->count()
+                    ];
+                }),
+                'available_villages_count' => count($availableVillages),
+                'village_results' => $meeting->villageResults->map(function ($result) {
+                    return [
+                        'id' => $result->id,
+                        'localite_id' => $result->localite_id,
+                        'people_to_enroll_count' => $result->people_to_enroll_count,
+                        'people_enrolled_count' => $result->people_enrolled_count,
+                        'cmu_cards_available_count' => $result->cmu_cards_available_count,
+                        'cmu_cards_distributed_count' => $result->cmu_cards_distributed_count,
+                        'complaints_received_count' => $result->complaints_received_count,
+                        'complaints_processed_count' => $result->complaints_processed_count,
+                        'comments' => $result->comments,
+                        'status' => $result->status,
+                        'enrollment_rate' => $result->enrollment_rate,
+                        'cmu_distribution_rate' => $result->cmu_distribution_rate,
+                        'complaint_processing_rate' => $result->complaint_processing_rate,
+                    ];
+                })
             ],
             'user' => $user
         ]);
@@ -672,6 +841,78 @@ class MeetingController extends Controller
         }
     }
 
+    /**
+     * Obtenir les villages disponibles pour l'éclatement d'une réunion
+     */
+    public function getAvailableVillagesForSplit(Meeting $meeting)
+    {
+        try {
+            if (!$meeting->canBeSplit()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cette réunion ne peut pas être éclatée'
+                ], 400);
+            }
+
+            $splitService = app(MeetingSplitService::class);
+            $villages = $splitService->getAvailableVillages($meeting);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Villages récupérés avec succès',
+                'data' => [
+                    'villages' => $villages,
+                    'meeting' => $meeting->load(['localCommittee.locality'])
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de la récupération des villages: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Éclater une réunion via API (pour Inertia)
+     */
+    public function splitMeetingApi(Request $request, Meeting $meeting)
+    {
+        try {
+            $validated = $request->validate([
+                'sub_meetings' => 'required|array|min:1',
+                'sub_meetings.*.location' => 'required|string',
+                'sub_meetings.*.villages' => 'required|array|min:1',
+                'sub_meetings.*.villages.*.id' => 'required|exists:localite,id',
+                'sub_meetings.*.villages.*.name' => 'required|string',
+            ]);
+
+            if (!$meeting->canBeSplit()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cette réunion ne peut pas être éclatée'
+                ], 400);
+            }
+
+            $splitService = app(MeetingSplitService::class);
+            $subMeetings = $splitService->splitMeeting($meeting, $validated['sub_meetings']);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Réunion éclatée avec succès en ' . count($subMeetings) . ' sous-réunions',
+                'data' => [
+                    'parent_meeting' => $meeting->load(['subMeetings.attendees']),
+                    'sub_meetings' => $subMeetings
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Erreur lors de l\'éclatement de la réunion: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function reschedule(Request $request, $meetingId)
     {
         $request->validate([
@@ -1015,6 +1256,158 @@ class MeetingController extends Controller
         ]);
     }
 
+    /**
+     * Valider uniquement les présences d'une réunion
+     */
+    public function validateAttendance(Meeting $meeting)
+    {
+        // Vérifier si l'utilisateur est un sous-préfet ou admin
+        if (!Auth::user()->hasRole(['sous-prefet', 'Sous-prefet', 'admin', 'Admin'])) {
+            return response()->json([
+                'message' => 'Vous n\'avez pas les droits pour valider les présences de cette réunion.'
+            ], 403);
+        }
+
+        // Vérifier si les présences peuvent être validées
+        if ($meeting->attendance_status !== 'submitted') {
+            return response()->json([
+                'message' => 'Les présences doivent être soumises avant d\'être validées.'
+            ], 400);
+        }
+
+        // Vérifier qu'il y a des participants présents
+        $presentAttendees = $meeting->attendees()->where('is_present', true)->count();
+        if ($presentAttendees === 0) {
+            return response()->json([
+                'message' => 'Impossible de valider les présences : aucun participant présent.'
+            ], 400);
+        }
+
+        // Mettre à jour la validation des présences
+        $meeting->update([
+            'attendance_validated_at' => now(),
+            'attendance_validated_by' => Auth::id(),
+        ]);
+
+        return response()->json([
+            'message' => 'Présences validées avec succès.'
+        ]);
+    }
+
+    /**
+     * Invalider les présences d'une réunion
+     */
+    public function invalidateAttendance(Meeting $meeting)
+    {
+        // Vérifier si l'utilisateur est un sous-préfet ou admin
+        if (!Auth::user()->hasRole(['sous-prefet', 'Sous-prefet', 'admin', 'Admin'])) {
+            return response()->json([
+                'message' => 'Vous n\'avez pas les droits pour invalider les présences de cette réunion.'
+            ], 403);
+        }
+
+        // Vérifier si les présences peuvent être invalidées
+        if (!$meeting->isAttendanceValidated()) {
+            return response()->json([
+                'message' => 'Les présences ne sont pas validées.'
+            ], 400);
+        }
+
+        // Mettre à jour la validation des présences
+        $meeting->update([
+            'attendance_validated_at' => null,
+            'attendance_validated_by' => null,
+        ]);
+
+        return response()->json([
+            'message' => 'Présences invalidées avec succès.'
+        ]);
+    }
+
+    /**
+     * Soumettre la liste de présence (sans finaliser la réunion)
+     */
+    public function submitAttendance(Meeting $meeting)
+    {
+        // Vérifier si l'utilisateur est un secrétaire ou admin
+        if (!Auth::user()->hasRole(['secretaire', 'Secrétaire', 'admin', 'Admin'])) {
+            return response()->json([
+                'message' => 'Vous n\'avez pas les droits pour soumettre la liste de présence.'
+            ], 403);
+        }
+
+        // Vérifier si les présences peuvent être soumises
+        if ($meeting->attendance_status !== 'draft') {
+            return response()->json([
+                'message' => 'La liste de présence a déjà été soumise ou validée.'
+            ], 400);
+        }
+
+        // Vérifier qu'il y a des participants présents
+        $presentAttendees = $meeting->attendees()->where('is_present', true)->count();
+        if ($presentAttendees === 0) {
+            return response()->json([
+                'message' => 'Impossible de soumettre la liste de présence : aucun participant présent.'
+            ], 400);
+        }
+
+        // Marquer les attendees sans statut explicite comme absents
+        $meeting->attendees()
+            ->whereNull('attendance_status')
+            ->update(['attendance_status' => 'absent', 'is_present' => false]);
+
+        // Soumettre la liste de présence
+        $meeting->update([
+            'attendance_status' => 'submitted',
+            'attendance_submitted_at' => now(),
+            'attendance_submitted_by' => Auth::id(),
+        ]);
+
+        // Envoyer les notifications aux préfets
+        $notificationService = app(\App\Services\AttendanceValidationNotificationService::class);
+        $notificationsSent = $notificationService->sendValidationNotifications($meeting);
+
+        $message = 'Liste de présence soumise avec succès.';
+        if ($notificationsSent) {
+            $message .= ' Les préfets ont été notifiés par email.';
+        }
+
+        return response()->json([
+            'message' => $message
+        ]);
+    }
+
+    /**
+     * Annuler la soumission de la liste de présence
+     */
+    public function cancelAttendanceSubmission(Meeting $meeting)
+    {
+        // Vérifier si l'utilisateur est un secrétaire ou admin
+        if (!Auth::user()->hasRole(['secretaire', 'Secrétaire', 'admin', 'Admin'])) {
+            return response()->json([
+                'message' => 'Vous n\'avez pas les droits pour annuler la soumission de la liste de présence.'
+            ], 403);
+        }
+
+        // Vérifier si les présences peuvent être annulées
+        if ($meeting->attendance_status !== 'submitted') {
+            return response()->json([
+                'message' => 'La liste de présence n\'est pas soumise.'
+            ], 400);
+        }
+
+        // Annuler la soumission
+        $meeting->update([
+            'attendance_status' => 'draft',
+            'attendance_submitted_at' => null,
+            'attendance_submitted_by' => null,
+        ]);
+
+        return response()->json([
+            'message' => 'Soumission de la liste de présence annulée avec succès.'
+        ]);
+    }
+
     public function confirm(Meeting $meeting)
     {
         // Vérifier si l'utilisateur est un secrétaire
@@ -1042,5 +1435,116 @@ class MeetingController extends Controller
             'message' => 'Réunion confirmée avec succès.',
             'meeting' => $meeting
         ]);
+    }
+
+    /**
+     * Afficher le formulaire d'éclatement d'une réunion
+     */
+    public function showSplitForm(Meeting $meeting)
+    {
+        // Vérifier si la réunion peut être éclatée
+        if (!$meeting->canBeSplit()) {
+            return redirect()->route('meetings.show', $meeting)
+                ->with('error', 'Cette réunion ne peut pas être éclatée.');
+        }
+       
+        // Vérifier s'il reste des villages disponibles
+        $splitService = app(MeetingSplitService::class);
+        $availableVillages = $splitService->getAvailableVillages($meeting);
+        
+        if (empty($availableVillages)) {
+            return redirect()->route('meetings.show', $meeting)
+                ->with('error', 'Tous les villages ont déjà été assignés à des sous-réunions. Aucun éclatement supplémentaire possible.');
+        }
+
+        // Charger les données nécessaires
+        $meeting->load(['localCommittee.locality', 'attendees.locality']);
+
+        return Inertia::render('Meetings/SplitMeeting', [
+            'meeting' => [
+                'id' => $meeting->id,
+                'title' => $meeting->title,
+                'scheduled_date' => $meeting->scheduled_date,
+                'location' => $meeting->location,
+                'description' => $meeting->description,
+                'target_enrollments' => $meeting->target_enrollments,
+                'actual_enrollments' => $meeting->actual_enrollments,
+                'status' => $meeting->status,
+                'local_committee' => [
+                    'id' => $meeting->localCommittee->id,
+                    'name' => $meeting->localCommittee->name,
+                    'locality' => [
+                        'id' => $meeting->localCommittee->locality->id,
+                        'name' => $meeting->localCommittee->locality->name,
+                    ]
+                ]
+            ]
+        ]);
+    }
+
+    /**
+     * Éclater une réunion en sous-réunions
+     */
+    public function splitMeeting(Request $request, Meeting $meeting)
+    {
+        // Vérifier si la réunion peut être éclatée
+        if (!$meeting->canBeSplit()) {
+            return redirect()->route('meetings.show', $meeting)
+                ->with('error', 'Cette réunion ne peut pas être éclatée.');
+        }
+
+        // Valider les données
+        $validated = $request->validate([
+            'sub_regions' => 'required|array|min:1',
+            'sub_regions.*.id' => 'required|exists:localite,id',
+            'sub_regions.*.name' => 'required|string',
+            'sub_regions.*.villages' => 'required|array|min:1',
+            'sub_regions.*.villages.*.id' => 'required|exists:localite,id',
+            'sub_regions.*.location' => 'nullable|string',
+        ]);
+
+        try {
+            $splitService = app(MeetingSplitService::class);
+            $subMeetings = $splitService->splitMeeting($meeting, $validated['sub_regions']);
+
+            return redirect()->route('meetings.show', $meeting)
+                ->with('success', 'Réunion éclatée avec succès en ' . count($subMeetings) . ' sous-réunions.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->with('error', 'Erreur lors de l\'éclatement de la réunion: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+    
+    public function deleteSubMeeting(Meeting $meeting, Meeting $subMeeting)
+    {
+        // Vérifier que la sous-réunion appartient bien à la réunion parent
+        if ($subMeeting->parent_meeting_id !== $meeting->id) {
+            return back()->withErrors(['error' => 'Cette sous-réunion n\'appartient pas à cette réunion parent']);
+        }
+        
+        // Vérifier les permissions (seuls les secrétaires peuvent supprimer)
+        if (!auth()->user()->hasRole(['secretaire', 'Secrétaire'])) {
+            return back()->withErrors(['error' => 'Vous n\'avez pas les permissions pour supprimer cette sous-réunion']);
+        }
+        
+        // Vérifier que la sous-réunion n'est pas encore terminée
+        if (in_array($subMeeting->status, ['completed', 'validated'])) {
+            return back()->withErrors(['error' => 'Impossible de supprimer une sous-réunion déjà terminée']);
+        }
+        
+        try {
+            // Supprimer les participants de la sous-réunion
+            $subMeeting->attendees()->delete();
+            
+            // Supprimer la sous-réunion
+            $subMeeting->delete();
+            
+            return redirect()->route('meetings.show', $meeting)
+                ->with('success', 'Sous-réunion supprimée avec succès');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Erreur lors de la suppression de la sous-réunion: ' . $e->getMessage()]);
+        }
     }
 } 
