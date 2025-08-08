@@ -77,6 +77,8 @@ class MeetingSplitService
      */
     private function assignAttendeesToSubMeeting(Meeting $subMeeting, array $villageIds): void
     {
+        Log::info("Assignation des participants pour la sous-réunion {$subMeeting->id} - Villages: " . implode(', ', $villageIds));
+        
         // Récupérer tous les participants de la réunion parent qui appartiennent aux villages spécifiés
         $attendees = MeetingAttendee::where('meeting_id', $subMeeting->parent_meeting_id)
             ->whereIn('localite_id', $villageIds)
@@ -86,49 +88,63 @@ class MeetingSplitService
 
         // Créer des participants pour chaque village assigné
         foreach ($villageIds as $villageId) {
+            $village = Locality::find($villageId);
+            Log::info("Traitement du village: {$village->name} (ID: {$villageId})");
+            
             // Vérifier si il y a déjà des participants pour ce village dans la réunion parent
             $existingAttendees = $attendees->where('localite_id', $villageId);
             
             if ($existingAttendees->count() > 0) {
+                Log::info("Copie de {$existingAttendees->count()} participants existants pour le village {$village->name}");
                 // Copier les participants existants
                 foreach ($existingAttendees as $attendee) {
                     $newAttendee = new MeetingAttendee([
                         'meeting_id' => $subMeeting->id,
                         'localite_id' => $attendee->localite_id,
                         'representative_id' => $attendee->representative_id,
-                        'name' => $attendee->name,
-                        'phone' => $attendee->phone,
-                        'role' => $attendee->role,
                         'attendance_status' => 'expected',
                         'is_expected' => true,
-                        'is_present' => false,
+                        'is_present' => falsemain,
                         'payment_status' => 'pending',
                     ]);
                     $newAttendee->save();
                     $targetEnrollments++;
                 }
             } else {
-                // Créer un participant virtuel pour ce village
-                $village = Locality::find($villageId);
-                if ($village) {
-                    $newAttendee = new MeetingAttendee([
-                        'meeting_id' => $subMeeting->id,
-                        'localite_id' => $villageId,
-                        'representative_id' => null,
-                        'name' => 'Représentant de ' . $village->name,
-                        'phone' => '',
-                        'role' => 'representative',
-                        'attendance_status' => 'expected',
-                        'is_expected' => true,
-                        'is_present' => false,
-                        'payment_status' => 'pending',
-                    ]);
-                    $newAttendee->save();
-                    $targetEnrollments++;
+                // Vérifier s'il y a des représentants pour ce village
+                $representatives = \App\Models\Representative::where('locality_id', $villageId)
+                    ->get();
+                
+                Log::info("Village {$village->name}: {$representatives->count()} représentants actifs trouvés");
+                
+                if ($representatives->count() > 0) {
+                    // Créer des participants pour chaque représentant du village
+                    foreach ($representatives as $representative) {
+                        Log::info("Création d'un participant pour le représentant: {$representative->name} ({$representative->role})");
+                        $newAttendee = new MeetingAttendee([
+                            'meeting_id' => $subMeeting->id,
+                            'localite_id' => $villageId,
+                            'representative_id' => $representative->id,
+                            'name' => $representative->name,
+                            'phone' => $representative->phone,
+                            'role' => $representative->role,
+                            'attendance_status' => 'expected',
+                            'is_expected' => true,
+                            'is_present' => false,
+                            'payment_status' => 'pending',
+                        ]);
+                        $newAttendee->save();
+                        $targetEnrollments++;
+                    }
+                } else {
+                    Log::info("Aucun représentant actif trouvé pour le village {$village->name} - Aucun participant créé");
                 }
+                // Si pas de représentants pour ce village, ne créer aucun participant
             }
         }
 
+        Log::info("Sous-réunion {$subMeeting->id}: {$targetEnrollments} participants créés au total");
+        
         // Mettre à jour le nombre de participants attendus
         $subMeeting->update(['target_enrollments' => $targetEnrollments]);
     }

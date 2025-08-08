@@ -45,6 +45,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/meetings/{meeting}/cancel', [MeetingController::class, 'cancel']);
     Route::post('/meetings/{meeting}/reschedule', [MeetingController::class, 'reschedule']);
     Route::post('/meetings/{meeting}/finalize', [MeetingController::class, 'finalize']);
+    Route::post('/meetings/{meeting}/submit-complete', [MeetingController::class, 'submitCompleteMeeting']);
     
     // Gestion des présences
     Route::post('/meetings/{meeting}/attendance', [MeetingController::class, 'markAttendance']);

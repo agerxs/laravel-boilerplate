@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Utils\Constants;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 
 class MeetingController extends Controller
 {
@@ -57,7 +58,7 @@ class MeetingController extends Controller
     {
         $meeting->load([
             'localCommittee.locality',
-            'attendees',
+            'attendees.representative',
             'agenda',
             'minutes',
             'attachments',
@@ -548,7 +549,7 @@ class MeetingController extends Controller
             info("=== TRAITEMENT ATTENDANCE $index ===");
             info('Données attendance: ' . json_encode($attendanceData));
             
-            $attendee = $meeting->attendees()->findOrFail($attendanceData['attendee_id']);
+            $attendee = $meeting->attendees()->with('representative')->findOrFail($attendanceData['attendee_id']);
             info('Attendee trouvé: ID ' . $attendee->id . ', Nom: ' . $attendee->name);
             
             $attendee->update([
@@ -625,7 +626,7 @@ class MeetingController extends Controller
                 return $this->format(Constants::JSON_STATUS_ERROR, 422, 'Données d\'attendance incomplètes');
             }
             
-            $attendee = $meeting->attendees()->findOrFail($attendanceData['attendee_id']);
+            $attendee = $meeting->attendees()->with('representative')->findOrFail($attendanceData['attendee_id']);
             info('Attendee trouvé: ID ' . $attendee->id . ', Nom: ' . $attendee->name);
             
             // Préparer les données de mise à jour
@@ -786,5 +787,212 @@ class MeetingController extends Controller
         return $this->format(Constants::JSON_STATUS_SUCCESS, 200, 'Export PDF', [
             'pdf_url' => '/exports/attendance-' . $meeting->id . '.pdf'
         ]);
+    }
+
+    /**
+     * Soumettre une réunion complète depuis l'application mobile
+     * Inclut toutes les données : réunion, présences, minutes, pièces jointes
+     */
+    public function submitCompleteMeeting(Request $request, Meeting $meeting)
+    {
+        info('=== SOUMISSION COMPLÈTE DE RÉUNION DÉBUT ===');
+        info('Meeting ID: ' . $meeting->id);
+        info('User ID: ' . Auth::id());
+        info('Request method: ' . $request->method());
+        info('Request URL: ' . $request->fullUrl());
+        info('Toutes les données reçues: ' . json_encode($request->all()));
+        
+        $request->validate([
+            'meeting' => 'required|array',
+            'meeting.title' => 'nullable|string|max:255',
+            'meeting.description' => 'nullable|string',
+            'meeting.agenda' => 'nullable|string',
+            'meeting.difficulties' => 'nullable|string',
+            'meeting.recommendations' => 'nullable|string',
+            'meeting.start_datetime' => 'nullable|date',
+            'meeting.end_datetime' => 'nullable|date',
+            'attendances' => 'nullable|array',
+            'attendances.*.representative_id' => 'nullable|exists:representatives,id',
+            'attendances.*.is_expected' => 'boolean',
+            'attendances.*.is_present' => 'boolean',
+            'attendances.*.comments' => 'nullable|string',
+            'attendances.*.arrival_time' => 'nullable|date',
+            'attendances.*.name' => 'nullable|string|max:255',
+            'attendances.*.phone' => 'nullable|string|max:20',
+            'attendances.*.role' => 'nullable|string|max:255',
+            'attendances.*.attendance_status' => 'nullable|string|in:expected,present,absent,replaced',
+            'minutes' => 'nullable|array',
+            'minutes.content' => 'nullable|string',
+            'minutes.status' => 'nullable|string|in:draft,published,pending_validation,validated',
+            'minutes.difficulties' => 'nullable|string',
+            'minutes.recommendations' => 'nullable|string',
+            'minutes.people_to_enroll_count' => 'nullable|integer',
+            'minutes.people_enrolled_count' => 'nullable|integer',
+            'minutes.cmu_cards_available_count' => 'nullable|integer',
+            'minutes.cmu_cards_distributed_count' => 'nullable|integer',
+            'minutes.complaints_received_count' => 'nullable|integer',
+            'minutes.complaints_processed_count' => 'nullable|integer',
+            'attachments' => 'nullable|array',
+            'attachments.*.title' => 'nullable|string|max:255',
+            'attachments.*.original_name' => 'nullable|string|max:255',
+            'attachments.*.file_path' => 'nullable|string',
+            'attachments.*.file_type' => 'nullable|string|max:100',
+            'attachments.*.nature' => 'nullable|string|in:photo,document_justificatif,compte_rendu',
+            'attachments.*.size' => 'nullable|integer',
+            'attachments.*.uploaded_by' => 'nullable|integer|exists:users,id',
+            'submitted_at' => 'nullable|date',
+            'submitted_by' => 'nullable|integer|exists:users,id',
+        ]);
+
+        info('Validation passée avec succès');
+
+        try {
+            DB::beginTransaction();
+
+            // 1. Mettre à jour les informations de la réunion
+            if ($request->has('meeting')) {
+                $meetingData = $request->meeting;
+                $updateData = [];
+                
+                if (isset($meetingData['title'])) $updateData['title'] = $meetingData['title'];
+                if (isset($meetingData['description'])) $updateData['description'] = $meetingData['description'];
+                if (isset($meetingData['agenda'])) $updateData['agenda'] = $meetingData['agenda'];
+                if (isset($meetingData['difficulties'])) $updateData['difficulties'] = $meetingData['difficulties'];
+                if (isset($meetingData['recommendations'])) $updateData['recommendations'] = $meetingData['recommendations'];
+                if (isset($meetingData['start_datetime'])) $updateData['start_datetime'] = $meetingData['start_datetime'];
+                if (isset($meetingData['end_datetime'])) $updateData['end_datetime'] = $meetingData['end_datetime'];
+                
+                if (!empty($updateData)) {
+                    $meeting->update($updateData);
+                    info('Informations de la réunion mises à jour');
+                }
+            }
+
+            // 2. Traiter les présences
+            if ($request->has('attendances') && is_array($request->attendances)) {
+                foreach ($request->attendances as $index => $attendanceData) {
+                    info("=== TRAITEMENT ATTENDANCE $index ===");
+                    info('Données attendance: ' . json_encode($attendanceData));
+                    
+                    // Trouver ou créer l'attendee
+                    $attendee = null;
+                    if (isset($attendanceData['representative_id'])) {
+                        $attendee = $meeting->attendees()->where('representative_id', $attendanceData['representative_id'])->first();
+                    }
+                    
+                    if (!$attendee && isset($attendanceData['name'])) {
+                        // Créer un nouvel attendee si pas trouvé
+                        $attendee = $meeting->attendees()->create([
+                            'name' => $attendanceData['name'],
+                            'phone' => $attendanceData['phone'] ?? '',
+                            'role' => $attendanceData['role'] ?? '',
+                            'representative_id' => $attendanceData['representative_id'] ?? null,
+                            'attendance_status' => $attendanceData['attendance_status'] ?? 'expected',
+                        ]);
+                    }
+                    
+                    if ($attendee) {
+                        $updateData = [];
+                        if (isset($attendanceData['is_expected'])) $updateData['is_expected'] = $attendanceData['is_expected'];
+                        if (isset($attendanceData['is_present'])) $updateData['is_present'] = $attendanceData['is_present'];
+                        if (isset($attendanceData['comments'])) $updateData['comments'] = $attendanceData['comments'];
+                        if (isset($attendanceData['arrival_time'])) $updateData['arrival_time'] = $attendanceData['arrival_time'];
+                        if (isset($attendanceData['attendance_status'])) $updateData['attendance_status'] = $attendanceData['attendance_status'];
+                        
+                        if (!empty($updateData)) {
+                            $attendee->update($updateData);
+                            info('Attendee mis à jour avec succès');
+                        }
+                    }
+                }
+            }
+
+            // 3. Traiter les minutes
+            if ($request->has('minutes') && is_array($request->minutes)) {
+                $minutesData = $request->minutes;
+                
+                $minutes = $meeting->minutes()->first();
+                if (!$minutes) {
+                    $minutes = $meeting->minutes()->create([
+                        'content' => $minutesData['content'] ?? null,
+                        'status' => $minutesData['status'] ?? 'draft',
+                        'difficulties' => $minutesData['difficulties'] ?? null,
+                        'recommendations' => $minutesData['recommendations'] ?? null,
+                        'people_to_enroll_count' => $minutesData['people_to_enroll_count'] ?? null,
+                        'people_enrolled_count' => $minutesData['people_enrolled_count'] ?? null,
+                        'cmu_cards_available_count' => $minutesData['cmu_cards_available_count'] ?? null,
+                        'cmu_cards_distributed_count' => $minutesData['cmu_cards_distributed_count'] ?? null,
+                        'complaints_received_count' => $minutesData['complaints_received_count'] ?? null,
+                        'complaints_processed_count' => $minutesData['complaints_processed_count'] ?? null,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                } else {
+                    $minutes->update([
+                        'content' => $minutesData['content'] ?? $minutes->content,
+                        'status' => $minutesData['status'] ?? $minutes->status,
+                        'difficulties' => $minutesData['difficulties'] ?? $minutes->difficulties,
+                        'recommendations' => $minutesData['recommendations'] ?? $minutes->recommendations,
+                        'people_to_enroll_count' => $minutesData['people_to_enroll_count'] ?? $minutes->people_to_enroll_count,
+                        'people_enrolled_count' => $minutesData['people_enrolled_count'] ?? $minutes->people_enrolled_count,
+                        'cmu_cards_available_count' => $minutesData['cmu_cards_available_count'] ?? $minutes->cmu_cards_available_count,
+                        'cmu_cards_distributed_count' => $minutesData['cmu_cards_distributed_count'] ?? $minutes->cmu_cards_distributed_count,
+                        'complaints_received_count' => $minutesData['complaints_received_count'] ?? $minutes->complaints_received_count,
+                        'complaints_processed_count' => $minutesData['complaints_processed_count'] ?? $minutes->complaints_processed_count,
+                        'updated_at' => now(),
+                    ]);
+                }
+                info('Minutes traitées avec succès');
+            }
+
+            // 4. Traiter les pièces jointes
+            if ($request->has('attachments') && is_array($request->attachments)) {
+                foreach ($request->attachments as $index => $attachmentData) {
+                    info("=== TRAITEMENT ATTACHMENT $index ===");
+                    info('Données attachment: ' . json_encode($attachmentData));
+                    
+                    // Vérifier si le fichier existe localement
+                    if (isset($attachmentData['file_path']) && Storage::exists($attachmentData['file_path'])) {
+                        $attachment = $meeting->attachments()->create([
+                            'title' => $attachmentData['title'] ?? 'Pièce jointe',
+                            'original_name' => $attachmentData['original_name'] ?? 'document',
+                            'file_path' => $attachmentData['file_path'],
+                            'file_type' => $attachmentData['file_type'] ?? 'application/octet-stream',
+                            'nature' => $attachmentData['nature'] ?? 'document_justificatif',
+                            'size' => $attachmentData['size'] ?? 0,
+                            'uploaded_by' => $attachmentData['uploaded_by'] ?? Auth::id(),
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                        info('Attachment créé avec succès');
+                    }
+                }
+            }
+
+            // 5. Mettre à jour le statut de soumission de la réunion
+            $meeting->update([
+                'attendance_status' => 'submitted',
+                'attendance_submitted_at' => $request->submitted_at ?? now(),
+                'attendance_submitted_by' => $request->submitted_by ?? Auth::id(),
+                'updated_at' => now(),
+            ]);
+
+            DB::commit();
+            info('=== SOUMISSION COMPLÈTE DE RÉUNION TERMINÉE AVEC SUCCÈS ===');
+            
+            return $this->format(Constants::JSON_STATUS_SUCCESS, 200, 'Réunion soumise avec succès. Toutes les données ont été enregistrées.', [
+                'meeting_id' => $meeting->id,
+                'submitted_at' => now()->toISOString(),
+                'submitted_by' => Auth::id(),
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            info('=== ERREUR LORS DE LA SOUMISSION COMPLÈTE ===');
+            info('Erreur: ' . $e->getMessage());
+            info('Stack trace: ' . $e->getTraceAsString());
+            
+            return $this->format(Constants::JSON_STATUS_ERROR, 500, 'Erreur lors de la soumission de la réunion: ' . $e->getMessage());
+        }
     }
 } 

@@ -278,53 +278,10 @@
               </div>
                   
                   <!-- Formulaire pour mettre à jour les enrôlements -->
-                  <div v-if="isSecretary && ['scheduled', 'planned', 'prevalidated', 'validated'].includes(meeting.status)" class="mt-4 border-t pt-4">
-                    <h4 class="text-sm font-medium text-gray-900 mb-2">Mettre à jour les enrôlements</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <InputLabel for="target_enrollments" value="Nombre de personnes à enrôler" />
-                        <TextInput
-                          id="target_enrollments"
-                          v-model="enrollmentsForm.target_enrollments"
-                          type="number"
-                          min="0"
-                          class="mt-1 block w-full text-sm"
-                          @input="validateEnrollments"
-                        />
-                      </div>
-                      <div>
-                        <InputLabel for="actual_enrollments" value="Nombre de personnes enrôlées" />
-                        <TextInput
-                          id="actual_enrollments"
-                          v-model="enrollmentsForm.actual_enrollments"
-                          type="number"
-                          min="0"
-                          :max="enrollmentsForm.target_enrollments"
-                          class="mt-1 block w-full text-sm"
-                          @input="validateEnrollments"
-                        />
-                      </div>
-                    </div>
-                    <div class="flex justify-end mt-3">
-                      <button
-                        type="button"
-                        @click="updateEnrollments"
-                        class="px-3 py-1 bg-indigo-100 text-indigo-800 rounded text-sm font-medium hover:bg-indigo-200"
-                        :disabled="enrollmentsLoading"
-                      >
-                        <span v-if="enrollmentsLoading">Mise à jour...</span>
-                        <span v-else>Mettre à jour</span>
-                      </button>
-                    </div>
-                  </div>
+                  
                 </div>
               </div>
-              <div>
-                <h3 class="text-lg font-medium text-gray-900">Description</h3>
-                <p class="mt-4 text-sm text-gray-600">
-                  {{ meeting.description || 'Aucune description' }}
-                </p>
-              </div>
+             
             </div>
           </div>
         </div>

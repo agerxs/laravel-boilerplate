@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Models\MeetingAttendee;
 use App\Models\LocalCommittee;
+use App\Services\PaymentListNotificationService;
 
 class MeetingPaymentListController extends Controller
 {
@@ -113,8 +114,20 @@ class MeetingPaymentListController extends Controller
             ]);
         }
 
+        // Envoyer des notifications aux trésoriers
+        $notificationService = new PaymentListNotificationService();
+        $fileName = 'Liste_Paiement_Reunion_' . $meeting->id . '_' . now()->format('Y-m-d_H-i-s') . '.csv';
+        $representativesCount = count($validated['attendees']);
+        
+        $notificationService->notifyTreasurers(
+            $meeting,
+            Auth::user(),
+            $fileName,
+            $representativesCount
+        );
+
         return redirect()->route('meeting-payments.lists.show', $paymentList->id)
-            ->with('success', 'Liste de paiement créée avec succès.');
+            ->with('success', 'Liste de paiement créée avec succès. Les trésoriers ont été notifiés.');
     }
 
     public function show(MeetingPaymentList $paymentList)
@@ -158,9 +171,19 @@ class MeetingPaymentListController extends Controller
             'submitted_at' => now(),
         ]);
 
-        // TODO: Envoyer une notification au président
+        // Envoyer des notifications aux trésoriers
+        $notificationService = new PaymentListNotificationService();
+        $fileName = 'Liste_Paiement_Reunion_' . $paymentList->meeting->id . '_' . now()->format('Y-m-d_H-i-s') . '.csv';
+        $representativesCount = $paymentList->paymentItems()->count();
+        
+        $notificationService->notifyTreasurers(
+            $paymentList->meeting,
+            Auth::user(),
+            $fileName,
+            $representativesCount
+        );
 
-        return redirect()->back()->with('success', 'Liste de paiement soumise pour validation.');
+        return redirect()->back()->with('success', 'Liste de paiement soumise pour validation. Les trésoriers ont été notifiés.');
     }
 
     public function validates(MeetingPaymentList $paymentList)
@@ -407,27 +430,24 @@ class MeetingPaymentListController extends Controller
 
         \Illuminate\Support\Facades\Log::info('Exporting payment list:', $paymentList->toArray());
 
-        // Préparation des données pour l'export
-        $exportData = [
-            'Réunion' => $paymentList->meeting->title,
-            'Date' => $paymentList->meeting->scheduled_date->format('d/m/Y'),
-            'Comité Local' => $paymentList->meeting->localCommittee->name,
-            'Montant Total' => $paymentList->total_amount,
-            'Statut Liste' => $this->translateStatus($paymentList->status),
-            'Participants' => $paymentList->paymentItems->map(function($item) use ($paymentList) {
-                return [
-                    'Nom' => $item->attendee->name,
-                    'Rôle' => $this->translateRole($item->role),
-                    'Montant' => $item->amount,
-                    'Statut' => $this->translatePaymentStatus($item->payment_status)
-                ];
-            })
-        ];
+        // Préparation des données pour l'export mobile money
+        $mobileMoneyData = [];
+        
+        foreach ($paymentList->paymentItems as $item) {
+            $mobileMoneyData[] = [
+                'Référence' => $item->attendee ? $item->attendee->phone : $item->phone ?? '',
+                'Montant' => $item->amount,
+                'Nom du Destinataire' => $item->attendee ? $item->attendee->name : $item->name ?? 'Nom non défini',
+                'Commentaire' => "Paiement {$item->role} - Réunion: {$paymentList->meeting->title}",
+                'Type d\'opération' => 'transfert-mobile-money'
+            ];
+        }
 
         return response()->json([
-            'data' => $exportData,
+            'data' => $mobileMoneyData,
             'total_amount' => $paymentList->total_amount,
-            'meeting_title' => $paymentList->meeting->title
+            'meeting_title' => $paymentList->meeting->title,
+            'total_items' => count($mobileMoneyData)
         ]);
     }
 
@@ -465,28 +485,25 @@ class MeetingPaymentListController extends Controller
 
         $paymentLists = $query->get();
 
-        // Préparation des données pour l'export
-        $exportData = $paymentLists->map(function($list) {
-            return [
-                'Réunion' => $list->meeting->title,
-                'Date' => $list->meeting->scheduled_date->format('d/m/Y'),
-                'Comité Local' => $list->meeting->localCommittee->name,
-                'Montant Total' => $list->total_amount,
-                'Statut Liste' => $this->translateStatus($list->status),
-                'Participants' => $list->paymentItems->map(function($item) {
-                    return [
-                        'Nom' => $item->attendee->name,
-                        'Rôle' => $this->translateRole($item->role),
-                        'Montant' => $item->amount,
-                        'Statut' => $this->translatePaymentStatus($item->payment_status)
-                    ];
-                })
-            ];
-        });
+        // Préparation des données pour l'export mobile money
+        $mobileMoneyData = [];
+        
+        foreach ($paymentLists as $list) {
+            foreach ($list->paymentItems as $item) {
+                $mobileMoneyData[] = [
+                    'Référence' => $item->attendee ? $item->attendee->phone : $item->phone ?? '',
+                    'Montant' => $item->amount,
+                    'Nom du Destinataire' => $item->attendee ? $item->attendee->name : $item->name ?? 'Nom non défini',
+                    'Commentaire' => "Paiement {$item->role} - Réunion: {$list->meeting->title}",
+                    'Type d\'opération' => 'transfert-mobile-money'
+                ];
+            }
+        }
 
         return response()->json([
-            'data' => $exportData,
-            'total_amount' => $paymentLists->sum('total_amount')
+            'data' => $mobileMoneyData,
+            'total_amount' => $paymentLists->sum('total_amount'),
+            'total_items' => count($mobileMoneyData)
         ]);
     }
 

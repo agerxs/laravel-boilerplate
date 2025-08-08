@@ -234,19 +234,19 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                   <tr v-for="item in selectedList.payment_items" :key="item.id">
                     <td class="px-6 py-4 whitespace-nowrap">
-                      <div v-if="item.attendee.presence_photo" class="relative">
+                      <div v-if="item.attendee && item.attendee.presence_photo" class="relative">
                         <img 
                           :src="`/storage/${item.attendee.presence_photo}`" 
                           class="h-12 w-12 rounded-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
-                          @click="showPhotoDetails(item.attendee)"
-                          :alt="`Photo de ${item.attendee.name}`"
+                          @click="item.attendee ? showPhotoDetails(item.attendee) : null"
+                          :alt="`Photo de ${item.attendee.representative.name}`"
                         />
                       </div>
                       <div v-else class="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center">
                         <UserIcon class="h-6 w-6 text-gray-400" />
                       </div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">{{ item.attendee.name }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">{{ item.attendee ? item.attendee.representative.name : item.name || 'Nom non défini' }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ translateRole(item.role) }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">{{ formatCurrency(item.amount) }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
@@ -474,54 +474,50 @@ const exportLists = async () => {
     }
 
     const result = await response.json();
-    const lists = result.data;
+    const mobileMoneyData = result.data;
     const grandTotal = result.total_amount;
 
-    if (!lists || lists.length === 0) {
+    if (!mobileMoneyData || mobileMoneyData.length === 0) {
       alert('Aucune donnée à exporter pour les filtres sélectionnés.');
       return;
     }
 
-    const finalSheetData = [];
+    // Préparer les données pour l'export mobile money
+    const finalSheetData = [
+      ['Référence', 'Montant (FCFA)', 'Nom du Destinataire', 'Commentaire', 'Type d\'opération']
+    ];
 
-    lists.forEach(list => {
-      // En-tête pour cette liste
-      finalSheetData.push(['Réunion', list['Réunion']]);
-      finalSheetData.push(['Date', list['Date']]);
-      finalSheetData.push(['Comité Local', list['Comité Local']]);
-      finalSheetData.push(['Montant Total Liste', list['Montant Total']]);
-      finalSheetData.push(['Statut Liste', list['Statut Liste']]);
-      finalSheetData.push([]); // Ligne vide
-      finalSheetData.push(['Nom', 'Rôle', 'Montant', 'Statut']); // En-têtes des participants
-
-      // Lignes des participants
-      if (list.Participants && Array.isArray(list.Participants)) {
-        list.Participants.forEach(p => {
-          finalSheetData.push([p.Nom, p.Rôle, p.Montant, p.Statut]);
-        });
-      }
-
-      // Séparateur avant la prochaine liste
-      finalSheetData.push([]);
-      finalSheetData.push([]);
+    // Ajouter les données des transferts
+    mobileMoneyData.forEach(item => {
+      finalSheetData.push([
+        item['Référence'],
+        item['Montant'],
+        item['Nom du Destinataire'],
+        item['Commentaire'],
+        item['Type d\'opération']
+      ]);
     });
 
-    // Ajouter le total général à la fin
-    finalSheetData.push(['', '', 'Total Général des listes filtrées:', grandTotal]);
+
 
     const worksheet = XLSX.utils.aoa_to_sheet(finalSheetData);
 
+    // Ajuster la largeur des colonnes
     worksheet['!cols'] = [
-      { wch: 30 }, { wch: 25 }, { wch: 15 }, { wch: 15 }
+      { wch: 20 }, // Référence
+      { wch: 15 }, // Montant
+      { wch: 30 }, // Nom du Destinataire
+      { wch: 40 }, // Commentaire
+      { wch: 20 }  // Type d'opération
     ];
 
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Listes de paiement');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Transferts Mobile Money');
 
-    const fileName = `Export_Listes_Paiement_${new Date().toISOString().split('T')[0]}.xlsx`;
+    const fileName = `Transferts_Mobile_Money_${new Date().toISOString().split('T')[0]}.xlsx`;
     XLSX.writeFile(workbook, fileName);
 
-    alert('Export des listes réussi !');
+    alert(`Export réussi ! ${mobileMoneyData.length} transferts générés pour un total de ${grandTotal} FCFA`);
 
   } catch (error) {
     console.error("Erreur lors de l'export des listes:", error);
@@ -535,8 +531,10 @@ const selectedAttendee = ref(null)
 
 // Fonctions pour gérer le modal photo
 const showPhotoDetails = (attendee) => {
-  selectedAttendee.value = attendee
-  showPhotoModal.value = true
+  if (attendee) {
+    selectedAttendee.value = attendee
+    showPhotoModal.value = true
+  }
 }
 
 const closePhotoModal = () => {
@@ -576,48 +574,53 @@ const exportSingleList = async (meetingId) => {
     }
 
     const result = await response.json();
-    const data = result.data;
+    const mobileMoneyData = result.data;
     
-    // 1. Préparer les données de l'en-tête
-    const headerData = [
-      ['Réunion', data.Réunion],
-      ['Date', data.Date],
-      ['Comité Local', data['Comité Local']],
-      ['Montant Total', data['Montant Total']],
-      ['Statut Liste', data['Statut Liste']],
-      [''], // Ligne vide
-      ['Nom', 'Rôle', 'Montant', 'Statut']
+    if (!mobileMoneyData || mobileMoneyData.length === 0) {
+      alert('Aucune donnée à exporter pour cette réunion.');
+      return;
+    }
+
+    // Préparer les données pour l'export mobile money
+    const finalSheetData = [
+      ['Référence', 'Montant (FCFA)', 'Nom du Destinataire', 'Commentaire', 'Type d\'opération']
     ];
 
-    // 2. Créer la feuille de calcul à partir de l'en-tête
-    const worksheet = XLSX.utils.aoa_to_sheet(headerData);
-
-    // 3. Ajouter les données des participants à la suite de l'en-tête
-    XLSX.utils.sheet_add_json(worksheet, data.Participants, {
-      origin: 'A8', // Commencer après l'en-tête (A1 à A7)
-      skipHeader: true // Ne pas ré-écrire les en-têtes (Nom, Rôle, etc.)
+    // Ajouter les données des transferts
+    mobileMoneyData.forEach(item => {
+      finalSheetData.push([
+        item['Référence'],
+        item['Montant'],
+        item['Nom du Destinataire'],
+        item['Commentaire'],
+        item['Type d\'opération']
+      ]);
     });
+
+
     
-    // 4. Ajuster la largeur des colonnes
-    const columnWidths = [
-      { wch: 30 }, // Nom
-      { wch: 15 }, // Rôle
-      { wch: 12 }, // Montant
-      { wch: 12 }  // Statut
+    const worksheet = XLSX.utils.aoa_to_sheet(finalSheetData);
+
+    // Ajuster la largeur des colonnes
+    worksheet['!cols'] = [
+      { wch: 20 }, // Référence
+      { wch: 15 }, // Montant
+      { wch: 30 }, // Nom du Destinataire
+      { wch: 40 }, // Commentaire
+      { wch: 20 }  // Type d'opération
     ];
-    worksheet['!cols'] = columnWidths;
     
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Liste de paiement');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Transferts Mobile Money');
     
     // Générer le nom du fichier
-    const fileName = `liste_paiement_${data.Réunion.replace(/[^a-zA-Z0-9]/g, '_')}_${data.Date.replace(/\//g, '-')}.xlsx`;
+    const fileName = `Transferts_Mobile_Money_${result.meeting_title.replace(/[^a-zA-Z0-9]/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`;
     
     // Télécharger le fichier
     XLSX.writeFile(workbook, fileName);
     
     // Afficher un message de succès
-    alert('Export réussi !');
+    alert(`Export réussi ! ${mobileMoneyData.length} transferts générés pour un total de ${result.total_amount} FCFA`);
   } catch (error) {
     alert('Erreur lors de l\'export : ' + error.message);
   }

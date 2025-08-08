@@ -350,9 +350,12 @@ class MeetingController extends Controller
                 'local_committee_id' => $meeting->local_committee_id,
                 'local_committee' => $committee,
                 'attendees' => $meeting->attendees->map(function ($attendee) {
+                    // Log de débogage pour chaque participant
+                    \Log::info('Données du participant', $attendee->debugInfo());
+                    
                     return [
                         'id' => $attendee->id,
-                        'name' => $attendee->representative ? $attendee->representative->name : ($attendee->name ?: 'Nom non défini'),
+                        'name' => $attendee->name,
                         'phone' => $attendee->phone,
                         'role' => $attendee->role,
                         'village' => [
@@ -475,9 +478,7 @@ class MeetingController extends Controller
                 foreach ($village->representatives as $representative) {
                     $meeting->attendees()->create([
                         'representative_id' => $representative->id,
-                        'name' => $representative->first_name . ' ' . $representative->last_name,
-                        'role' => $representative->role,
-                        'phone' => $representative->phone,
+                    
                         'localite_id' => $village->id
                     ]);
                 }
@@ -526,9 +527,6 @@ class MeetingController extends Controller
                         foreach ($village->representatives as $representative) {
                             $meeting->attendees()->create([
                                 'representative_id' => $representative->id,
-                                'name' => $representative->first_name . ' ' . $representative->last_name,
-                                'role' => $representative->role,
-                                'phone' => $representative->phone,
                                 'localite_id' => $village->id
                             ]);
                         }
@@ -1105,8 +1103,7 @@ class MeetingController extends Controller
             }
 
             // Créer les éléments de paiement pour chaque participant présent
-            foreach ($meeting->attendees()->where('is_present', true)->get() as $attendee) {
-                info($attendee);
+            foreach ($meeting->attendees()->where('attendance_status', 'present')->orWhere('attendance_status', 'replaced')->get() as $attendee) {
                 $amount = 0;
                 switch ($attendee->role) {
                     case 'sous-prefet':
@@ -1137,17 +1134,6 @@ class MeetingController extends Controller
             $paymentList->update([
                 'total_amount' => $paymentList->paymentItems->sum('amount')
             ]);
-        }
-        // Soumettre la liste de paiement si elle existe
-        else {
-            $paymentList = $meeting->paymentList;
-            if ($paymentList->status === 'draft') {
-                $paymentList->update([
-                    'status' => 'submitted',
-                    'submitted_at' => now(),
-                    'submitted_by' => Auth::id(),
-                ]);
-            }
         }
 
         return response()->json([
@@ -1276,7 +1262,7 @@ class MeetingController extends Controller
         }
 
         // Vérifier qu'il y a des participants présents
-        $presentAttendees = $meeting->attendees()->where('is_present', true)->count();
+        $presentAttendees = $meeting->attendees()->where('attendance_status', 'present')->orWhere('attendance_status', 'replaced')->count();
         if ($presentAttendees === 0) {
             return response()->json([
                 'message' => 'Impossible de valider les présences : aucun participant présent.'
@@ -1289,8 +1275,63 @@ class MeetingController extends Controller
             'attendance_validated_by' => Auth::id(),
         ]);
 
+        // Créer une liste de paiement si elle n'existe pas
+        if (!$meeting->paymentList()->exists()) {
+            $paymentList = MeetingPaymentList::create([
+                'meeting_id' => $meeting->id,
+                'submitted_at' => now(),
+                'status' => 'submitted',
+                'submitted_by' => Auth::id(),
+                'total_amount' => 0,
+            ]);
+
+            // Récupérer le comité local avec sa localité
+            $localCommittee = LocalCommittee::with('locality')->find($meeting->local_committee_id);
+            
+            // Compter le nombre de réunions validées pour cette localité
+            $validatedMeetingsCount = Meeting::whereHas('localCommittee', function($query) use ($localCommittee) {
+                $query->where('locality_id', $localCommittee->locality_id);
+            })
+            ->where('status', 'validated')
+            ->count();
+           
+
+            // Créer les éléments de paiement pour chaque participant présent
+            foreach ($meeting->attendees()->where('attendance_status', 'present')->orWhere('attendance_status', 'replaced')->get() as $attendee) {
+                $amount = 0;
+                switch ($attendee->role) {
+                    case 'sous-prefet':
+                        $amount = MeetingPaymentList::SUB_PREFET_AMOUNT;
+                        break;
+                    case 'secretaire':
+                        $amount = MeetingPaymentList::SECRETARY_AMOUNT;
+                        break;
+                    default :
+                        $amount = MeetingPaymentList::PARTICIPANT_AMOUNT;
+                        break;
+                }
+
+                if ($amount > 0) {
+                    MeetingPaymentItem::create([
+                        'meeting_payment_list_id' => $paymentList->id,
+                        'attendee_id' => $attendee->id,
+                        'amount' => $amount,
+                        'role' => $attendee->role,
+                        'payment_status' => 'pending',
+                        'name' => $attendee->name,
+                        'phone' => $attendee->phone
+                    ]);
+                }
+            }
+
+            // Mettre à jour le montant total
+            $paymentList->update([
+                'total_amount' => $paymentList->paymentItems->sum('amount')
+            ]);
+        }
+
         return response()->json([
-            'message' => 'Présences validées avec succès.'
+            'message' => 'Présences validées avec succès et liste de paiement générée.'
         ]);
     }
 

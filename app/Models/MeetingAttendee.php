@@ -34,6 +34,75 @@ class MeetingAttendee extends Model
         'presence_timestamp',
     ];
 
+    /**
+     * Accesseur pour le nom (utilise le representative si disponible)
+     */
+    public function getNameAttribute($value)
+    {
+        // Si on a un représentant lié et qu'il a un nom
+        if ($this->representative && $this->representative->name) {
+            return $this->representative->name;
+        }
+        
+        // Si on a un nom stocké directement dans l'attendee
+        if ($value && !empty(trim($value))) {
+            return $value;
+        }
+        
+        // Si on a un représentant mais sans nom, essayer de construire le nom
+        if ($this->representative) {
+            $name = '';
+            if ($this->representative->first_name) {
+                $name .= $this->representative->first_name;
+            }
+            if ($this->representative->last_name) {
+                $name .= ' ' . $this->representative->last_name;
+            }
+            if (!empty(trim($name))) {
+                return trim($name);
+            }
+        }
+        
+        // Fallback : nom par défaut
+        return 'Nom non défini';
+    }
+
+    /**
+     * Accesseur pour le téléphone (utilise le representative si disponible)
+     */
+    public function getPhoneAttribute($value)
+    {
+        // Si on a un représentant lié et qu'il a un téléphone
+        if ($this->representative && $this->representative->phone) {
+            return $this->representative->phone;
+        }
+        
+        // Si on a un téléphone stocké directement dans l'attendee
+        if ($value && !empty(trim($value))) {
+            return $value;
+        }
+        
+        return null;
+    }
+
+    /**
+     * Accesseur pour le rôle (utilise le representative si disponible)
+     */
+    public function getRoleAttribute($value)
+    {
+        // Si on a un représentant lié et qu'il a un rôle
+        if ($this->representative && $this->representative->role) {
+            return $this->representative->role;
+        }
+        
+        // Si on a un rôle stocké directement dans l'attendee
+        if ($value && !empty(trim($value))) {
+            return $value;
+        }
+        
+        return 'Rôle non défini';
+    }
+
     protected $casts = [
         'is_expected' => 'boolean',
         'is_present' => 'boolean',
@@ -143,5 +212,39 @@ class MeetingAttendee extends Model
     public function paymentItems(): HasMany
     {
         return $this->hasMany(MeetingPaymentItem::class, 'attendee_id');
+    }
+
+    /**
+     * Méthode de débogage pour voir les données du participant
+     */
+    public function debugInfo()
+    {
+        $info = [
+            'id' => $this->id,
+            'meeting_id' => $this->meeting_id,
+            'representative_id' => $this->representative_id,
+            'localite_id' => $this->localite_id,
+            'name_direct' => $this->getRawOriginal('name'),
+            'name_computed' => $this->name,
+            'phone_direct' => $this->getRawOriginal('phone'),
+            'phone_computed' => $this->phone,
+            'role_direct' => $this->getRawOriginal('role'),
+            'role_computed' => $this->role,
+        ];
+        
+        if ($this->representative) {
+            $info['representative'] = [
+                'id' => $this->representative->id,
+                'name' => $this->representative->name,
+                'first_name' => $this->representative->first_name ?? 'null',
+                'last_name' => $this->representative->last_name ?? 'null',
+                'phone' => $this->representative->phone,
+                'role' => $this->representative->role,
+            ];
+        } else {
+            $info['representative'] = 'null';
+        }
+        
+        return $info;
     }
 } 

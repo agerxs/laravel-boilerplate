@@ -43,8 +43,8 @@
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200">
                                         <tr v-for="item in paymentList.items" :key="item.id">
-                                            <td class="px-6 py-4 whitespace-nowrap">{{ item.attendee.name }}</td>
-                                            <td class="px-6 py-4 whitespace-nowrap">{{ item.attendee.role }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap">{{ item.attendee ? item.attendee.name : item.name || 'Nom non défini' }}</td>
+                                            <td class="px-6 py-4 whitespace-nowrap">{{ item.attendee ? item.attendee.role : item.role || 'Rôle non défini' }}</td>
                                             <td class="px-6 py-4 whitespace-nowrap">{{ formatAmount(item.amount) }} FCFA</td>
                                             <td class="px-6 py-4 whitespace-nowrap">
                                                 <span :class="getStatusClass(item.status)">
@@ -86,8 +86,8 @@
                 <div v-if="selectedItem" class="space-y-4">
                     <div>
                         <h3 class="font-medium">Informations du participant</h3>
-                        <p>Nom : {{ selectedItem.attendee.name }}</p>
-                        <p>Rôle : {{ selectedItem.attendee.role }}</p>
+                        <p>Nom : {{ selectedItem.attendee ? selectedItem.attendee.name : selectedItem.name || 'Nom non défini' }}</p>
+                        <p>Rôle : {{ selectedItem.attendee ? selectedItem.attendee.role : selectedItem.role || 'Rôle non défini' }}</p>
                     </div>
                     <div>
                         <h3 class="font-medium">Détails du paiement</h3>

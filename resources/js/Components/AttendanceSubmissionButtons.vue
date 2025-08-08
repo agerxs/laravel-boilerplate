@@ -36,7 +36,7 @@
       Présences soumises
       <span class="ml-2 text-xs text-blue-600">
         le {{ formatDate(meeting.attendance_submitted_at) }}
-      </span>bc
+      </span>
 
     <!-- Indicateur de brouillon 
     <div v-if="meeting.attendance_status === 'draft'" class="inline-flex items-center px-3 py-2 bg-gray-100 text-gray-800 rounded-md text-sm font-medium">
@@ -44,6 +44,7 @@
       Brouillon
     </div>-->
   </div>
+</div>
 </template>
 
 <script setup lang="ts">
