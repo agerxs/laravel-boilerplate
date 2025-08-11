@@ -1294,7 +1294,7 @@ class MeetingController extends Controller
             })
             ->where('status', 'validated')
             ->count();
-           
+            
 
             // Créer les éléments de paiement pour chaque participant présent
             foreach ($meeting->attendees()->where('attendance_status', 'present')->orWhere('attendance_status', 'replaced')->get() as $attendee) {
