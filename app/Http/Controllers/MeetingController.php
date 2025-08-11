@@ -995,29 +995,6 @@ class MeetingController extends Controller
     }
 
     /**
-     * Prévalider une réunion (réservé aux secrétaires)
-     */
-    public function prevalidate(Meeting $meeting)
-    {
-
-        // Permettre aux administrateurs ainsi qu'aux secrétaires de prévalider
-        if (!Auth::user()->hasRole('secretaire') && !Auth::user()->hasRole('admin')) {
-            abort(403, 'Seuls les secrétaires et les administrateurs peuvent prévalider les réunions');
-        }
-
-        if ($meeting->status !== 'scheduled' && $meeting->status !== 'planned' && $meeting->status !== 'completed') {
-            return back()->with('error', 'Seules les réunions planifiées peuvent être prévalidées');
-        }
-        $meeting->update([
-            'status' => 'prevalidated',
-            'prevalidated_at' => now(),
-            'prevalidated_by' => Auth::id()
-        ]);
-        //dd($meeting);
-        return back()->with('success', 'La réunion a été prévalidée avec succès');
-    }
-
-    /**
      * Valider une réunion (réservé aux présidents)
      */
     public function validateMeeting(Meeting $meeting)

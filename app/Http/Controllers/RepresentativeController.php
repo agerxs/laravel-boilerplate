@@ -62,7 +62,7 @@ class RepresentativeController extends Controller
             'locality_id' => 'required|exists:localite,id',
             'local_committee_id' => 'required|exists:local_committees,id',
             'role' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:255',
+            'phone' => 'required|max:255',
         ]);
         
         $representative = Representative::create($validated);
@@ -77,7 +77,7 @@ class RepresentativeController extends Controller
             'locality_id' => 'required|exists:localite,id',
             'local_committee_id' => 'required|exists:local_committees,id',
             'role' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:255',
+            'phone' => 'required|max:255',
         ]);
 
         $representative->update($validated);

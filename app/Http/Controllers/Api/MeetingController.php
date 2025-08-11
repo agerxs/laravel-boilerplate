@@ -408,7 +408,7 @@ class MeetingController extends Controller
         }
 
         $meeting->update([
-            'status' => 'confirmed',
+            'status' => 'completed',
             'confirmed_at' => now(),
             'confirmed_by' => Auth::id(),
         ]);
@@ -418,26 +418,6 @@ class MeetingController extends Controller
         ]);
     }
 
-    /**
-     * Prévalider une réunion (pour les secrétaires)
-     */
-    public function prevalidate(Meeting $meeting)
-    {
-        $user = Auth::user();
-        if (!$user || !in_array($user->role, ['secretaire', 'admin'])) {
-            return $this->format(Constants::JSON_STATUS_ERROR, 403, 'Accès non autorisé');
-        }
-
-        $meeting->update([
-            'status' => 'prevalidated',
-            'prevalidated_at' => now(),
-            'prevalidated_by' => Auth::id(),
-        ]);
-
-        return $this->format(Constants::JSON_STATUS_SUCCESS, 200, 'Réunion prévalidée avec succès', [
-            'meeting' => $meeting->fresh()
-        ]);
-    }
 
     /**
      * Valider une réunion (pour les sous-préfets)
