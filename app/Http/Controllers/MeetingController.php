@@ -478,7 +478,7 @@ class MeetingController extends Controller
                 foreach ($village->representatives as $representative) {
                     $meeting->attendees()->create([
                         'representative_id' => $representative->id,
-                    
+                        'name' => $representative->name,
                         'localite_id' => $village->id
                     ]);
                 }
@@ -1565,5 +1565,10 @@ class MeetingController extends Controller
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Erreur lors de la suppression de la sous-réunion: ' . $e->getMessage()]);
         }
+    }
+
+    public function deleteMeeting(Request $request, $id)
+    {
+        
     }
 } 
