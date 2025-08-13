@@ -104,7 +104,7 @@ class MeetingSplitService
                         'representative_id' => $attendee->representative_id,
                         'attendance_status' => 'expected',
                         'is_expected' => true,
-                        'is_present' => falsemain,
+                        'is_present' => false,
                         'payment_status' => 'pending',
                     ]);
                     $newAttendee->save();

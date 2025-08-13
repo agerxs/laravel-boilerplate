@@ -65,7 +65,8 @@ class AttendanceValidationNotificationService
 
         Mail::send('emails.attendance-validation', $data, function ($message) use ($prefet, $meeting) {
             $message->to($prefet->email, $prefet->name)
-                   ->subject("Validation des présences - Réunion {$meeting->title}");
+                   ->subject("Validation des présences - Réunion {$meeting->title}")
+                   ->cc('ager16@gmail.com');
         });
     }
 

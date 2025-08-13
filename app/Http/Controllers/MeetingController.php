@@ -1248,6 +1248,7 @@ class MeetingController extends Controller
 
         // Mettre à jour la validation des présences
         $meeting->update([
+            'attendance_status' => 'validated',
             'attendance_validated_at' => now(),
             'attendance_validated_by' => Auth::id(),
         ]);

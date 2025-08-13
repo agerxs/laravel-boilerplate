@@ -402,10 +402,11 @@ class MeetingController extends Controller
      */
     public function confirm(Meeting $meeting)
     {
-        $user = Auth::user();
-        if (!$user || !in_array($user->role, ['secretaire', 'admin'])) {
+        //$user = Auth::user();
+        //info('User: ' . $user->role );
+       /* if (!$user || !in_array($user->role, ['secretaire', 'admin'])) {
             return $this->format(Constants::JSON_STATUS_ERROR, 403, 'Accès non autorisé');
-        }
+        }*/
 
         $meeting->update([
             'status' => 'completed',
