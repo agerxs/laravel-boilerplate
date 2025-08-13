@@ -12,21 +12,21 @@ return new class extends Migration
     public function up(): void
     {
         // Modifier le type de la colonne localite_id pour qu'elle soit compatible
-        Schema::table('village_results', function (Blueprint $table) {
-            $table->bigInteger('localite_id')->unsigned(false)->change();
-        });
+        // Schema::table('village_results', function (Blueprint $table) {
+        //     $table->unsignedBigInteger('localite_id')->unsigned(false)->change();
+        // });
         
         Schema::table('village_results', function (Blueprint $table) {
             // Ajouter l'index s'il n'existe pas
             if (!Schema::hasIndex('village_results', 'village_results_localite_id_foreign')) {
                 $table->index('localite_id', 'village_results_localite_id_foreign');
-            }
-            
-            // Ajouter la contrainte de clé étrangère qui référence localite
-            $table->foreign('localite_id', 'village_results_localite_id_foreign')
-                  ->references('id')
-                  ->on('localite')
-                  ->onDelete('cascade');
+
+                // Ajouter la contrainte de clé étrangère qui référence localite
+                $table->foreign('localite_id', 'village_results_localite_id_foreign')
+                    ->references('id')
+                    ->on('localite')
+                    ->onDelete('cascade');
+                }
         });
     }
 
@@ -45,7 +45,7 @@ return new class extends Migration
         
         // Restaurer le type de colonne original
         Schema::table('village_results', function (Blueprint $table) {
-            $table->bigInteger('localite_id')->unsigned()->change();
+            $table->unsignedBigInteger('localite_id')->unsigned()->change();
         });
     }
 };

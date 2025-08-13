@@ -348,7 +348,7 @@ import {
   ArrowDownTrayIcon,
   UserIcon
 } from '@heroicons/vue/24/outline'
-import { getStatusText, getStatusClass, translateRole } from '@/utils/translations'
+import { getStatusText, getStatusClass, translateRole } from '@/Utils/translations'
 import * as XLSX from 'xlsx'
 
 const props = defineProps({

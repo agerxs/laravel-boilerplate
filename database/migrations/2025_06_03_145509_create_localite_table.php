@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('localite', function (Blueprint $table) {
-            $table->bigInteger('id', true);
+            // $table->bigInteger('id', true);
+            $table->bigIncrements('id');
             $table->timestamp('created_at')->nullable()->useCurrent();
             $table->string('name');
             $table->bigInteger('parent_id')->nullable();

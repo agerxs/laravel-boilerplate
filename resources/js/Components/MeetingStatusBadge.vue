@@ -21,7 +21,7 @@ import {
   PlayIcon,
   CalendarIcon
 } from '@heroicons/vue/16/solid'
-import { getStatusText, getStatusClass } from '@/utils/translations';
+import { getStatusText, getStatusClass } from '@/Utils/translations';
 
 interface Props {
   status: string;

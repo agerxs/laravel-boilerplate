@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('assignment_locations', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
-            $table->bigInteger('locality_id')->index('locality_id');
+            $table->unsignedBigInteger('locality_id')->index('locality_id');
             $table->timestamps();
             $table->softDeletes();
         });

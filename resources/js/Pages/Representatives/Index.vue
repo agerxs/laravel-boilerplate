@@ -219,12 +219,12 @@
                     <input
                         id="phone"
                         v-model="form.phone"
-                        type="number"
+                        type="tel"
                         placeholder="Ex: 0123456789"
                         maxlength="10"
                         minlength="10"
-                        pattern="\\d*"
-                        inputmode="numeric"
+                        pattern="[0-9]{10}"
+                        inputmode="tel"
                         class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                         :class="{ 'border-red-500': form.errors.phone }"
                     />

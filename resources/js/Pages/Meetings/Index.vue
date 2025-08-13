@@ -238,7 +238,7 @@ import MeetingValidationButtons from '@/Components/MeetingValidationButtons.vue'
 import AttendanceStatusBadge from '@/Components/AttendanceStatusBadge.vue';
 import { PlusIcon, EyeIcon, XCircleIcon, ClockIcon, Squares2X2Icon } from '@heroicons/vue/24/outline';
 import { useToast } from '@/Composables/useToast';
-import { hasRole } from '@/utils/authUtils';
+import { hasRole } from '@/Utils/authUtils';
 
 interface Meeting {
   id: number;
