@@ -31,7 +31,7 @@
           <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
             <div class="flex justify-between items-center mb-6">
               <h2 class="text-2xl font-bold">Liste des Représentants</h2>
-              <button @click="openModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium inline-flex items-center">
+              <button @click="openModal(representatives.data[0] || null, true)" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium inline-flex items-center">
                 <PlusIcon class="h-4 w-4 mr-2" />
                 Nouveau Représentant
               </button>
@@ -234,10 +234,10 @@
                 <!-- Village -->
                 <div>
                     <label for="locality_id" class="block text-sm font-medium text-gray-700 mb-1">Village *</label>
+                    <!-- :disabled="!!form.locality_id" -->
                     <select
                         id="locality_id"
                         v-model="form.locality_id"
-                        :disabled="!!form.locality_id"
                         required
                         class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                         :class="{ 'border-red-500': form.errors.locality_id }"
@@ -262,7 +262,7 @@
                     >
                         <option value="">Sélectionner un comité</option>
                         <option v-for="committee in localCommittees" :key="committee.id" :value="committee.id">
-                            {{ committee.name }}
+                          {{ committee.name }}
                         </option>
                     </select>
                     <p v-if="form.errors.local_committee_id" class="mt-1 text-sm text-red-600">{{ form.errors.local_committee_id }}</p>
@@ -362,10 +362,14 @@ const clearFilters = () => {
   applyFilters();
 };
 
-const openModal = (representative: Representative | null = null) => {
+const openModal = (representative: Representative | null = null, created: boolean) => {
   isEditing.value = !!representative;
+
   form.reset();
-  if (representative) {
+
+  if (representative && created) {
+    form.local_committee_id = representative.local_committee?.id;
+  } else if (representative) {
     form.id = representative.id;
     form.name = representative.name;
     form.role = representative.role;
@@ -373,6 +377,7 @@ const openModal = (representative: Representative | null = null) => {
     form.locality_id = representative.locality?.id;
     form.local_committee_id = representative.local_committee?.id;
   }
+
   isModalOpen.value = true;
 };
 
