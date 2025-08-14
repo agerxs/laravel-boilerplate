@@ -43,7 +43,7 @@ class ExecutivePaymentController extends Controller
         // Log de la requête SQL de base
         \Illuminate\Support\Facades\Log::info('SQL Query:', ['sql' => $query->toSql(), 'bindings' => $query->getBindings()]);
 
-        $payments = $query->orderBy('created_at', 'desc')->paginate(15);
+        $payments = $query->orderBy('created_at', 'desc')->paginate(50);
 
         // Enrichir les données avec les réunions déclencheuses
         $payments->getCollection()->transform(function ($payment) {
@@ -60,6 +60,7 @@ class ExecutivePaymentController extends Controller
                     });
                 $payment->triggering_meetings_data = $triggeringMeetings;
             }
+
             return $payment;
         });
 
