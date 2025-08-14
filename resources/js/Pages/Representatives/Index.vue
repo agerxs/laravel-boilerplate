@@ -85,7 +85,7 @@
                           <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                               <div class="flex items-center justify-end space-x-2">
                                   <button 
-                                      @click="openModal(rep)" 
+                                      @click="openModal(rep || null, true)" 
                                       class="p-1 text-indigo-600 hover:text-indigo-900 transition-colors duration-200 rounded-full hover:bg-indigo-100"
                                       title="Modifier le représentant"
                                   >
