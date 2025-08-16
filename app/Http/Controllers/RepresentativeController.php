@@ -20,6 +20,22 @@ class RepresentativeController extends Controller
 
     public function index(Request $request)
     {
+        // Optimisation de cette zone necessaire pour éviter les requêtes inutiles
+
+        
+        // Récuperation de l'utilisateur connecté et de ses comités locaux
+        $user = auth()->user();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        // Recuparation de la localité de l'utilisateur
+        $userLocality = $user->locality_id;
+
+        // Recuperation des localitées filles
+        $localities = Locality::where('parent_id', $userLocality)->pluck('id')->toArray();
+
         $query = Representative::with(['locality', 'localCommittee']);
 
         // Filtres
@@ -29,8 +45,11 @@ class RepresentativeController extends Controller
         if ($request->filled('local_committee_id')) {
             $query->where('local_committee_id', $request->local_committee_id);
         }
+
         if ($request->filled('locality_id')) {
             $query->where('locality_id', $request->locality_id);
+        } else if ($localities !== null) {
+            $query->whereIn('locality_id', $localities);
         }
 
         $user = auth()->user();

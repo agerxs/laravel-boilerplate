@@ -546,7 +546,7 @@ import axios from 'axios'
 import { useToast } from '@/Composables/useToast'
 import StatusBadge from '@/Components/StatusBadge.vue'
 import GeographicAnalysis from '@/Components/GeographicAnalysis.vue'
-import { analyzeGeographicConsistency, calculateDistance, formatDistance } from '@/utils/geoUtils'
+import { analyzeGeographicConsistency, calculateDistance, formatDistance } from '@/Utils/geoUtils'
 
 const props = defineProps({
   meeting: Object,

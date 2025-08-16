@@ -1435,7 +1435,7 @@ import AttendanceSubmissionButtons from '@/Components/AttendanceSubmissionButton
 import VillageResultsForm from '@/Components/VillageResultsForm.vue'
 import VillageResultsDisplay from '@/Components/VillageResultsDisplay.vue'
 import VillageResultsManager from '@/Components/VillageResultsManager.vue'
-import { getStatusText, getStatusClass, translateRole } from '@/utils/translations'
+import { getStatusText, getStatusClass, translateRole } from '@/Utils/translations'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import GeographicAnalysis from '@/Components/GeographicAnalysis.vue'

@@ -265,8 +265,6 @@ class LocalCommitteeController extends Controller
 
     public function update(Request $request, LocalCommittee $localCommittee)
     {
-
-
         // Décoder les champs JSON si besoin
         if (is_string($request->members)) {
             $request->merge([

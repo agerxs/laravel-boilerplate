@@ -51,7 +51,7 @@
 import { ref, computed } from 'vue'
 import { PaperAirplaneIcon, ArrowUturnLeftIcon, PencilIcon } from '@heroicons/vue/24/outline'
 import { useToast } from '@/Composables/useToast'
-import { hasRole } from '@/utils/authUtils'
+import { hasRole } from '@/Utils/authUtils'
 import axios from 'axios'
 import { router } from '@inertiajs/vue3'
 

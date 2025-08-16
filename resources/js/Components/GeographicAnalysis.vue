@@ -161,7 +161,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { analyzeGeographicConsistency, getConsistencyLevel, formatDistance, calculateDistance } from '@/utils/geoUtils'
+import { analyzeGeographicConsistency, getConsistencyLevel, formatDistance, calculateDistance } from '@/Utils/geoUtils'
 
 const props = defineProps({
   attendees: {

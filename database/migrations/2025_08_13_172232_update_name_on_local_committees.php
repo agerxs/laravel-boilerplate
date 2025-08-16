@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('assignment_locations', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('name');
-            $table->unsignedBigInteger('locality_id')->index('locality_id');
-            $table->timestamps();
-            $table->softDeletes();
+        Schema::table('local_committees', function (Blueprint $table) {
+            $table->string('name')->unique()->change();
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('assignment_locations');
+        Schema::table('local_committees', function (Blueprint $table) {
+            $table->dropUnique(['name']);
+        });
     }
 };

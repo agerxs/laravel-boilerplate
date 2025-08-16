@@ -12,15 +12,45 @@ use Carbon\Carbon;
 use App\Models\MeetingAttendee;
 use App\Models\LocalCommittee;
 use App\Services\PaymentListNotificationService;
+use App\Models\Locality;
 
 class MeetingPaymentListController extends Controller
 {
     public function index(Request $request)
     {
         $user = Auth::user();
+        $meetingsId = [];
+
+        // Si utilisateur à le role de gestionnaire, on récupère toutes les réunions
+        if (!in_array('gestionnaire', $user->roles->pluck('name')->toArray()) || !in_array('Gestionnaire', $user->roles->pluck('name')->toArray())) {
+            // Recuparation de la localité de l'utilisateur
+            $userLocality = $user->locality_id;
+
+            // Recuperation des localitées filles
+            $localities = Locality::where('parent_id', $userLocality)->pluck('id')->toArray();
+            $localities = array_merge($localities, [$user->locality_id]);
+            $localities =  array_merge($localities, Locality::whereIn('parent_id', $localities)->pluck('id')->toArray());
+
+            \Log::info('User Locality:', ['localities' => $localities]);
+
+            // Récuperation des commités locaux par localite id 
+            $localCommittees = LocalCommittee::whereIn('locality_id', $localities)->pluck('id')->toArray();
+
+            \Log::info('Local Committees:', $localCommittees);
+
+            // Récuperation des meeting
+            $meetingsId = Meeting::whereIn('local_committee_id', $localCommittees)->pluck('id')->toArray();
+
+            \Log::info('Meetings ID:', $meetingsId);
+        }
+
         $query = MeetingPaymentList::query()
             ->with(['meeting.localCommittee', 'submitter', 'paymentItems.attendee'])
             ->orderBy('created_at', 'desc');
+
+        if(count($meetingsId) > 0) {
+            $query->whereIn('meeting_id', $meetingsId);
+        }
 
         // Filtre par comité local
         if ($request->filled('local_committee_id')) {
@@ -49,6 +79,7 @@ class MeetingPaymentListController extends Controller
         $paymentLists = $query->paginate(10)
             ->through(function ($list) {
                 $list->total_amount = $list->paymentItems->sum('amount');
+                
                 return $list;
             });
 

@@ -197,7 +197,7 @@ import {
   UserGroupIcon
 } from '@heroicons/vue/24/outline'
 import axios from 'axios'
-import { hasRole } from '@/utils/authUtils'
+import { hasRole } from '@/Utils/authUtils'
 import { Role } from '@/types/Role'
 
 interface Member {

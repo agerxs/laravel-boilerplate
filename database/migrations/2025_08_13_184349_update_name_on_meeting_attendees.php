@@ -11,12 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('assignment_locations', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->string('name');
-            $table->unsignedBigInteger('locality_id')->index('locality_id');
-            $table->timestamps();
-            $table->softDeletes();
+        Schema::table('meeting_attendees', function (Blueprint $table) {
+            $table->string('name')->nullable()->change();
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('assignment_locations');
+        Schema::table('meeting_attendees', function (Blueprint $table) {
+            $table->string('name')->nullable(false)->change();
+        });
     }
 };

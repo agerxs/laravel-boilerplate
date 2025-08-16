@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->string('postal_code')->nullable();
             $table->softDeletes();
-            $table->bigInteger('locality_id')->nullable()->index('users_locality_id_foreign');
+            $table->unsignedBigInteger('locality_id')->nullable()->index('users_locality_id_foreign');
             $table->unsignedBigInteger('organization_id')->nullable()->index('users_organization_id_foreign');
             $table->unsignedBigInteger('job_function_id')->nullable()->index('users_job_function_id_foreign');
             $table->unsignedBigInteger('contract_type_id')->nullable()->index('users_contract_type_id_foreign');

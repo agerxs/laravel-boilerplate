@@ -121,14 +121,14 @@ const navigation: NavigationItem[] = [
     color: 'text-rose-600',
     gradient: 'from-rose-500 to-rose-600'
   },
-  {
-    name: 'Paiements des Comités',
-    href: route('executive-payments.index'),
-    icon: DocumentIcon,
-    roles: ['gestionnaire', 'admin'],
-    color: 'text-violet-600',
-    gradient: 'from-violet-500 to-violet-600'
-  },
+//   {
+//     name: 'Paiements des Comités',
+//     href: route('executive-payments.index'),
+//     icon: DocumentIcon,
+//     roles: ['gestionnaire', 'admin'],
+//     color: 'text-violet-600',
+//     gradient: 'from-violet-500 to-violet-600'
+//   },
   { 
     name: 'Gestion des APKs', 
     href: route('admin.app_versions.index'), 

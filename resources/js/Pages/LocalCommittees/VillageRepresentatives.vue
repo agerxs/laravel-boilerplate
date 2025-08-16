@@ -201,7 +201,7 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 import InputLabel from '@/Components/InputLabel.vue'
 import TextInput from '@/Components/TextInput.vue'
 import axios from 'axios'
-import { hasRole } from '@/utils/authUtils'
+import { hasRole } from '@/Utils/authUtils'
 import { Role } from '@/types/Role'
 
 const { props } = usePage()

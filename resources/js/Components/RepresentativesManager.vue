@@ -171,7 +171,7 @@
 import { ref, computed } from 'vue'
 import InputLabel from '@/Components/InputLabel.vue'
 import TextInput from '@/Components/TextInput.vue'
-import { hasRole } from '@/utils/authUtils'
+import { hasRole } from '@/Utils/authUtils'
 import { Role } from '@/types/Role'
 
 interface Village {
