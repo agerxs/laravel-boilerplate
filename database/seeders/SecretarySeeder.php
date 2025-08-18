@@ -18,7 +18,7 @@ class SecretarySeeder extends Seeder
     public function run()
     {
         // Créer le rôle secrétaire s'il n'existe pas
-        $secretaryRole = Role::firstOrCreate(['name' => 'secretaire']);
+       // $secretaryRole = Role::firstOrFail(['name' => 'secretaire']);
         
         // Analyse préliminaire pour trouver les doublons
         $secretariesData = json_decode(file_get_contents(resource_path('data/secretaires_dates_harmonisees_v2.json')), true);
@@ -106,7 +106,7 @@ class SecretarySeeder extends Seeder
             }
 
             $locality = Locality::whereHas('type', function($query) {
-                $query->where('name', 'subprefecture');
+                $query->where('name', 'sub_prefecture');
             })
             ->where('name', trim($secretary['SOUS-PREFECTURES']))
             ->first();
@@ -144,7 +144,15 @@ class SecretarySeeder extends Seeder
                 ]);
 
                 // Assigner le rôle secrétaire
-                $user->assignRole('secretaire');
+                try {
+                    $user->assignRole('secretaire');
+                } catch (\Exception $e) {
+                    $message = "Erreur lors de l'assignation du rôle secretaire à {$secretary['Nom et Prénom']} : {$e->getMessage()}";
+                    echo $message . "\n";
+                    Log::error($message);
+                    throw new \Exception('test');
+                }
+                
                 
                 $message = "Créé : {$secretary['Nom et Prénom']}";
                 echo $message . "\n";

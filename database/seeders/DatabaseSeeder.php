@@ -17,13 +17,14 @@ class DatabaseSeeder extends Seeder
 
 
         $this->call([
+            RoleSeeder::class,
             HierarchySeeder::class,
             ReferenceDataSeeder::class,
             SecretarySeeder::class,
             SubPrefectSeeder::class,
             LocalCommitteeSeeder::class,
-            MeetingSeeder::class,
-            RoleSeeder::class,
+            //MeetingSeeder::class,
+            
         ]);
     }
 }

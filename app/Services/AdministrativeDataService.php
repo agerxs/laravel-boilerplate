@@ -71,7 +71,7 @@ class AdministrativeDataService
                     $q->where('name', 'departement');
                 })->with(['children' => function($q) {
                     $q->whereHas('type', function($sq) {
-                        $sq->where('name', 'subprefecture');
+                        $sq->where('name', 'sub_prefecture');
                     })->with(['children' => function($sq) {
                         $sq->whereHas('type', function($tq) {
                             $tq->where('name', 'village');
@@ -94,7 +94,7 @@ class AdministrativeDataService
                                 return [
                                     'id' => $subPrefecture->id,
                                     'name' => $subPrefecture->name,
-                                    'type' => 'subprefecture',
+                                    'type' => 'sub_prefecture',
                                     'children' => $subPrefecture->children->map(function ($villageOrCommune) {
                                         return [
                                             'id' => $villageOrCommune->id,

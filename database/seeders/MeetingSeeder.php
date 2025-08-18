@@ -25,7 +25,7 @@ class MeetingSeeder extends Seeder
         echo "Fichier JSON chargé : " . count($jsonData) . " sous-préfectures trouvées\n";
 
         // Récupérer le type "sous-prefecture"
-        $subPrefectureType = LocalityType::where('name', 'subprefecture')->first();
+        $subPrefectureType = LocalityType::where('name', 'sub_prefecture')->first();
         if (!$subPrefectureType) {
             echo "ERREUR : Type 'sub_prefecture' non trouvé\n";
             return;

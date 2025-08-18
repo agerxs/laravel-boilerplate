@@ -7,7 +7,7 @@ $app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
 // Récupérer une sous-préfecture
 $subPrefecture = \App\Models\Locality::whereHas('type', function($q) { 
-    $q->where('name', 'subprefecture'); 
+    $q->where('name', 'sub_prefecture'); 
 })->first();
 
 if (!$subPrefecture) {

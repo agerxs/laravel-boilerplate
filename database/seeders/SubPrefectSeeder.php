@@ -13,8 +13,8 @@ class SubPrefectSeeder extends Seeder
 {
     public function run()
     {
-        // Créer le rôle sous-prefet s'il n'existe pas
-        $subPrefectRole = Role::firstOrCreate(['name' => 'sous-prefet']);
+        // Créer le rôle president s'il n'existe pas
+        //$subPrefectRole = Role::firstOrFail(['name' => 'president']);
         
         // Charger les données des présidents
         $subPrefectsData = json_decode(file_get_contents(resource_path('data/sous-pref_dates_harmonisees_v2.json')), true);
@@ -49,7 +49,7 @@ class SubPrefectSeeder extends Seeder
 
             // Trouver la localité (sous-préfecture)
             $locality = Locality::whereHas('type', function($query) {
-                $query->where('name', 'subprefecture');
+                $query->where('name', 'sub_prefecture');
             })
             ->where('name', trim($subPrefect['Sous-Préfecture']))
             ->first();
@@ -77,8 +77,14 @@ class SubPrefectSeeder extends Seeder
                     'remember_token' => Str::random(10),
                 ]);
 
-                // Assigner le rôle sous-prefet
-                $user->assignRole('sous-prefet');
+                // Assigner le rôle president
+                try {
+                    $user->assignRole('president');
+                } catch (\Exception $e) {
+                    $message = "Erreur lors de l'assignation du rôle president à {$name} : {$e->getMessage()}";
+                    echo $message . "\n";
+                    Log::error($message);
+                }
                 
                 $message = "Créé : {$name} - {$subPrefect['Sous-Préfecture']}";
                 echo $message . "\n";

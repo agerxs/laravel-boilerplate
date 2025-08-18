@@ -29,7 +29,6 @@ class LocalCommitteeController extends Controller
     public function index(Request $request)
     {
         $query = LocalCommittee::with(['locality', 'members.user']);
-        
         $user = auth()->user();
         
         // Les gestionnaires peuvent voir tous les comités locaux
