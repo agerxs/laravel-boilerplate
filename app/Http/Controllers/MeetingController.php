@@ -44,7 +44,7 @@ class MeetingController extends Controller
         $user = auth()->user();
         
         // Filtrer par localité si l'utilisateur est un préfet ou un secrétaire
-        if ($user->hasRole(['sous-prefet', 'Sous-prefet', 'secretaire', 'Secrétaire'])) {
+        if ($user->hasRole(['president', 'president', 'secretaire', 'Secrétaire'])) {
             // Pour les autres (présidents et secrétaires), montrer uniquement les réunions de leur localité
             $query->whereHas('localCommittee', function($q) use ($user) {
                 $q->where('locality_id', $user->locality_id);
@@ -157,7 +157,7 @@ class MeetingController extends Controller
                 $q->where('id', $user->locality_id)
                   ->orWhere('parent_id', $user->locality_id);
             });
-        } elseif ($user->hasRole(['sous-prefet', 'Sous-prefet', 'secretaire', 'Secrétaire'])) {
+        } elseif ($user->hasRole(['president', 'President', 'secretaire', 'Secrétaire'])) {
             // Pour les présidents et secrétaires, montrer uniquement les comités de leur localité
             $committeeQuery->where('locality_id', $user->locality_id);
         }
@@ -201,7 +201,7 @@ class MeetingController extends Controller
                 $q->where('id', $user->locality_id)
                   ->orWhere('parent_id', $user->locality_id);
             });
-        } elseif ($user->hasRole(['sous-prefet', 'Sous-prefet', 'secretaire', 'Secrétaire'])) {
+        } elseif ($user->hasRole(['president', 'President', 'secretaire', 'Secrétaire'])) {
             // Pour les présidents et secrétaires, montrer uniquement les comités de leur localité
             $query->where('locality_id', $user->locality_id);
         }
@@ -224,7 +224,7 @@ class MeetingController extends Controller
                 $q->where('id', $user->locality_id)
                   ->orWhere('parent_id', $user->locality_id);
             });
-        } elseif ($user->hasRole(['sous-prefet', 'Sous-prefet', 'secretaire', 'Secrétaire'])) {
+        } elseif ($user->hasRole(['president', 'President', 'secretaire', 'Secrétaire'])) {
             // Pour les présidents et secrétaires, montrer uniquement les comités de leur localité
             $query->where('locality_id', $user->locality_id);
         }
@@ -283,7 +283,7 @@ class MeetingController extends Controller
             }
             
             // Récupérer le président associé à cette localité avec son profil complet
-            $sousPrefet = User::role('sous-prefet')
+            $sousPrefet = User::role('president')
                 ->where('locality_id', $committee->locality_id)
                 ->first();
             
@@ -318,7 +318,7 @@ class MeetingController extends Controller
                 $committee->members[] = (object)[
                     'id' => 'sp_'.$sousPrefet->id,
                     'user' => $sousPrefet,
-                    'role' => 'sous-prefet'
+                    'role' => 'president'
                 ];
             }
             
@@ -478,7 +478,6 @@ class MeetingController extends Controller
                 foreach ($village->representatives as $representative) {
                     $meeting->attendees()->create([
                         'representative_id' => $representative->id,
-                        'name' => $representative->name,
                         'localite_id' => $village->id
                     ]);
                 }
@@ -1000,7 +999,7 @@ class MeetingController extends Controller
     public function validateMeeting(Meeting $meeting)
     {
         // Vérifier si l'utilisateur est un président ou admin
-        if (!Auth::user()->hasRole(['sous-prefet', 'Sous-prefet', 'admin', 'Admin'])) {
+        if (!Auth::user()->hasRole(['president', 'President', 'admin', 'Admin'])) {
             return response()->json([
                 'message' => 'Vous n\'avez pas les droits pour valider cette réunion.'
             ], 403);
@@ -1045,7 +1044,7 @@ class MeetingController extends Controller
             
             // Ajouter le président s'il existe et si c'est la 2ème réunion validée
             if ($isSecondValidatedMeeting) {
-                $sousPrefet = User::role(['sous-prefet', 'Sous-prefet'])
+                $sousPrefet = User::role(['president', 'President'])
                     ->where('locality_id', $localCommittee->locality_id)
                     ->first();
                 
@@ -1054,7 +1053,7 @@ class MeetingController extends Controller
                         'meeting_payment_list_id' => $paymentList->id,
                         'attendee_id' => null,
                         'amount' => MeetingPaymentList::SUB_PREFET_AMOUNT,
-                        'role' => 'sous-prefet',
+                        'role' => 'president',
                         'payment_status' => 'pending',
                         'name' => $sousPrefet->name,
                         'phone' => $sousPrefet->phone
@@ -1083,7 +1082,7 @@ class MeetingController extends Controller
             foreach ($meeting->attendees()->where('attendance_status', 'present')->orWhere('attendance_status', 'replaced')->get() as $attendee) {
                 $amount = 0;
                 switch ($attendee->role) {
-                    case 'sous-prefet':
+                    case 'president':
                         $amount = MeetingPaymentList::SUB_PREFET_AMOUNT;
                         break;
                     case 'secretaire':
@@ -1125,7 +1124,7 @@ class MeetingController extends Controller
     public function invalidate(Meeting $meeting)
     {
         // Permettre aux administrateurs ainsi qu'aux présidents d'invalider
-        if (Auth::user()->role !== 'sous-prefet' && !Auth::user()->hasRole('admin')) {
+        if (Auth::user()->role !== 'president' && !Auth::user()->hasRole('admin')) {
             abort(403, 'Seuls les présidents et les administrateurs peuvent invalider les réunions');
         }
 
@@ -1225,7 +1224,7 @@ class MeetingController extends Controller
     public function validateAttendance(Meeting $meeting)
     {
         // Vérifier si l'utilisateur est un sous-préfet ou admin
-        if (!Auth::user()->hasRole(['sous-prefet', 'Sous-prefet', 'admin', 'Admin'])) {
+        if (!Auth::user()->hasRole(['president', 'President', 'admin', 'Admin'])) {
             return response()->json([
                 'message' => 'Vous n\'avez pas les droits pour valider les présences de cette réunion.'
             ], 403);
@@ -1278,7 +1277,7 @@ class MeetingController extends Controller
             foreach ($meeting->attendees()->where('attendance_status', 'present')->orWhere('attendance_status', 'replaced')->get() as $attendee) {
                 $amount = 0;
                 switch ($attendee->role) {
-                    case 'sous-prefet':
+                    case 'president':
                         $amount = MeetingPaymentList::SUB_PREFET_AMOUNT;
                         break;
                     case 'secretaire':
@@ -1319,7 +1318,7 @@ class MeetingController extends Controller
     public function invalidateAttendance(Meeting $meeting)
     {
         // Vérifier si l'utilisateur est un sous-préfet ou admin
-        if (!Auth::user()->hasRole(['sous-prefet', 'Sous-prefet', 'admin', 'Admin'])) {
+        if (!Auth::user()->hasRole(['president', 'president', 'admin', 'Admin'])) {
             return response()->json([
                 'message' => 'Vous n\'avez pas les droits pour invalider les présences de cette réunion.'
             ], 403);

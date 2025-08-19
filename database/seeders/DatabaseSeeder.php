@@ -18,7 +18,8 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             RoleSeeder::class,
-            HierarchySeeder::class,
+            \Database\Seeders\Models\LocalityTypeSeeder::class,
+            \Database\Seeders\Models\LocalitySeeder::class,
             ReferenceDataSeeder::class,
             SecretarySeeder::class,
             SubPrefectSeeder::class,
@@ -26,5 +27,6 @@ class DatabaseSeeder extends Seeder
             //MeetingSeeder::class,
             
         ]);
+  
     }
 }

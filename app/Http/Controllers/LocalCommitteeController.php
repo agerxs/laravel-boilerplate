@@ -34,8 +34,8 @@ class LocalCommitteeController extends Controller
         // Les gestionnaires peuvent voir tous les comités locaux
         if (!in_array('gestionnaire', $user->roles->pluck('name')->toArray()) && !in_array('Gestionnaire', $user->roles->pluck('name')->toArray())) {
             // Filtrer par localité si l'utilisateur est un préfet ou un secrétaire
-            if (in_array('sous-prefet', $user->roles->pluck('name')->toArray()) || 
-                      in_array('Sous-prefet', $user->roles->pluck('name')->toArray()) ||
+            if (in_array('president', $user->roles->pluck('name')->toArray()) || 
+                      in_array('President', $user->roles->pluck('name')->toArray()) ||
                       in_array('secretaire', $user->roles->pluck('name')->toArray()) ||
                       in_array('Secrétaire', $user->roles->pluck('name')->toArray())) {
                 // Pour les autres (présidents et secrétaires), montrer uniquement les comités de leur localité
@@ -75,7 +75,7 @@ class LocalCommitteeController extends Controller
     public function create()
     {
         // Récupérer les utilisateurs avec le rôle "président"
-        $sousPrefets = User::role('Sous-prefet')
+        $sousPrefets = User::role('president')
             ->with('locality')
             ->get()
             ->map(function ($user) {
@@ -207,7 +207,7 @@ class LocalCommitteeController extends Controller
         $committee = LocalCommittee::with(['locality.children.representatives', 'members.user'])->findOrFail($id);
         $localities = $this->administrativeService->getLocalityHierarchy();
        
-        $sousPrefets = User::role('Sous-prefet')
+        $sousPrefets = User::role('President')
             ->with('locality')
             ->get()
             ->map(function ($user) {
@@ -527,7 +527,7 @@ class LocalCommitteeController extends Controller
         ];
         
         // Récupérer les utilisateurs avec le rôle "président"
-        $sousPrefets = User::role('Sous-prefet')
+        $sousPrefets = User::role('President')
             ->with('locality')
             ->get()
             ->map(function ($user) {

@@ -126,9 +126,7 @@ class MeetingSplitService
                             'meeting_id' => $subMeeting->id,
                             'localite_id' => $villageId,
                             'representative_id' => $representative->id,
-                            'name' => $representative->name,
-                            'phone' => $representative->phone,
-                            'role' => $representative->role,
+                            
                             'attendance_status' => 'expected',
                             'is_expected' => true,
                             'is_present' => false,

@@ -366,9 +366,11 @@ const openModal = (representative: Representative | null = null, created: boolea
   isEditing.value = !!representative;
 
   form.reset();
+  
 
-  if (representative && created) {
-    form.local_committee_id = representative.local_committee?.id;
+  if (created) {
+    //form.local_committee_id = representative.local_committee?.id;
+    form.local_committee_id = props.localCommittees[0]?.id;
   } else if (representative) {
     form.id = representative.id;
     form.name = representative.name;

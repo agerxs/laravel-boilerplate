@@ -52,7 +52,6 @@ class RepresentativeController extends Controller
             $query->whereIn('locality_id', $localities);
         }
 
-        $user = auth()->user();
         $userSubPrefecture = $user->locality;
         
         $villages = Locality::where('locality_type_id', 6)

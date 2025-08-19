@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f20daeedc6444a2c9b1504e1e13b3af0",
+    "content-hash": "ec170efb0e86e9f08b0c4b5fd8c797ae",
     "packages": [
         {
             "name": "althinect/filament-spatie-roles-permissions",
@@ -10474,6 +10474,69 @@
             "time": "2025-01-23T13:41:43+00:00"
         },
         {
+            "name": "orangehill/iseed",
+            "version": "v3.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/orangehill/iseed.git",
+                "reference": "bfe8f5882641f70b309cd01e30f02e8e9d09b492"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/orangehill/iseed/zipball/bfe8f5882641f70b309cd01e30f02e8e9d09b492",
+                "reference": "bfe8f5882641f70b309cd01e30f02e8e9d09b492",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "~5.5.0|~5.6.0|~5.7.0|~5.8.0|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0",
+                "php": "^7.2|^8.0.2"
+            },
+            "require-dev": {
+                "illuminate/filesystem": "~5.5.0|~5.6.0|~5.7.0|~5.8.0|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0",
+                "laravel/framework": "~5.5.0|~5.6.0|~5.7.0|~5.8.0|^6.0|^7.0|^8.0|^9.0|^10.0|^11.0|^12.0",
+                "mockery/mockery": "^1.0.0",
+                "phpunit/phpunit": "^8.0|^11.5.3"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Orangehill\\Iseed\\IseedServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Orangehill\\Iseed": "src/"
+                },
+                "classmap": [
+                    "src/Orangehill/Iseed/Exceptions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-2-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Tihomir Opacic",
+                    "email": "tihomir.opacic@orangehilldev.com"
+                }
+            ],
+            "description": "Generate a new Laravel database seed file based on data from the existing database table.",
+            "keywords": [
+                "artisan",
+                "generators",
+                "laravel",
+                "seed"
+            ],
+            "support": {
+                "issues": "https://github.com/orangehill/iseed/issues",
+                "source": "https://github.com/orangehill/iseed/tree/v3.1.1"
+            },
+            "time": "2025-03-04T07:56:48+00:00"
+        },
+        {
             "name": "phar-io/manifest",
             "version": "2.0.4",
             "source": {
@@ -12042,6 +12105,65 @@
                 }
             ],
             "time": "2024-03-03T12:36:25+00:00"
+        },
+        {
+            "name": "tyghaykal/laravel-seed-generator",
+            "version": "v2.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tyghaykal/laravel-seeder-generator.git",
+                "reference": "e0a2ead30ef98e8742662864a1a560ce4a2e5c35"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tyghaykal/laravel-seeder-generator/zipball/e0a2ead30ef98e8742662864a1a560ce4a2e5c35",
+                "reference": "e0a2ead30ef98e8742662864a1a560ce4a2e5c35",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/framework": "5.8.*|6.*|7.*|8.*|9.*|10.*|11.*|^12.0",
+                "php": ">=7.3"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^3.0|^4.0|^5.0|^6.0|^7.0|^8.0|^9.0|^10.0",
+                "phpunit/phpunit": "^11.0|^10.0|^9.0|^8.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "TYGHaykal\\LaravelSeedGenerator\\SeedGeneratorServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "TYGHaykal\\LaravelSeedGenerator\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Andre Haykal Rachman",
+                    "email": "andrecsd9@gmail.com"
+                }
+            ],
+            "description": "Laravel Seed Generator",
+            "keywords": [
+                "artisan",
+                "generator",
+                "laravel",
+                "seed",
+                "seeders"
+            ],
+            "support": {
+                "issues": "https://github.com/tyghaykal/laravel-seeder-generator/issues",
+                "source": "https://github.com/tyghaykal/laravel-seeder-generator/tree/v2.2.1"
+            },
+            "time": "2025-05-05T03:00:51+00:00"
         }
     ],
     "aliases": [],
