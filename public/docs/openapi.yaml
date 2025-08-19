@@ -39,7 +39,7 @@ components:
           type: string
         role:
           type: string
-          enum: [admin, sous-prefet, village-representative]
+          enum: [admin, president, village-representative]
 
     Meeting:
       type: object

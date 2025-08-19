@@ -386,7 +386,7 @@ const userHasRole = (role) => {
 
 // Computed pour vérifier si l'utilisateur peut valider
 const canValidateItems = computed(() => {
-  const hasRole = userHasRole('gestionnaire') || userHasRole('admin')
+  const hasRole = userHasRole('tresorier') || userHasRole('admin')
   console.log('Debug - canValidateItems:', hasRole)
   return hasRole
 })

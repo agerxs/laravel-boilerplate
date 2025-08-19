@@ -23,11 +23,11 @@ class CheckLocalityAccess
         $user = Auth::user();
         
         // Les gestionnaires ont accès à toutes les localités
-        if (in_array('gestionnaire', $user->roles->pluck('name')->toArray()) || in_array('Gestionnaire', $user->roles->pluck('name')->toArray())) {
+        if (in_array('tresorier', $user->roles->pluck('name')->toArray()) || in_array('Tresorier', $user->roles->pluck('name')->toArray())) {
             return $next($request);
         }
         
-        if (in_array('sous-prefet', $user->roles->pluck('name')->toArray()) || in_array('Sous-prefet', $user->roles->pluck('name')->toArray()) || 
+        if (in_array('president', $user->roles->pluck('name')->toArray()) || in_array('President', $user->roles->pluck('name')->toArray()) || 
             in_array('secretaire', $user->roles->pluck('name')->toArray()) || in_array('Secrétaire', $user->roles->pluck('name')->toArray())) {
             // Si l'utilisateur n'a pas de localité assignée, accès refusé
             if (!$user->locality_id) {

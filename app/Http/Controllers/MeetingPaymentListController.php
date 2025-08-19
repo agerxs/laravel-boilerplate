@@ -21,8 +21,8 @@ class MeetingPaymentListController extends Controller
         $user = Auth::user();
         $meetingsId = [];
 
-        // Si utilisateur à le role de gestionnaire, on récupère toutes les réunions
-        if (!in_array('gestionnaire', $user->roles->pluck('name')->toArray()) || !in_array('Gestionnaire', $user->roles->pluck('name')->toArray())) {
+        // Si utilisateur à le role de tresorier, on récupère toutes les réunions
+        if (!in_array('tresorier', $user->roles->pluck('name')->toArray()) || !in_array('Tresorier', $user->roles->pluck('name')->toArray())) {
             // Recuparation de la localité de l'utilisateur
             $userLocality = $user->locality_id;
 
@@ -87,7 +87,7 @@ class MeetingPaymentListController extends Controller
             'paymentLists' => $paymentLists,
             'meetings' => Meeting::orderBy('scheduled_date', 'desc')->get(),
             'localCommittees' => LocalCommittee::orderBy('name')->get(),
-            'canValidate' => in_array('gestionnaire', $user->roles->pluck('name')->toArray()) || in_array('Gestionnaire', $user->roles->pluck('name')->toArray()),
+            'canValidate' => in_array('tresorier', $user->roles->pluck('name')->toArray()) || in_array('Tresorier', $user->roles->pluck('name')->toArray()),
             'filters' => $request->only(['local_committee_id', 'meeting_id', 'status', 'role'])
         ]);
     }
@@ -171,7 +171,7 @@ class MeetingPaymentListController extends Controller
         ]);
 
         $user = Auth::user();
-        $canValidate = in_array('sous-prefet', $user->roles->pluck('name')->toArray()) || in_array('Sous-prefet', $user->roles->pluck('name')->toArray());
+        $canValidate = in_array('president', $user->roles->pluck('name')->toArray()) || in_array('President', $user->roles->pluck('name')->toArray());
 
         return Inertia::render('MeetingPayments/Lists/Show', [
             'paymentList' => $paymentList,
@@ -225,8 +225,8 @@ class MeetingPaymentListController extends Controller
         }
         info('cafdd');
 
-        if (!in_array('gestionnaire', Auth::user()->roles->pluck('name')->toArray()) && !in_array('Gestionnaire', Auth::user()->roles->pluck('name')->toArray())) {
-            return redirect()->back()->with('error', 'Seul un gestionnaire peut valider cette liste.');
+        if (!in_array('tresorier', Auth::user()->roles->pluck('name')->toArray()) && !in_array('Tresorier', Auth::user()->roles->pluck('name')->toArray())) {
+            return redirect()->back()->with('error', 'Seul un tresorier peut valider cette liste.');
         }
         info('sksjkdj');
         $paymentList->update([
@@ -248,7 +248,7 @@ class MeetingPaymentListController extends Controller
             return redirect()->back()->with('error', 'Cette liste ne peut pas être rejetée.');
         }
 
-        if (!in_array('sous-prefet', Auth::user()->roles->pluck('name')->toArray()) && !in_array('Sous-prefet', Auth::user()->roles->pluck('name')->toArray())) {
+        if (!in_array('president', Auth::user()->roles->pluck('name')->toArray()) && !in_array('President', Auth::user()->roles->pluck('name')->toArray())) {
             return redirect()->back()->with('error', 'Vous n\'avez pas les droits pour rejeter cette liste.');
         }
 
@@ -264,8 +264,8 @@ class MeetingPaymentListController extends Controller
 
     public function validateItem(MeetingPaymentItem $item)
     {
-        // Vérifier si l'utilisateur est un gestionnaire
-        if (!in_array('gestionnaire', Auth::user()->roles->pluck('name')->toArray()) && !in_array('Gestionnaire', Auth::user()->roles->pluck('name')->toArray())) {
+        // Vérifier si l'utilisateur est un tresorier
+        if (!in_array('tresorier', Auth::user()->roles->pluck('name')->toArray()) && !in_array('Tresorier', Auth::user()->roles->pluck('name')->toArray())) {
             return response()->json([
                 'message' => 'Vous n\'avez pas les droits pour valider ce paiement.'
             ], 403);
@@ -306,8 +306,8 @@ class MeetingPaymentListController extends Controller
 
     public function invalidateItem(MeetingPaymentItem $item)
     {
-        // Vérifier si l'utilisateur est un gestionnaire
-        if (!in_array('gestionnaire', Auth::user()->roles->pluck('name')->toArray()) && !in_array('Gestionnaire', Auth::user()->roles->pluck('name')->toArray())) {
+        // Vérifier si l'utilisateur est un tresorier
+        if (!in_array('tresorier', Auth::user()->roles->pluck('name')->toArray()) && !in_array('Tresorier', Auth::user()->roles->pluck('name')->toArray())) {
             return response()->json([
                 'message' => 'Vous n\'avez pas les droits pour invalider ce paiement.'
             ], 403);
@@ -349,8 +349,8 @@ class MeetingPaymentListController extends Controller
 
     public function validateAll(Request $request)
     {
-        // Vérifier si l'utilisateur est un gestionnaire
-        if (!in_array('gestionnaire', Auth::user()->roles->pluck('name')->toArray()) && !in_array('Gestionnaire', Auth::user()->roles->pluck('name')->toArray())) {
+        // Vérifier si l'utilisateur est un tresorier
+        if (!in_array('tresorier', Auth::user()->roles->pluck('name')->toArray()) && !in_array('Tresorier', Auth::user()->roles->pluck('name')->toArray())) {
             return response()->json([
                 'message' => 'Vous n\'avez pas les droits pour valider les paiements.'
             ], 403);
@@ -442,7 +442,7 @@ class MeetingPaymentListController extends Controller
     {
         $user = Auth::user();
         
-        if (!in_array('gestionnaire', $user->roles->pluck('name')->toArray()) && !in_array('Gestionnaire', $user->roles->pluck('name')->toArray())) {
+        if (!in_array('tresorier', $user->roles->pluck('name')->toArray()) && !in_array('Tresorier', $user->roles->pluck('name')->toArray())) {
             return response()->json(['message' => 'Accès non autorisé'], 403);
         }
 
@@ -486,7 +486,7 @@ class MeetingPaymentListController extends Controller
     {
         $user = Auth::user();
         
-        if (!in_array('gestionnaire', $user->roles->pluck('name')->toArray()) && !in_array('Gestionnaire', $user->roles->pluck('name')->toArray())) {
+        if (!in_array('tresorier', $user->roles->pluck('name')->toArray()) && !in_array('Tresorier', $user->roles->pluck('name')->toArray())) {
             //return response()->json(['message' => 'Accès non autorisé'], 403);
         }
 
@@ -589,8 +589,8 @@ class MeetingPaymentListController extends Controller
             return redirect()->back()->with('error', 'Cette liste ne peut pas être validée.');
         }
 
-        if (!in_array('gestionnaire', Auth::user()->roles->pluck('name')->toArray()) && !in_array('Gestionnaire', Auth::user()->roles->pluck('name')->toArray())) {
-            return redirect()->back()->with('error', 'Seul un gestionnaire peut valider cette liste.');
+        if (!in_array('tresorier', Auth::user()->roles->pluck('name')->toArray()) && !in_array('Tresorier', Auth::user()->roles->pluck('name')->toArray())) {
+            return redirect()->back()->with('error', 'Seul un tresorier peut valider cette liste.');
         }
 
         $paymentList->update([

@@ -230,7 +230,7 @@ class ExecutivePaymentController extends Controller
     {
         $translations = [
             'secretaire' => 'Secrétaire',
-            'sous-prefet' => 'Président'
+            'president' => 'Président'
         ];
         return $translations[$role] ?? $role;
     }

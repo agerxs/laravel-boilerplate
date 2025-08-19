@@ -47,7 +47,7 @@ Les taux sont configurés dans la table `payment_rates` :
 ```sql
 INSERT INTO payment_rates (role, meeting_rate, is_active) VALUES
 ('secretaire', 10000, true),
-('sous-prefet', 15000, true);
+('president', 15000, true);
 ```
 
 ## Génération automatique
@@ -107,7 +107,7 @@ fetch(`/executive-payments/${paymentId}/status`, {
 ### Statuts disponibles
 
 - **pending** : En attente (statut initial)
-- **validated** : Validé par un gestionnaire
+- **validated** : Validé par un tresorier
 - **paid** : Payé
 - **cancelled** : Annulé
 
@@ -127,7 +127,7 @@ fetch('/executive-payments/export/all?role=secretaire&payment_status=pending')
 ### Export paiements non effectués
 
 ```javascript
-fetch('/executive-payments/export/pending?role=sous-prefet')
+fetch('/executive-payments/export/pending?role=president')
 .then(response => response.json())
 .then(data => {
     console.log('Paiements en attente:', data.data);
@@ -179,7 +179,7 @@ Résultat :
 2. Vérifier que les cadres ont les bons rôles :
    ```bash
    php artisan tinker --execute="App\Models\User::role('secretaire')->count()"
-   php artisan tinker --execute="App\Models\User::role('sous-prefet')->count()"
+   php artisan tinker --execute="App\Models\User::role('president')->count()"
    ```
 
 3. Vérifier qu'il y a des réunions validées :

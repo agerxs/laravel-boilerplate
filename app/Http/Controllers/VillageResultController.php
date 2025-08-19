@@ -89,7 +89,7 @@ class VillageResultController extends Controller
             'totals' => $totals,
             'globalRates' => $globalRates,
             'summary' => $summary,
-            'canValidate' => in_array(Auth::user()->role, ['sous-prefet', 'Sous-prefet', 'admin', 'Admin']),
+            'canValidate' => in_array(Auth::user()->role, ['president', 'President', 'admin', 'Admin']),
         ]);
     }
 
@@ -107,7 +107,7 @@ class VillageResultController extends Controller
             'meeting' => $meeting,
             'village' => $village,
             'result' => $result,
-            'canValidate' => in_array(Auth::user()->role, ['sous-prefet', 'Sous-prefet', 'admin', 'Admin']),
+            'canValidate' => in_array(Auth::user()->role, ['president', 'President', 'admin', 'Admin']),
         ]);
     }
 

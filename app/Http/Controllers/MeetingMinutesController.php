@@ -162,7 +162,7 @@ class MeetingMinutesController extends Controller
     {
         // Vérifier si l'utilisateur est un président
         $user = Auth::user();
-        if (!$user || !in_array($user->role, ['sous-prefet', 'Sous-prefet'])) {
+        if (!$user || !in_array($user->role, ['president', 'President'])) {
             return response()->json([
                 'message' => 'Vous n\'êtes pas autorisé à valider ce compte-rendu'
             ], 403);

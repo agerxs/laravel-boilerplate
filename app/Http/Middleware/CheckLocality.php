@@ -13,7 +13,7 @@ class CheckLocality
         $user = Auth::user();
         
         // Les gestionnaires ont accès à toutes les localités
-        if (in_array('gestionnaire', $user->roles->pluck('name')->toArray()) || in_array('Gestionnaire', $user->roles->pluck('name')->toArray())) {
+        if (in_array('tresorier', $user->roles->pluck('name')->toArray()) || in_array('Tresorier', $user->roles->pluck('name')->toArray())) {
             return $next($request);
         }
         

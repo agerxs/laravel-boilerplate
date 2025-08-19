@@ -28,7 +28,7 @@ class AttendanceValidationPaymentTest extends TestCase
         
         // Créer un sous-préfet
         $this->user = User::factory()->create();
-        $this->user->assignRole('sous-prefet');
+        $this->user->assignRole('president');
         
         // Créer une localité et un village
         $locality = Locality::factory()->create([
@@ -169,7 +169,7 @@ class AttendanceValidationPaymentTest extends TestCase
             'localite_id' => 1,
             'name' => 'Sous-préfet',
             'phone' => '111111111',
-            'role' => 'sous-prefet',
+            'role' => 'president',
             'attendance_status' => 'present',
             'is_expected' => true,
             'is_present' => true,
@@ -195,7 +195,7 @@ class AttendanceValidationPaymentTest extends TestCase
         $paymentList = MeetingPaymentList::where('meeting_id', $this->meeting->id)->first();
         $paymentItems = $paymentList->paymentItems;
 
-        $sousPrefetItem = $paymentItems->where('role', 'sous-prefet')->first();
+        $sousPrefetItem = $paymentItems->where('role', 'president')->first();
         $this->assertNotNull($sousPrefetItem);
         $this->assertEquals(MeetingPaymentList::SUB_PREFET_AMOUNT, $sousPrefetItem->amount);
 

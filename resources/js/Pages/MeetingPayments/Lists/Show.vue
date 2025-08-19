@@ -55,7 +55,7 @@
                   Soumettre
                 </button>
               </template>
-              <template v-if="paymentList.status === 'submitted' && userHasRole('gestionnaire')">
+              <template v-if="paymentList.status === 'submitted' && userHasRole('tresorier')">
                 <button
                   @click="validateList"
                   class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
@@ -72,7 +72,7 @@
                 </button>
               </template>
               <button
-                v-if="paymentList.status === 'validated' && userHasRole('gestionnaire')"
+                v-if="paymentList.status === 'validated' && userHasRole('tresorier')"
                 @click="validateAll"
                 class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
               >
@@ -134,14 +134,14 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div class="flex space-x-2">
                         <button
-                          v-if="item.payment_status === 'pending' && userHasRole('gestionnaire')"
+                          v-if="item.payment_status === 'pending' && userHasRole('tresorier')"
                           @click="validateItem(item)"
                           class="text-indigo-600 hover:text-indigo-900"
                         >
                           Valider
                         </button>
                         <button
-                          v-if="item.payment_status === 'validated' && userHasRole('gestionnaire')"
+                          v-if="item.payment_status === 'validated' && userHasRole('tresorier')"
                           @click="invalidateItem(item)"
                           class="text-red-600 hover:text-red-900"
                         >

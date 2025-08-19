@@ -8,8 +8,8 @@
 
     <div class="py-12">
       <div class="max-w-10xl mx-auto sm:px-6 lg:px-8">
-        <!-- Section Gestionnaire -->
-        <template v-if="user?.roles?.includes('gestionnaire')">
+        <!-- Section Tresorier -->
+        <template v-if="user?.roles?.includes('tresorier')">
           <div class="mb-8">
             <h3 class="text-lg font-medium text-gray-900 mb-4">Gestion des Paiements</h3>
             

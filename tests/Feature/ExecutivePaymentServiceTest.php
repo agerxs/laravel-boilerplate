@@ -53,11 +53,11 @@ class ExecutivePaymentServiceTest extends TestCase
     public function test_sous_prefet_gets_paid_for_validated_meetings()
     {
         // Test simplifié pour identifier le problème
-        $role = Role::firstOrCreate(['name' => 'sous-prefet']);
+        $role = Role::firstOrCreate(['name' => 'president']);
         $committee = LocalCommittee::factory()->create();
         $sousPrefet = User::factory()->create(['locality_id' => $committee->locality_id]);
         $sousPrefet->assignRole($role);
-        PaymentRate::create(['role' => 'sous-prefet', 'meeting_rate' => 15000, 'is_active' => true]);
+        PaymentRate::create(['role' => 'president', 'meeting_rate' => 15000, 'is_active' => true]);
         
         // Créer seulement 2 réunions pour simplifier
         $meetings = Meeting::factory()->count(2)->create([
@@ -117,14 +117,14 @@ class ExecutivePaymentServiceTest extends TestCase
     public function test_multiple_executives_in_same_locality_get_paid()
     {
         $roleSecretaire = Role::firstOrCreate(['name' => 'secretaire']);
-        $roleSousPrefet = Role::firstOrCreate(['name' => 'sous-prefet']);
+        $roleSousPrefet = Role::firstOrCreate(['name' => 'president']);
         $committee = LocalCommittee::factory()->create();
         $secretaire = User::factory()->create(['locality_id' => $committee->locality_id]);
         $secretaire->assignRole($roleSecretaire);
         $sousPrefet = User::factory()->create(['locality_id' => $committee->locality_id]);
         $sousPrefet->assignRole($roleSousPrefet);
         PaymentRate::create(['role' => 'secretaire', 'meeting_rate' => 10000, 'is_active' => true]);
-        PaymentRate::create(['role' => 'sous-prefet', 'meeting_rate' => 15000, 'is_active' => true]);
+        PaymentRate::create(['role' => 'president', 'meeting_rate' => 15000, 'is_active' => true]);
         $meetings = Meeting::factory()->count(4)->create([
             'local_committee_id' => $committee->id,
             'status' => 'validated',
@@ -143,7 +143,7 @@ class ExecutivePaymentServiceTest extends TestCase
         $this->assertDatabaseHas('meeting_payments', [
             'user_id' => $sousPrefet->id,
             'amount' => 15000,
-            'role' => 'sous-prefet',
+            'role' => 'president',
         ]);
     }
 } 

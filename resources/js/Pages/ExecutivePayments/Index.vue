@@ -50,7 +50,7 @@ const getStatusText = (status) => {
 const getRoleText = (role) => {
   const texts = {
     'secretaire': 'Secrétaire',
-    'sous-prefet': 'Président'
+    'president': 'Président'
   };
   return texts[role] || role;
 };
@@ -178,7 +178,7 @@ const clearFilters = () => {
                 <select v-model="filters.role" class="w-full border-gray-300 rounded-md shadow-sm">
                   <option value="">Tous les rôles</option>
                   <option value="secretaire">Secrétaire</option>
-                  <option value="sous-prefet">Président</option>
+                  <option value="president">Président</option>
                 </select>
               </div>
               

@@ -22,7 +22,7 @@ class DashboardAccess
         }
 
         // Vérifier si l'utilisateur a un rôle autorisé
-        if (!$user->hasRole(['sous-prefet', 'sousprefet','Sous-prefet', 'secretaire', 'Secrétaire', 'gestionnaire', 'Gestionnaire'])) {
+        if (!$user->hasRole(['president', 'sousprefet','President', 'secretaire', 'Secrétaire', 'tresorier', 'Tresorier'])) {
             return response()->view('errors.unauthorized', [
                 'message' => 'Vous n\'avez pas accès au dashboard.'
             ], 403);

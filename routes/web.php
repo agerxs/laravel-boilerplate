@@ -139,7 +139,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('minutes.request-validation');
     Route::post('/minutes/{minutes}/validate', [MeetingMinutesController::class, 'validates'])
         ->name('minutes.validate')
-        ->middleware('role:sous-prefet|Sous-prefet|admin|Admin'); // Sous-préfets et admins peuvent valider
+        ->middleware('role:president|President|admin|Admin'); // Sous-préfets et admins peuvent valider
 
     // Routes pour les résultats des villages
     Route::prefix('meetings/{meeting}/village-results')->name('village-results.')->middleware('check.locality')->group(function () {
@@ -149,7 +149,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/{village}/submit', [App\Http\Controllers\VillageResultController::class, 'submit'])->name('submit');
         Route::post('/{village}/validate', [App\Http\Controllers\VillageResultController::class, 'validateResults'])
             ->name('validate')
-            ->middleware('role:sous-prefet|Sous-prefet|admin|Admin'); // Seuls les superviseurs peuvent valider
+            ->middleware('role:president|President|admin|Admin'); // Seuls les superviseurs peuvent valider
         Route::delete('/{village}', [App\Http\Controllers\VillageResultController::class, 'destroy'])->name('destroy');
     });
 
@@ -207,11 +207,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         
     Route::post('/meetings/{meeting}/validate', [MeetingController::class, 'validateMeeting'])
         ->name('meetings.validate')
-        ->middleware('role:sous-prefet|Sous-prefet|admin|Admin'); // Sous-préfets et admins peuvent valider
+        ->middleware('role:president|President|admin|Admin'); // Sous-préfets et admins peuvent valider
         
     Route::post('/meetings/{meeting}/invalidate', [MeetingController::class, 'invalidate'])
         ->name('meetings.invalidate')
-        ->middleware('role:sous-prefet|Sous-prefet|admin|Admin'); // Sous-préfets et admins peuvent invalider
+        ->middleware('role:president|President|admin|Admin'); // Sous-préfets et admins peuvent invalider
 
     //Route::get('/village-representatives', [VillageRepresentativesController::class, 'index'])->name('village-representatives.index');
 
@@ -242,18 +242,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Route pour le suivi des paiements des cadres
     Route::get('/executive-payments', [\App\Http\Controllers\ExecutivePaymentController::class, 'index'])
         ->name('executive-payments.index')
-        ->middleware('role:gestionnaire|admin');
+        ->middleware('role:tresorier|admin');
     
     // Routes pour l'export et la gestion des paiements des cadres
     Route::get('/executive-payments/export/all', [\App\Http\Controllers\ExecutivePaymentController::class, 'exportAll'])
         ->name('executive-payments.export.all')
-        ->middleware('role:gestionnaire|admin');
+        ->middleware('role:tresorier|admin');
     Route::get('/executive-payments/export/pending', [\App\Http\Controllers\ExecutivePaymentController::class, 'exportPending'])
         ->name('executive-payments.export.pending')
-        ->middleware('role:gestionnaire|admin');
+        ->middleware('role:tresorier|admin');
     Route::post('/executive-payments/{executivePayment}/update-status', [\App\Http\Controllers\ExecutivePaymentController::class, 'updateStatus'])
         ->name('executive-payments.update-status')
-        ->middleware('role:gestionnaire|admin');
+        ->middleware('role:tresorier|admin');
 
     // Routes pour la gestion des listes de présence
     Route::get('/meetings/{meeting}/attendance', [AttendanceController::class, 'index'])

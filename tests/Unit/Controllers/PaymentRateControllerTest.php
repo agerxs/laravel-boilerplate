@@ -18,7 +18,7 @@ class PaymentRateControllerTest extends TestCase
         $this->actingAs($user);
 
         $response = $this->post(route('payment-rates.store'), [
-            'role' => 'sous-prefet',
+            'role' => 'president',
             'meeting_rate' => 15000,
             'notes' => 'Test notes',
             'is_active' => true
@@ -27,7 +27,7 @@ class PaymentRateControllerTest extends TestCase
         $response->assertRedirect(route('payment-rates.index'));
         
         $this->assertDatabaseHas('payment_rates', [
-            'role' => 'sous-prefet',
+            'role' => 'president',
             'meeting_rate' => 15000,
             'notes' => 'Test notes',
             'is_active' => true
@@ -41,12 +41,12 @@ class PaymentRateControllerTest extends TestCase
         $this->actingAs($user);
 
         $paymentRate = PaymentRate::factory()->create([
-            'role' => 'sous-prefet',
+            'role' => 'president',
             'meeting_rate' => 15000
         ]);
 
         $response = $this->put(route('payment-rates.update', $paymentRate), [
-            'role' => 'sous-prefet',
+            'role' => 'president',
             'meeting_rate' => 20000,
             'notes' => 'Updated notes',
             'is_active' => true

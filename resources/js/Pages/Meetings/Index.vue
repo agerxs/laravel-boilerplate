@@ -370,7 +370,7 @@ const cancelMeeting = (meeting: Meeting) => {
 };
 
 const isSecretary = computed(() => hasRole(props.auth.user.roles, 'secretaire') || hasRole(props.auth.user.roles, 'Secrétaire'));
-const isSubPrefect = computed(() => hasRole(props.auth.user.roles, 'sous-prefet') || hasRole(props.auth.user.roles, 'Sous-prefet'));
+const isSubPrefect = computed(() => hasRole(props.auth.user.roles, 'president') || hasRole(props.auth.user.roles, 'President'));
 
 const expandedMeetings = ref<number[]>([]);
 

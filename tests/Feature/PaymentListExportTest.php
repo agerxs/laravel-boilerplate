@@ -26,9 +26,9 @@ class PaymentListExportTest extends TestCase
     {
         parent::setUp();
         
-        // Créer un gestionnaire
+        // Créer un tresorier
         $this->user = User::factory()->create();
-        $this->user->assignRole('gestionnaire');
+        $this->user->assignRole('tresorier');
         
         // Créer une localité et un village
         $locality = Locality::factory()->create([

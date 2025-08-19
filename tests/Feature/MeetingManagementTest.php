@@ -166,7 +166,7 @@ class MeetingManagementTest extends TestCase
     {
         // Créer un sous-préfet
         $sousPrefet = User::factory()->create();
-        $sousPrefet->assignRole('sous-prefet');
+        $sousPrefet->assignRole('president');
 
         // Créer une réunion marquée comme terminée
         $meeting = Meeting::factory()->create([
@@ -211,7 +211,7 @@ class MeetingManagementTest extends TestCase
     {
         // Créer un sous-préfet
         $sousPrefet = User::factory()->create();
-        $sousPrefet->assignRole('sous-prefet');
+        $sousPrefet->assignRole('president');
 
         // Créer une réunion avec un statut différent de 'completed'
         $meeting = Meeting::factory()->create([
@@ -238,9 +238,9 @@ class MeetingManagementTest extends TestCase
     #[Test]
     public function gestionnaire_peut_valider_liste_paiement()
     {
-        // Créer un gestionnaire
-        $gestionnaire = User::factory()->create();
-        $gestionnaire->assignRole('gestionnaire');
+        // Créer un tresorier
+        $tresorier = User::factory()->create();
+        $tresorier->assignRole('tresorier');
 
         // Créer une réunion terminée
         $meeting = Meeting::factory()->create([
@@ -254,7 +254,7 @@ class MeetingManagementTest extends TestCase
         ]);
 
         // Valider la liste de paiement
-        $response = $this->actingAs($gestionnaire)
+        $response = $this->actingAs($tresorier)
             ->postJson(route('meeting-payments.lists.validate', $paymentList->id));
 
         // Vérifier que la réponse est réussie
@@ -267,16 +267,16 @@ class MeetingManagementTest extends TestCase
         $this->assertDatabaseHas('meeting_payment_lists', [
             'id' => $paymentList->id,
             'status' => 'validated',
-            'validated_by' => $gestionnaire->id
+            'validated_by' => $tresorier->id
         ]);
     }
 
     #[Test]
     public function gestionnaire_peut_rejeter_liste_paiement()
     {
-        // Créer un gestionnaire
-        $gestionnaire = User::factory()->create();
-        $gestionnaire->assignRole('gestionnaire');
+        // Créer un tresorier
+        $tresorier = User::factory()->create();
+        $tresorier->assignRole('tresorier');
 
         // Créer une réunion terminée
         $meeting = Meeting::factory()->create([
@@ -290,7 +290,7 @@ class MeetingManagementTest extends TestCase
         ]);
 
         // Rejeter la liste de paiement
-        $response = $this->actingAs($gestionnaire)
+        $response = $this->actingAs($tresorier)
             ->postJson(route('meeting-payments.lists.reject', $paymentList->id), [
                 'rejection_reason' => 'Données incomplètes'
             ]);
@@ -305,7 +305,7 @@ class MeetingManagementTest extends TestCase
         $this->assertDatabaseHas('meeting_payment_lists', [
             'id' => $paymentList->id,
             'status' => 'rejected',
-            'rejected_by' => $gestionnaire->id,
+            'rejected_by' => $tresorier->id,
             'rejection_reason' => 'Données incomplètes'
         ]);
     }

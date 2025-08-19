@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             SecretarySeeder::class,
             SubPrefectSeeder::class,
             LocalCommitteeSeeder::class,
+            TestUsersSeeder::class, // Ajouter le seeder des utilisateurs de test
             //MeetingSeeder::class,
             
         ]);

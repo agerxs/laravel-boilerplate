@@ -22,7 +22,7 @@ abstract class TestCase extends BaseTestCase
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         // Créer les rôles s'ils n'existent pas
-        $roles = ['admin', 'sous-prefet', 'secretaire', 'prefet', 'gestionnaire'];
+        $roles = ['admin', 'president', 'secretaire', 'prefet', 'tresorier'];
         foreach ($roles as $role) {
             if (!\Spatie\Permission\Models\Role::where('name', $role)->exists()) {
                 \Spatie\Permission\Models\Role::create(['name' => $role]);

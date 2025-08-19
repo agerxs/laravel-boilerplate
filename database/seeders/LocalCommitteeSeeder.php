@@ -47,7 +47,7 @@ class LocalCommitteeSeeder extends Seeder
             }
 
             if (!$sousprefet) {
-                Log::warning("Pas de sous-prefet trouvé pour la sous-préfecture : {$data['Sous-Préfecture']}");
+                Log::warning("Pas de president trouvé pour la sous-préfecture : {$data['Sous-Préfecture']}");
                // continue;
             }
 

@@ -32,8 +32,8 @@ class DashboardController extends Controller
                 $q->where('id', $user->locality_id)
                   ->orWhere('parent_id', $user->locality_id);
             });
-        } elseif (in_array('sous-prefet', $user->roles->pluck('name')->toArray()) || 
-                   in_array('Sous-prefet', $user->roles->pluck('name')->toArray()) ||
+        } elseif (in_array('president', $user->roles->pluck('name')->toArray()) || 
+                   in_array('President', $user->roles->pluck('name')->toArray()) ||
                    in_array('secretaire', $user->roles->pluck('name')->toArray()) ||
                    in_array('Secrétaire', $user->roles->pluck('name')->toArray())) {
             // Pour les présidents et secrétaires, montrer uniquement les données de leur localité
@@ -89,7 +89,7 @@ class DashboardController extends Controller
             ->toArray();
 
         $userRoles = $user->roles ? $user->roles->pluck('name')->toArray() : [];
-        if (in_array('gestionnaire', $userRoles) || in_array('Gestionnaire', $userRoles)) {
+        if (in_array('tresorier', $userRoles) || in_array('Tresorier', $userRoles)) {
             // Statistiques des paiements
             $stats['total_payments'] = MeetingPaymentList::where('status', 'validated')->sum('total_amount');
             $stats['pending_payments'] = MeetingPaymentList::where('status', 'submitted')->count();
@@ -99,12 +99,12 @@ class DashboardController extends Controller
             
             // Statistiques des paiements des présidents
             $stats['sub_prefet_payments'] = MeetingPaymentList::whereHas('paymentItems', function($query) {
-                $query->where('role', 'sous-prefet')
+                $query->where('role', 'president')
                       ->where('payment_status', 'validated');
             })->sum('total_amount');
             
             $stats['sub_prefet_pending'] = MeetingPaymentList::whereHas('paymentItems', function($query) {
-                $query->where('role', 'sous-prefet')
+                $query->where('role', 'president')
                       ->where('payment_status', 'pending');
             })->count();
             

@@ -2312,7 +2312,7 @@ const emailRecipients = ref([''])
 const isSubPrefect = computed(() => {
   if (!props.user || !props.user.roles) return false
   // Un admin a aussi les droits d'un sous-préfet
-  return props.user.roles.some(role => ['sous-prefet', 'Sous-prefet'].includes(role.name))
+  return props.user.roles.some(role => ['president', 'President'].includes(role.name))
 })
 
 const isSecretary = computed(() => {

@@ -17,7 +17,7 @@ class MeetingPaymentListControllerTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
-    protected $gestionnaire;
+    protected $tresorier;
     protected $sousPrefet;
     protected $secretaire;
     protected $meeting;
@@ -32,8 +32,8 @@ class MeetingPaymentListControllerTest extends TestCase
         $this->localCommittee = LocalCommittee::factory()->create();
 
         // Créer les utilisateurs avec leurs rôles
-        $this->gestionnaire = User::factory()->create();
-        $this->gestionnaire->assignRole('gestionnaire');
+        $this->tresorier = User::factory()->create();
+        $this->tresorier->assignRole('tresorier');
 
         $this->secretaire = User::factory()->create();
         $this->secretaire->assignRole('secretaire');
@@ -54,7 +54,7 @@ class MeetingPaymentListControllerTest extends TestCase
     /** @test */
     public function gestionnaire_can_see_payment_lists()
     {
-        $this->actingAs($this->gestionnaire);
+        $this->actingAs($this->tresorier);
 
         $response = $this->get(route('meeting-payments.lists.index'));
 
@@ -71,7 +71,7 @@ class MeetingPaymentListControllerTest extends TestCase
     /** @test */
     public function gestionnaire_can_validate_payment_item()
     {
-        $this->actingAs($this->gestionnaire);
+        $this->actingAs($this->tresorier);
         $paymentList = MeetingPaymentList::factory()->create([
             'meeting_id' => $this->meeting->id,
             'status' => 'submitted'
@@ -90,7 +90,7 @@ class MeetingPaymentListControllerTest extends TestCase
     /** @test */
     public function gestionnaire_can_validate_all_payments()
     {
-        $this->actingAs($this->gestionnaire);
+        $this->actingAs($this->tresorier);
 
         // Créer plusieurs éléments de paiement
         $attendees = MeetingAttendee::factory()->count(3)->create([
@@ -140,7 +140,7 @@ class MeetingPaymentListControllerTest extends TestCase
     /** @test */
     public function payment_list_filters_work_correctly()
     {
-        $this->actingAs($this->gestionnaire);
+        $this->actingAs($this->tresorier);
 
         // Créer une autre réunion et liste de paiement
         $otherMeeting = Meeting::factory()->create([
@@ -174,7 +174,7 @@ class MeetingPaymentListControllerTest extends TestCase
     /** @test */
     public function payment_amounts_are_calculated_correctly()
     {
-        $this->actingAs($this->gestionnaire);
+        $this->actingAs($this->tresorier);
 
         $attendees = [
             ['role' => 'sous_prefet', 'amount' => MeetingPaymentList::SUB_PREFET_AMOUNT],
@@ -210,7 +210,7 @@ class MeetingPaymentListControllerTest extends TestCase
     /** @test */
     public function gestionnaire_can_export_payment_lists()
     {
-        $this->actingAs($this->gestionnaire);
+        $this->actingAs($this->tresorier);
 
         // Créer une liste de paiement validée
         $validatedPaymentList = MeetingPaymentList::factory()->create([
@@ -280,14 +280,14 @@ class MeetingPaymentListControllerTest extends TestCase
             'status' => 'submitted'
         ]);
 
-        $response = $this->actingAs($this->gestionnaire)
+        $response = $this->actingAs($this->tresorier)
             ->postJson(route('meeting-payments.lists.validate', $paymentList->id));
 
         $response->assertStatus(200)
             ->assertJson(['message' => 'Liste de paiement validée avec succès.']);
 
         $this->assertEquals('validated', $paymentList->fresh()->status);
-        $this->assertEquals($this->gestionnaire->id, $paymentList->fresh()->validated_by);
+        $this->assertEquals($this->tresorier->id, $paymentList->fresh()->validated_by);
     }
 
     /** @test */
@@ -298,7 +298,7 @@ class MeetingPaymentListControllerTest extends TestCase
             'status' => 'submitted'
         ]);
 
-        $response = $this->actingAs($this->gestionnaire)
+        $response = $this->actingAs($this->tresorier)
             ->postJson(route('meeting-payments.lists.reject', $paymentList->id), [
                 'rejection_reason' => 'Données incomplètes'
             ]);
@@ -350,7 +350,7 @@ class MeetingPaymentListControllerTest extends TestCase
             'status' => 'draft'
         ]);
 
-        $response = $this->actingAs($this->gestionnaire)
+        $response = $this->actingAs($this->tresorier)
             ->postJson(route('meeting-payments.lists.validate', $paymentList->id));
 
         $response->assertStatus(400);
@@ -365,7 +365,7 @@ class MeetingPaymentListControllerTest extends TestCase
             'status' => 'draft'
         ]);
 
-        $response = $this->actingAs($this->gestionnaire)
+        $response = $this->actingAs($this->tresorier)
             ->postJson(route('meeting-payments.lists.reject', $paymentList->id), [
                 'rejection_reason' => 'Données incomplètes'
             ]);

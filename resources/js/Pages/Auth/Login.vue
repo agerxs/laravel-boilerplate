@@ -30,13 +30,13 @@ const submit = () => {
 
 // Fonctions pour la connexion rapide
 const loginAsAdmin = () => {
-    form.email = 'admin@gmail.com';
-    form.password = '12345678';
+    form.email = 'admin@test.com';
+    form.password = 'password123';
     submit();
 };
 
 const loginAsSousPrefet = () => {
-    form.email = 'sousprefet@test.com';
+    form.email = 'president@test.com';
     form.password = 'password123';
     submit();
 };
@@ -48,8 +48,8 @@ const loginAsSecretaire = () => {
 };
 
 const loginAsGestionnaire = () => {
-    form.email = 'gestionnaire@example.com';
-    form.password = 'password';
+    form.email = 'tresorier@example.com';
+    form.password = 'password123';
     submit();
 };
 </script>

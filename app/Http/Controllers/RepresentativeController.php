@@ -60,7 +60,7 @@ class RepresentativeController extends Controller
             ->get();
 
         $committeeQuery = \App\Models\LocalCommittee::query();
-        if ($user->hasRole(['sous-prefet', 'Sous-prefet', 'secretaire', 'Secrétaire'])) {
+        if ($user->hasRole(['president', 'President', 'secretaire', 'Secrétaire'])) {
             $committeeQuery->where('locality_id', $user->locality_id);
         }
         $localCommittees = $committeeQuery->get();

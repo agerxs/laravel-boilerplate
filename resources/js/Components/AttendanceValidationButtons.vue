@@ -71,12 +71,12 @@ const loading = ref(false)
 
 // Vérifier si l'utilisateur peut valider les présences
 const canValidateAttendance = computed(() => {
-  return hasRole(props.user.roles, 'sous-prefet') || hasRole(props.user.roles, 'admin')
+  return hasRole(props.user.roles, 'president') || hasRole(props.user.roles, 'admin')
 })
 
 // Vérifier si l'utilisateur peut invalider les présences
 const canInvalidateAttendance = computed(() => {
-  return hasRole(props.user.roles, 'sous-prefet') || hasRole(props.user.roles, 'admin')
+  return hasRole(props.user.roles, 'president') || hasRole(props.user.roles, 'admin')
 })
 
 // Vérifier si les présences peuvent être validées

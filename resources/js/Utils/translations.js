@@ -41,7 +41,7 @@ export const ROLES = {
   sous_prefet: 'Président',
   secretaire: 'Secrétaire',
   representant: 'Représentant',
-  gestionnaire: 'Trésorier',
+  tresorier: 'Trésorier',
   member: 'Membre',
   guest: 'Invité',
   observer: 'Observateur'

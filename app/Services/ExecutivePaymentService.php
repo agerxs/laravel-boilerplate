@@ -23,12 +23,12 @@ class ExecutivePaymentService
         Log::info("Localité ID: {$meeting->localCommittee->locality_id}");
         
         // Récupérer les rôles de secrétaire et président
-        $executiveRoles = Role::whereIn('name', ['secretaire', 'sous-prefet'])->get();
-        Log::info("Rôles recherchés: secretaire, sous-prefet");
+        $executiveRoles = Role::whereIn('name', ['secretaire', 'president'])->get();
+        Log::info("Rôles recherchés: secretaire, president");
         Log::info("Rôles trouvés: " . $executiveRoles->pluck('name')->join(', '));
         
         if ($executiveRoles->isEmpty()) {
-            Log::warning('Les rôles "secretaire" ou "sous-prefet" n\'ont pas été trouvés.');
+            Log::warning('Les rôles "secretaire" ou "president" n\'ont pas été trouvés.');
             return 0;
         }
 

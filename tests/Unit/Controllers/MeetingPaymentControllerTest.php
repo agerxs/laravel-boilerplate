@@ -21,7 +21,7 @@ class MeetingPaymentControllerTest extends TestCase
 
         $meeting = Meeting::factory()->create();
         $paymentRate = PaymentRate::factory()->create([
-            'role' => 'sous-prefet',
+            'role' => 'president',
             'meeting_rate' => 15000,
             'is_active' => true
         ]);
@@ -48,7 +48,7 @@ class MeetingPaymentControllerTest extends TestCase
             'payments' => [
                 [
                     'user_id' => $official->id,
-                    'role' => 'sous-prefet',
+                    'role' => 'president',
                     'amount' => 15000,
                     'is_paid' => true,
                     'payment_date' => '2024-03-14',
@@ -63,7 +63,7 @@ class MeetingPaymentControllerTest extends TestCase
         $this->assertDatabaseHas('meeting_payments', [
             'meeting_id' => $meeting->id,
             'user_id' => $official->id,
-            'role' => 'sous-prefet',
+            'role' => 'president',
             'amount' => 15000,
             'is_paid' => true
         ]);

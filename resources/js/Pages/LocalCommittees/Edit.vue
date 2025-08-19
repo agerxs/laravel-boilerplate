@@ -448,7 +448,7 @@ const permanentMembers = ref({
 const presidentDetails = ref({ phone: '', whatsapp: '' });
 const secretaryDetails = ref({ phone: '', whatsapp: '' });
 
-const sousPrefets = computed(() => props.users.filter(user => user.role === 'Sous-prefet'));
+const sousPrefets = computed(() => props.users.filter(user => user.role === 'President'));
 const secretaires = computed(() => props.users.filter(user => user.role === 'Secrétaire'));
 
 const updatePresidentDetails = () => {

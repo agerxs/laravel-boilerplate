@@ -85,7 +85,7 @@ const navigation: NavigationItem[] = [
     name: 'Comités Locaux', 
     href: route('local-committees.index'), 
     icon: UserGroupIcon,
-    roles: ['sous-prefet', 'secretaire', 'prefet', 'admin', 'gestionnaire'],
+    roles: ['president', 'secretaire', 'prefet', 'admin', 'tresorier'],
     color: 'text-emerald-600',
     gradient: 'from-emerald-500 to-emerald-600'
   },
@@ -93,7 +93,7 @@ const navigation: NavigationItem[] = [
     name: 'Représentants', 
     href: route('representatives.index'), 
     icon: UserIcon,
-    roles: ['sous-prefet', 'secretaire'],
+    roles: ['president', 'secretaire'],
     color: 'text-indigo-600',
     gradient: 'from-indigo-500 to-indigo-600'
   },
@@ -101,7 +101,7 @@ const navigation: NavigationItem[] = [
     name: 'Réunions', 
     href: route('meetings.index'), 
     icon: UsersIcon,
-    roles: ['sous-prefet', 'secretaire', 'prefet', 'gestionnaire'],
+    roles: ['president', 'secretaire', 'prefet', 'tresorier'],
     color: 'text-orange-600',
     gradient: 'from-orange-500 to-orange-600'
   },
@@ -109,7 +109,7 @@ const navigation: NavigationItem[] = [
     name: 'Historique des imports', 
     href: route('bulk-imports.index'), 
     icon: ArrowUpTrayIcon,
-    roles: ['sous-prefet', 'secretaire', 'prefet', 'gestionnaire'],
+    roles: ['president', 'secretaire', 'prefet', 'tresorier'],
     color: 'text-cyan-600',
     gradient: 'from-cyan-500 to-cyan-600'
   },
@@ -117,7 +117,7 @@ const navigation: NavigationItem[] = [
     name: 'Gestion des Paiements', 
     href: route('meeting-payments.lists.index'), 
     icon: DocumentIcon,
-    roles: ['sous-prefet', 'secretaire', 'gestionnaire'],
+    roles: ['president', 'secretaire', 'tresorier'],
     color: 'text-rose-600',
     gradient: 'from-rose-500 to-rose-600'
   },
@@ -125,7 +125,7 @@ const navigation: NavigationItem[] = [
 //     name: 'Paiements des Comités',
 //     href: route('executive-payments.index'),
 //     icon: DocumentIcon,
-//     roles: ['gestionnaire', 'admin'],
+//     roles: ['tresorier', 'admin'],
 //     color: 'text-violet-600',
 //     gradient: 'from-violet-500 to-violet-600'
 //   },

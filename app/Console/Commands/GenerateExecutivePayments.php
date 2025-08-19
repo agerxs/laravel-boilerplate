@@ -125,7 +125,7 @@ class GenerateExecutivePayments extends Command
         
         $executives = \App\Models\User::where('locality_id', $committee->locality_id)
             ->whereHas('roles', function($query) {
-                $query->whereIn('name', ['secretaire', 'sous-prefet']);
+                $query->whereIn('name', ['secretaire', 'president']);
             })
             ->count();
         

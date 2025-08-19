@@ -35,8 +35,8 @@ $subPrefet = new \App\Models\User([
 $subPrefet->save();
 
 // Créer un rôle président si nécessaire
-$role = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'sous-prefet']);
-$subPrefet->assignRole('sous-prefet');
+$role = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'president']);
+$subPrefet->assignRole('president');
 
 
 

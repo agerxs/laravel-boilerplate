@@ -19,7 +19,7 @@ class BulkImportController extends Controller
                 $q->where('id', $user->locality_id)
                   ->orWhere('parent_id', $user->locality_id);
             });
-        } elseif ($user->hasRole(['sous-prefet', 'Sous-prefet', 'secretaire', 'Secrétaire'])) {
+        } elseif ($user->hasRole(['president', 'President', 'secretaire', 'Secrétaire'])) {
             $query->whereHas('localCommittee', function ($q) use ($user) {
                 $q->where('locality_id', $user->locality_id);
             });
@@ -56,7 +56,7 @@ class BulkImportController extends Controller
         if ($user->hasRole(['prefet', 'Prefet'])) {
             $allowed = $bulkImport->localCommittee->locality->id === $user->locality_id ||
                       $bulkImport->localCommittee->locality->parent_id === $user->locality_id;
-        } elseif ($user->hasRole(['sous-prefet', 'Sous-prefet', 'secretaire', 'Secrétaire'])) {
+        } elseif ($user->hasRole(['president', 'President', 'secretaire', 'Secrétaire'])) {
             $allowed = $bulkImport->localCommittee->locality_id === $user->locality_id;
         } else {
             $allowed = $bulkImport->user_id === $user->id;
@@ -81,7 +81,7 @@ class BulkImportController extends Controller
         if ($user->hasRole(['prefet', 'Prefet'])) {
             $allowed = $bulkImport->localCommittee->locality->id === $user->locality_id ||
                       $bulkImport->localCommittee->locality->parent_id === $user->locality_id;
-        } elseif ($user->hasRole(['sous-prefet', 'Sous-prefet', 'secretaire', 'Secrétaire'])) {
+        } elseif ($user->hasRole(['president', 'President', 'secretaire', 'Secrétaire'])) {
             $allowed = $bulkImport->localCommittee->locality_id === $user->locality_id;
         } else {
             $allowed = $bulkImport->user_id === $user->id;
@@ -109,7 +109,7 @@ class BulkImportController extends Controller
         if ($user->hasRole(['prefet', 'Prefet'])) {
             $allowed = $bulkImport->localCommittee->locality->id === $user->locality_id ||
                       $bulkImport->localCommittee->locality->parent_id === $user->locality_id;
-        } elseif ($user->hasRole(['sous-prefet', 'Sous-prefet', 'secretaire', 'Secrétaire'])) {
+        } elseif ($user->hasRole(['president', 'President', 'secretaire', 'Secrétaire'])) {
             $allowed = $bulkImport->localCommittee->locality_id === $user->locality_id;
         } else {
             $allowed = $bulkImport->user_id === $user->id;

@@ -569,7 +569,7 @@ const isSubPrefect = computed(() => {
   console.log('Debug - User:', user)
   console.log('Debug - User roles:', user?.roles)
   if (!user || !user.roles) return false
-  return user.roles.some(role => role?.name && ['sous-prefet', 'Sous-prefet'].includes(role.name))
+  return user.roles.some(role => role?.name && ['president', 'President'].includes(role.name))
 })
 
 const isSecretary = computed(() => {
