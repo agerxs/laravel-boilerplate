@@ -207,7 +207,7 @@ function translateRole(role) {
     const translations = {
         'sous_prefet': 'Président',
         'secretaire': 'Secrétaire',
-        'representant': 'Représentant'
+        'membre': 'Membre'
     };
     
     return translations[role] || role;

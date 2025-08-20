@@ -165,6 +165,7 @@
                       type="file"
                       id="decree"
                       @change="handleFileChange($event, 'decree')"
+                      accept=".pdf,.jpg,.jpeg,.png,.xlsx,.xls"
                       class="mt-1 block w-full"
                       
                     />
@@ -191,6 +192,9 @@
                     </object>
                   </template>
                 </div>
+                <p class="mt-1 text-sm text-gray-500">
+                  Formats acceptés : PDF, JPG, PNG, Excel (.xlsx, .xls). Taille maximum : 10MB
+                </p>
               </div>
             </div>
           </form>
@@ -396,13 +400,14 @@
               <div>
                 <InputLabel for="installation_minutes" value="Compte rendu de la réunion d'installation"  />
                 <div class="relative">
-                  <input
-                    type="file"
-                    id="installation_minutes"
-                    @change="handleFileChange($event, 'minutes')"
-                    class="mt-1 block w-full"
-                    required
-                  />
+                                      <input
+                      type="file"
+                      id="installation_minutes"
+                      @change="handleFileChange($event, 'minutes')"
+                      accept=".pdf,.jpg,.jpeg,.png,.xlsx,.xls"
+                      class="mt-1 block w-full"
+                      required
+                    />
                   <div v-if="form.installation_minutes_file" class="absolute top-0 right-0 bg-green-100 text-green-800 px-2 py-1 rounded-md text-xs font-medium">
                     Fichier chargé: {{ form.installation_minutes_file.name }}
                   </div>
@@ -418,17 +423,21 @@
                     </div>
                   </div>
                 </div>
+                <p class="mt-1 text-sm text-gray-500">
+                  Formats acceptés : PDF, JPG, PNG, Excel (.xlsx, .xls). Taille maximum : 10MB
+                </p>
               </div>
               <div>
                 <InputLabel for="attendance_list" value="Liste de présence de la réunion d'installation" />
                 <div class="relative">
-                  <input
-                    type="file"
-                    id="attendance_list"
-                    @change="handleFileChange($event, 'attendance')"
-                    class="mt-1 block w-full"
-                    required
-                  />
+                                      <input
+                      type="file"
+                      id="attendance_list"
+                      @change="handleFileChange($event, 'attendance')"
+                      accept=".pdf,.jpg,.jpeg,.png,.xlsx,.xls"
+                      class="mt-1 block w-full"
+                      required
+                    />
                   <div v-if="form.attendance_list_file" class="absolute top-0 right-0 bg-green-100 text-green-800 px-2 py-1 rounded-md text-xs font-medium">
                     Fichier chargé: {{ form.attendance_list_file.name }}
                   </div>
@@ -441,9 +450,12 @@
                     <div>
                       <p class="text-sm font-medium">Liste de présence (PDF)</p>
                       <a :href="attendancePreview" target="_blank" class="text-xs text-blue-600 hover:underline">Voir le document</a>
-                    </div>
+                </div>
                   </div>
                 </div>
+                <p class="mt-1 text-sm text-gray-500">
+                  Formats acceptés : PDF, JPG, PNG, Excel (.xlsx, .xls). Taille maximum : 10MB
+                </p>
               </div>
             </div>
           </form>
@@ -510,7 +522,7 @@
       </div>
     </div>
 
-    <!-- Modal pour ajouter des représentants -->
+            <!-- Modal pour ajouter des membres -->
     <div v-if="showRepresentativeModal" class="fixed inset-0 z-50 overflow-y-auto">
       <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 transition-opacity" @click="closeRepresentativeModal">
@@ -527,7 +539,7 @@
             <div class="sm:flex sm:items-start">
               <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                 <h3 class="text-lg leading-6 font-medium text-gray-900">
-                  Représentants du village {{ selectedVillage ? selectedVillage.name : '' }}
+                  Membres du village {{ selectedVillage ? selectedVillage.name : '' }}
                 </h3>
                 
                 <div class="mt-4 space-y-4">
@@ -571,8 +583,8 @@
                         >
                           <option value="">Sélectionner un rôle</option>
                           <option value="Chef du village">Chef du village</option>
-                          <option value="Représentant des femmes">Représentant des femmes</option>
-                          <option value="Représentant des jeunes">Représentant des jeunes</option>
+                                                  <option value="Membre des femmes">Membre des femmes</option>
+                        <option value="Membre des jeunes">Membre des jeunes</option>
                           <option value="Autre">Autre</option>
                         </select>
                       </div>
@@ -598,7 +610,7 @@
                       <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                       </svg>
-                      Ajouter un représentant
+                      Ajouter un membre
                     </button>
                   </div>
                 </div>
@@ -651,6 +663,7 @@ interface Representative {
   first_name: string;
   last_name: string;
   phone: string;
+  gender?: string;
   role: string;
 }
 
@@ -934,13 +947,14 @@ const previousStep = () => {
   }
 };
 
-// Logique pour les représentants des villages
+    // Logique pour les membres des villages
 const selectedVillage = ref<Village | null>(null);
-const representativeRoles = ['Chef du village', 'Représentant des femmes', 'Représentant des jeunes'];
+const representativeRoles = ['Chef du village', 'Membre des femmes', 'Membre des jeunes'];
 const villageRepresentatives = ref<Representative[]>(representativeRoles.map(role => ({
   first_name: '',
   last_name: '',
   phone: '',
+  gender: '',
   role: role
 })));
 
@@ -979,6 +993,30 @@ const handleFileChange = (event:Event,stype: string) =>  {
   const target = event.target as HTMLInputElement;
   const file = target.files ? target.files[0] : null;
   if (file) {
+    // Vérifier le type de fichier
+    const allowedTypes = [
+      'application/pdf',
+      'image/jpeg',
+      'image/jpg', 
+      'image/png',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+      'application/vnd.ms-excel' // .xls
+    ];
+    
+    if (!allowedTypes.includes(file.type)) {
+      showToastMessage(`Type de fichier non autorisé. Formats acceptés : PDF, JPG, PNG, Excel`, 'error');
+      target.value = ''; // Réinitialiser le champ
+      return;
+    }
+    
+    // Vérifier la taille du fichier (max 10MB)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      showToastMessage(`Fichier trop volumineux. Taille maximum : 10MB`, 'error');
+      target.value = ''; // Réinitialiser le champ
+      return;
+    }
+    
     const reader = new FileReader();
     reader.onload = (e) => {
       console.log(stype);
@@ -987,14 +1025,17 @@ const handleFileChange = (event:Event,stype: string) =>  {
         decreeFile.value = file;
         form.decree_file = file;
         decreePreview.value = result;
+        showToastMessage('Arrêté chargé avec succès', 'success');
       } else if (stype === 'minutes') {
         installationMinutesFile.value = file;
         form.installation_minutes_file = file;
         minutesPreview.value = result;
+        showToastMessage('Compte rendu chargé avec succès', 'success');
       } else if (stype === 'attendance') {
         attendanceListFile.value = file;
         form.attendance_list_file = file;
         attendancePreview.value = result;
+        showToastMessage('Liste de présence chargée avec succès', 'success');
       }
     };
     reader.readAsDataURL(file);
@@ -1016,7 +1057,7 @@ const showToastMessage = (message: string, type: 'success' | 'error' | 'warning'
   }, 3000); // Le toast disparaît après 3 secondes
 };
 
-// Modifiez la fonction saveProgress pour inclure les responsables et les représentants par village
+    // Modifiez la fonction saveProgress pour inclure les responsables et les membres par village
 const saveProgress = () => {
   // Créez un FormData pour envoyer les fichiers
   const formData = new FormData();
@@ -1059,7 +1100,7 @@ const saveProgress = () => {
   // Ajoutez les membres au FormData
   formData.append('members', JSON.stringify(members));
   
-  // Ajoutez les villages et leurs représentants
+          // Ajoutez les villages et leurs membres
   formData.append('villages', JSON.stringify(addedVillages.value));
   
   // Ajoutez les dates et lieux
@@ -1399,7 +1440,7 @@ const validateForm = () => {
 // Ajoutez ces variables d'état pour le modal
 const showRepresentativeModal = ref(false);
 
-// Fonction pour ouvrir le modal des représentants
+    // Fonction pour ouvrir le modal des membres
 const openRepresentativeModal = (village: Village) => {
   if (selectedVillage.value) {
     selectedVillage.value = village;
@@ -1419,7 +1460,7 @@ const closeRepresentativeModal = () => {
   villageRepresentatives.value = [];
 };
 
-// Fonction pour ajouter un représentant
+    // Fonction pour ajouter un membre
 const addRepresentative = () => {
   villageRepresentatives.value.push({
     first_name: '',
@@ -1429,17 +1470,17 @@ const addRepresentative = () => {
   });
 };
 
-// Fonction pour supprimer un représentant
+    // Fonction pour supprimer un membre
 const removeRepresentative = (index: number) => {
   villageRepresentatives.value.splice(index, 1);
   
-  // S'assurer qu'il y a toujours au moins un représentant
+      // S'assurer qu'il y a toujours au moins un membre
   if (villageRepresentatives.value.length === 0) {
     addRepresentative();
   }
 };
 
-// Fonction pour enregistrer les représentants
+    // Fonction pour enregistrer les membres
 const saveRepresentatives = () => {
   if (!selectedVillage.value) return;
   
@@ -1451,7 +1492,7 @@ const saveRepresentatives = () => {
   );
   
   if (!isValid) {
-    alert('Veuillez remplir tous les champs obligatoires pour chaque représentant.');
+            alert('Veuillez remplir tous les champs obligatoires pour chaque membre.');
     return;
   }
   
@@ -1459,10 +1500,10 @@ const saveRepresentatives = () => {
   const existingIndex = addedVillages.value.findIndex(v => v.id === selectedVillage.value!.id);
   
   if (existingIndex >= 0) {
-    // Mettre à jour les représentants du village existant
+            // Mettre à jour les membres du village existant
     addedVillages.value[existingIndex].representatives = [...villageRepresentatives.value];
   } else {
-    // Ajouter le village avec ses représentants
+            // Ajouter le village avec ses membres
     addedVillages.value.push({
       id: selectedVillage.value.id,
       name: selectedVillage.value.name,
@@ -1474,7 +1515,7 @@ const saveRepresentatives = () => {
   closeRepresentativeModal();
 };
 
-// Ajoutez ces fonctions pour vérifier si un village est déjà ajouté et obtenir le nombre de représentants
+    // Ajoutez ces fonctions pour vérifier si un village est déjà ajouté et obtenir le nombre de membres
 const isVillageAdded = (villageId: number) => {
   return addedVillages.value.some(v => v.id === villageId);
 };
@@ -1484,7 +1525,7 @@ const getRepresentativesCount = (villageId: number) => {
   return village && village.representatives ? village.representatives.length : 0;
 };
 
-// Ajoutez cette fonction pour éditer les représentants d'un village
+    // Ajoutez cette fonction pour éditer les membres d'un village
 const editVillageRepresentatives = (village: Village) => {
   if (village && village.representatives) {
     selectedVillage.value = village;

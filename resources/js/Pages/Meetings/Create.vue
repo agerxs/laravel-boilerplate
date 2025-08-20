@@ -82,11 +82,11 @@
 
             
 
-            <!-- Section des représentants des villages -->
+            <!-- Section des membres des villages -->
             <div v-if="committeeVillages.length > 0" class="mt-8 border-t pt-6">
-              <h3 class="text-lg font-medium text-gray-900 mb-4">Représentants des villages</h3>
+                              <h3 class="text-lg font-medium text-gray-900 mb-4">Membres des villages</h3>
               <p class="text-sm text-gray-600 mb-6">
-                Ces représentants sont issus du comité local sélectionné. Vous pouvez les modifier pour cette réunion spécifique.
+                                  Ces membres sont issus du comité local sélectionné. Vous pouvez les modifier pour cette réunion spécifique.
               </p>
 
               <div class="space-y-6">
@@ -98,7 +98,7 @@
                       @click="toggleVillageRepresentatives(village.id)"
                       class="text-sm text-blue-600 hover:text-blue-800"
                     >
-                      {{ expandedVillages.includes(village.id) ? 'Masquer' : 'Modifier les représentants' }}
+                      {{ expandedVillages.includes(village.id) ? 'Masquer' : 'Modifier les membres' }}
                     </button>
                   </div>
                   
@@ -134,8 +134,8 @@
                           >
                             <option value="">Sélectionner un rôle</option>
                             <option value="Chef de village">Chef de village</option>
-                            <option value="Représentant des femmes">Représentant des femmes</option>
-                            <option value="Représentant des jeunes">Représentant des jeunes</option>
+                            <option value="Membre des femmes">Membre des femmes</option>
+                            <option value="Membre des jeunes">Membre des jeunes</option>
                             <option value="Autre">Autre</option>
                           </select>
                         </div>
@@ -179,7 +179,7 @@
                   </div>
                   
                   <div v-else class="text-sm text-gray-600">
-                    {{ getAttendingCount(village.id) }} / {{ meetingRepresentatives[village.id]?.length || 0 }} représentants participeront
+                    {{ getAttendingCount(village.id) }} / {{ meetingRepresentatives[village.id]?.length || 0 }} membres participeront
                   </div>
                 </div>
               </div>

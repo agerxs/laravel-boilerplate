@@ -1,9 +1,9 @@
 <template>
-  <Head title="Ajouter des représentants pour les villages" />
+  <Head title="Ajouter des membres pour les villages" />
 
-  <AppLayout title="Ajouter des représentants pour les villages">
+  <AppLayout title="Ajouter des membres pour les villages">
     <div class="max-w-10xl mx-auto py-6">
-      <h1 class="text-3xl font-extrabold mb-6 text-gray-900">Ajouter des représentants pour les villages</h1>
+              <h1 class="text-3xl font-extrabold mb-6 text-gray-900">Ajouter des membres pour les villages</h1>
       
       <!-- Afficher le nom du comité -->
       <h2 class="text-2xl font-semibold mb-4 text-indigo-600">Comité: {{ committee.name }}</h2>
@@ -40,11 +40,11 @@
 
       <!-- Formulaire pour ajouter un village et ses représentants -->
       <div v-if="selectedVillage" class="bg-white p-6 rounded-lg shadow-md mb-6">
-        <h3 class="text-lg font-medium text-gray-900 mt-4">Représentants du village</h3>
+                    <h3 class="text-lg font-medium text-gray-900 mt-4">Membres du village</h3>
         <div class="space-y-4">
           <div v-for="(rep, index) in villageRepresentatives" :key="index" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
             <h4 class="text-md font-semibold text-gray-800">{{ rep.role }}</h4>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
               <div>
                 <InputLabel :for="`representative-${index}-firstname`" value="Prénom" />
                 <TextInput
@@ -78,6 +78,19 @@
                   pattern="\\d*"
                   inputmode="numeric"
                 />
+              </div>
+
+              <div>
+                <InputLabel :for="`representative-${index}-gender`" value="Sexe" />
+                <select
+                  :id="`representative-${index}-gender`"
+                  v-model="rep.gender"
+                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                >
+                  <option value="">Sélectionner...</option>
+                  <option value="M">Masculin</option>
+                  <option value="F">Féminin</option>
+                </select>
               </div>
             </div>
           </div>
@@ -133,11 +146,11 @@
 
       <!-- Formulaire de modification -->
       <div v-if="editIndex !== null" class="bg-white p-6 rounded-lg shadow-md mb-6">
-        <h3 class="text-lg font-medium text-gray-900 mt-4">Modifier les représentants du village</h3>
+                    <h3 class="text-lg font-medium text-gray-900 mt-4">Modifier les membres du village</h3>
         <div class="space-y-4">
           <div v-for="(rep, index) in editRepresentatives" :key="index" class="bg-gray-50 p-4 rounded-lg border border-gray-200">
             <h4 class="text-md font-semibold text-gray-800">{{ rep.role }}</h4>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
               <div>
                 <InputLabel :for="`edit-representative-${index}-firstname`" value="Prénom" />
                 <TextInput
@@ -152,7 +165,7 @@
               <div>
                 <InputLabel :for="`edit-representative-${index}-lastname`" value="Nom" />
                 <TextInput
-                  :id="`edit-representative-${index}-lastname`"
+                  :id="`edit-representative-${index}-firstname`"
                   v-model="rep.last_name"
                   type="text"
                   class="mt-1 block w-full"
@@ -171,6 +184,19 @@
                   pattern="\\d*"
                   inputmode="numeric"
                 />
+              </div>
+
+              <div>
+                <InputLabel :for="`edit-representative-${index}-gender`" value="Sexe" />
+                <select
+                  :id="`edit-representative-${index}-gender`"
+                  v-model="rep.gender"
+                  class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                >
+                  <option value="">Sélectionner...</option>
+                  <option value="M">Masculin</option>
+                  <option value="F">Féminin</option>
+                </select>
               </div>
             </div>
           </div>
@@ -221,11 +247,12 @@ onMounted(() => {
 })
 
 const selectedVillage = ref(null)
-const representativeRoles = ['Chef du village', 'Représentant des femmes', 'Représentant des jeunes']
+const representativeRoles = ['Chef du village', 'Membre des femmes', 'Membre des jeunes']
 const villageRepresentatives = ref(representativeRoles.map(role => ({
   first_name: '',
   last_name: '',
   phone: '',
+  gender: '',
   role: role
 })))
 

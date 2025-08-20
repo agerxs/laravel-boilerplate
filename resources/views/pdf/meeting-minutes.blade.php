@@ -148,33 +148,46 @@
         <h2>Informations générales</h2>
         <div class="info-grid">
             <div class="info-label">Date :</div>
-            <div class="info-value">{{ $meeting->start_datetime->format('d/m/Y H:i') }}</div>
+            <div class="info-value">
+                {{ $meeting->start_datetime ? $meeting->start_datetime->format('d/m/Y H:i') : 'Date non définie' }}
+            </div>
             
             <div class="info-label">Lieu :</div>
-            <div class="info-value">{{ $meeting->location }}</div>
+            <div class="info-value">{{ $meeting->location ?? 'Lieu non défini' }}</div>
             
             <div class="info-label">Durée :</div>
             <div class="info-value">
-                {{ $meeting->start_datetime->diffForHumans($meeting->end_datetime, ['parts' => 2]) }}
+                @if($meeting->start_datetime && $meeting->end_datetime)
+                    {{ $meeting->start_datetime->diffForHumans($meeting->end_datetime, ['parts' => 2]) }}
+                @else
+                    Durée non définie
+                @endif
             </div>
         </div>
     </div>
 
+    @if(isset($meeting->attendees) && $meeting->attendees->count() > 0)
     <div class="section">
         <h2>Participants</h2>
         <ul class="participants-list">
-            @foreach($meeting->participants as $participant)
+            @foreach($meeting->attendees as $attendee)
                 <li>
-                    {{ $participant->user ? $participant->user->name : $participant->guest_name }}
-                    @if($participant->user && $participant->user->email)
-                        <span style="color: #718096"> - {{ $participant->user->email }}</span>
+                    {{ $attendee->user ? $attendee->user->name : $attendee->guest_name }}
+                    @if($attendee->user && $attendee->user->email)
+                        <span style="color: #718096"> - {{ $attendee->user->email }}</span>
                     @endif
                 </li>
             @endforeach
         </ul>
     </div>
+    @else
+    <div class="section">
+        <h2>Participants</h2>
+        <p>Aucun participant enregistré pour cette réunion.</p>
+    </div>
+    @endif
 
-    @if($meeting->agenda->count() > 0)
+    @if(isset($meeting->agenda) && $meeting->agenda->count() > 0)
     <div class="section">
         <h2>Ordre du jour</h2>
         @foreach($meeting->agenda as $item)
@@ -191,6 +204,11 @@
                 </p>
             </div>
         @endforeach
+    </div>
+    @else
+    <div class="section">
+        <h2>Ordre du jour</h2>
+        <p>Aucun ordre du jour défini pour cette réunion.</p>
     </div>
     @endif
 

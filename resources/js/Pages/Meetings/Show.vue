@@ -128,7 +128,7 @@
                 :meeting="meeting"
                 :user="user"
                 @attendance-validated="handleAttendanceValidated"
-                @attendance-invalidated="handleAttendanceInvalidated"
+                @attendance-rejected="handleAttendanceRejected"
               />
               
               <AttendanceSubmissionButtons 
@@ -386,7 +386,7 @@
                       </div>
                       
                       <div class="flex-1 min-w-0">
-                        <!-- Nom du représentant et village -->
+                        <!-- Nom du membre et village -->
                         <div class="flex items-center space-x-2 mb-1">
                           <p class="text-base font-semibold text-gray-900">
                             {{ attendee.name }}
@@ -401,7 +401,7 @@
                           🔄 Remplacé par {{ attendee.replacement_name }}
                         </p>
                         
-                        <!-- Rôle du représentant -->
+                        <!-- Rôle du membre -->
                         <p class="text-sm text-gray-600 mb-1">
                           {{ attendee.role || 'Pas de rôle défini' }}
                         </p>
@@ -672,29 +672,39 @@
               <!-- Difficultés rencontrées -->
               <div class="mt-6">
                 <label for="difficulties" class="block text-sm font-medium text-gray-700 mb-2">
-                  Difficultés rencontrées
+                  Difficultés rencontrées <span class="text-red-500">*</span>
                 </label>
                 <textarea
                   id="difficulties"
                   v-model="form.minutes.difficulties"
                   rows="4"
+                  required
+                  minlength="10"
                   class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Décrivez les difficultés rencontrées pendant la réunion..."
+                  placeholder="Décrivez les difficultés rencontrées pendant la réunion (minimum 10 caractères)..."
                 ></textarea>
+                <p class="mt-1 text-sm text-gray-500">
+                  Ce champ est obligatoire et doit contenir au moins 10 caractères.
+                </p>
               </div>
 
               <!-- Recommandations -->
               <div class="mt-6">
                 <label for="recommendations" class="block text-sm font-medium text-gray-700 mb-2">
-                  Recommandations
+                  Recommandations <span class="text-red-500">*</span>
                 </label>
                 <textarea
                   id="recommendations"
                   v-model="form.minutes.recommendations"
                   rows="4"
+                  required
+                  minlength="10"
                   class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Formulez vos recommandations et suggestions d'amélioration..."
+                  placeholder="Formulez vos recommandations et suggestions d'amélioration (minimum 10 caractères)..."
                 ></textarea>
+                <p class="mt-1 text-sm text-gray-500">
+                  Ce champ est obligatoire et doit contenir au moins 10 caractères.
+                </p>
               </div>
 
               
@@ -1057,7 +1067,7 @@
         </div>
     </Modal>
 
-    <!-- Modal pour gérer les représentants -->
+            <!-- Modal pour gérer les membres -->
     <Modal :show="showManageRepresentativesModal" @close="closeManageRepresentativesModal" max-width="4xl">
       <div class="p-6">
         <h3 class="text-lg font-medium text-gray-900 mb-4">Gérer les participants à la réunion</h3>
@@ -1074,7 +1084,7 @@
                 @click="toggleVillageRepresentatives(village.id)"
                 class="text-sm text-blue-600 hover:text-blue-800"
               >
-                {{ expandedVillages.includes(village.id) ? 'Masquer' : 'Modifier les représentants' }}
+                {{ expandedVillages.includes(village.id) ? 'Masquer' : 'Modifier les membres' }}
               </button>
             </div>
             
@@ -1112,8 +1122,8 @@
                     >
                       <option value="">Sélectionner un rôle</option>
                       <option value="Chef de village">Chef de village</option>
-                      <option value="Représentant des femmes">Représentant des femmes</option>
-                      <option value="Représentant des jeunes">Représentant des jeunes</option>
+                                              <option value="Membre des femmes">Membre des femmes</option>
+                        <option value="Membre des jeunes">Membre des jeunes</option>
                       <option value="Autre">Autre</option>
                     </select>
                   </div>
@@ -1165,13 +1175,13 @@
                   <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                   </svg>
-                  Ajouter un représentant
+                  Ajouter un membre
                 </button>
               </div>
             </div>
             
             <div v-else class="text-sm text-gray-600">
-              {{ getParticipantsCount(village.id) }} / {{ meetingRepresentatives[village.id]?.length || 0 }} représentants participeront
+                              {{ getParticipantsCount(village.id) }} / {{ meetingRepresentatives[village.id]?.length || 0 }} membres participeront
             </div>
           </div>
         </div>
@@ -1580,7 +1590,7 @@ const getInitials = (person): string => {
       .substring(0, 2);
   }
   
-  // Pour les représentants qui ont first_name et last_name
+          // Pour les membres qui ont first_name et last_name
   if (person.first_name && person.last_name) {
     return (person.first_name[0] + person.last_name[0]).toUpperCase();
   }
@@ -1897,34 +1907,45 @@ const handleResultsUpdated = () => {
 // Sauvegarde globale
 const saveAll = async () => {
   try {
-    // Sauvegarder les difficultés et recommandations s'il y en a
-    if (form.minutes.difficulties || form.minutes.recommendations) {
-      if (!props.meeting.minutes) {
-        // Création d'un nouveau compte rendu
-        await axios.post(route('minutes.store', props.meeting.id), {
-          difficulties: form.minutes.difficulties,
-          recommendations: form.minutes.recommendations,
-          people_to_enroll_count: form.minutes.people_to_enroll_count,
-          people_enrolled_count: form.minutes.people_enrolled_count,
-          cmu_cards_available_count: form.minutes.cmu_cards_available_count,
-          cmu_cards_distributed_count: form.minutes.cmu_cards_distributed_count,
-          complaints_received_count: form.minutes.complaints_received_count,
-          complaints_processed_count: form.minutes.complaints_processed_count,
-        })
-      } else {
-        // Mise à jour d'un compte rendu existant
-        await axios.put(route('minutes.update', props.meeting.minutes.id), {
-          status: form.minutes.status,
-          difficulties: form.minutes.difficulties,
-          recommendations: form.minutes.recommendations,
-          people_to_enroll_count: form.minutes.people_to_enroll_count,
-          people_enrolled_count: form.minutes.people_enrolled_count,
-          cmu_cards_available_count: form.minutes.cmu_cards_available_count,
-          cmu_cards_distributed_count: form.minutes.cmu_cards_distributed_count,
-          complaints_received_count: form.minutes.complaints_received_count,
-          complaints_processed_count: form.minutes.complaints_processed_count,
-        })
-      }
+    // Validation côté client des champs obligatoires
+    if (!form.minutes.difficulties || form.minutes.difficulties.trim().length < 10) {
+      toast.error('Le champ "Difficultés rencontrées" est obligatoire et doit contenir au moins 10 caractères');
+      return;
+    }
+    
+    if (!form.minutes.recommendations || form.minutes.recommendations.trim().length < 10) {
+      toast.error('Le champ "Recommandations" est obligatoire et doit contenir au moins 10 caractères');
+      return;
+    }
+
+    // Sauvegarder les difficultés et recommandations
+    if (!props.meeting.minutes) {
+      // Création d'un nouveau compte rendu
+      await axios.post(route('minutes.store', props.meeting.id), {
+        content: form.minutes.content || 'Compte rendu de réunion',
+        difficulties: form.minutes.difficulties,
+        recommendations: form.minutes.recommendations,
+        people_to_enroll_count: form.minutes.people_to_enroll_count,
+        people_enrolled_count: form.minutes.people_enrolled_count,
+        cmu_cards_available_count: form.minutes.cmu_cards_available_count,
+        cmu_cards_distributed_count: form.minutes.cmu_cards_distributed_count,
+        complaints_received_count: form.minutes.complaints_received_count,
+        complaints_processed_count: form.minutes.complaints_processed_count,
+      })
+    } else {
+      // Mise à jour d'un compte rendu existant
+      await axios.put(route('minutes.update', props.meeting.minutes.id), {
+        content: form.minutes.content || 'Compte rendu de réunion',
+        status: form.minutes.status,
+        difficulties: form.minutes.difficulties,
+        recommendations: form.minutes.recommendations,
+        people_to_enroll_count: form.minutes.people_to_enroll_count,
+        people_enrolled_count: form.minutes.people_enrolled_count,
+        cmu_cards_available_count: form.minutes.cmu_cards_available_count,
+        cmu_cards_distributed_count: form.minutes.cmu_cards_distributed_count,
+        complaints_received_count: form.minutes.complaints_received_count,
+        complaints_processed_count: form.minutes.complaints_processed_count,
+      })
     }
     
     // Ensuite sauvegarder les autres modifications de la réunion
@@ -1933,7 +1954,11 @@ const saveAll = async () => {
     toast.success('Toutes les modifications ont été enregistrées avec succès');
   } catch (error) {
     console.error('Erreur lors de la sauvegarde:', error);
-    toast.error('Une erreur est survenue lors de la sauvegarde');
+    if (error.response?.data?.message) {
+      toast.error(error.response.data.message);
+    } else {
+      toast.error('Une erreur est survenue lors de la sauvegarde');
+    }
   }
 };
 
@@ -2145,7 +2170,7 @@ const getParticipantsCount = (villageId) => {
     return meetingRepresentatives.value[villageId].filter(rep => rep.is_expected).length;
   }
   
-  // Si pas de participants enregistrés, utiliser les représentants du village
+          // Si pas de participants enregistrés, utiliser les membres du village
   const village = props.meeting.local_committee?.locality?.children?.find(v => v.id === villageId);
   if (village?.representatives && village.representatives.length) {
     return village.representatives.length;
@@ -2170,15 +2195,15 @@ const saveRepresentatives = () => {
   // Envoyer les données au serveur
   axios.post(route('meetings.representatives.save', props.meeting.id), data)
     .then(response => {
-      toast.success('Représentants enregistrés avec succès')
+              toast.success('Membres enregistrés avec succès')
       showManageRepresentativesModal.value = false
       
       // Forcer le rechargement de la page pour afficher les changements
       window.location.reload()
     })
     .catch(error => {
-      console.error('Erreur lors de l\'enregistrement des représentants:', error)
-      toast.error('Erreur lors de l\'enregistrement des représentants')
+              console.error('Erreur lors de l\'enregistrement des membres:', error)
+        toast.error('Erreur lors de l\'enregistrement des membres')
     })
     .finally(() => {
       savingRepresentatives.value = false
@@ -2191,7 +2216,7 @@ const closeManageRepresentativesModal = () => {
 }
 
 const getAttendanceClass = (rep) => {
-  // Vérifier si le représentant est dans la liste des participants
+          // Vérifier si le membre est dans la liste des participants
   const villageId = rep.locality_id || rep.localite_id
   const repName = rep.name || `${rep.first_name} ${rep.last_name}`
   
@@ -2229,20 +2254,20 @@ const getAttendanceStatus = (rep) => {
   }
 }
 
-// Charger les représentants au montage du composant
+        // Charger les membres au montage du composant
 onMounted(() => {
   loadRepresentatives()
 })
 
-// Fonctions pour gérer les représentants
+        // Fonctions pour gérer les membres
 const loadRepresentatives = async () => {
   try {
     const response = await axios.get(route('meetings.representatives', props.meeting.id))
     meetingRepresentatives.value = {}
     
-    console.log('Représentants reçus du serveur:', response.data.representatives);
+            console.log('Membres reçus du serveur:', response.data.representatives);
     
-    // Organiser les représentants par village
+            // Organiser les membres par village
     if (response.data.representatives && response.data.representatives.length > 0) {
       response.data.representatives.forEach(rep => {
         if (!meetingRepresentatives.value[rep.localite_id]) {
@@ -2260,19 +2285,19 @@ const loadRepresentatives = async () => {
         })
       })
       
-      console.log('Représentants organisés par village:', meetingRepresentatives.value);
+              console.log('Membres organisés par village:', meetingRepresentatives.value);
     }
     
-    // Pour les villages sans représentants, initialiser avec un tableau vide
+            // Pour les villages sans membres, initialiser avec un tableau vide
     if (props.meeting.local_committee?.locality?.children) {
       props.meeting.local_committee.locality.children.forEach(village => {
         if (!meetingRepresentatives.value[village.id]) {
           meetingRepresentatives.value[village.id] = []
           
-          // Ajouter les représentants du village s'ils existent
+          // Ajouter les membres du village s'ils existent
           if (village.representatives && village.representatives.length > 0) {
             village.representatives.forEach(rep => {
-              // Vérifier si ce représentant est déjà ajouté
+              // Vérifier si ce membre est déjà ajouté
               const existingRep = meetingRepresentatives.value[village.id].find(
                 r => r.representative_id === rep.id
               );
@@ -2293,11 +2318,11 @@ const loadRepresentatives = async () => {
         }
       })
       
-      console.log('Représentants finaux après ajout des représentants potentiels:', meetingRepresentatives.value);
+              console.log('Membres finaux après ajout des membres potentiels:', meetingRepresentatives.value);
     }
   } catch (error) {
-    console.error('Erreur lors du chargement des représentants:', error)
-    toast.error('Erreur lors du chargement des représentants')
+            console.error('Erreur lors du chargement des membres:', error)
+        toast.error('Erreur lors du chargement des membres')
   }
 }
 
@@ -2615,7 +2640,7 @@ const updateEnrollments = async () => {
 
 // Formulaire pour l'ajout de participants aux inscriptions
 
-// Variables pour les représentants des villages
+        // Variables pour les membres des villages
 
 // Autres variables pour les modals
 
@@ -2629,7 +2654,7 @@ const handleAttendanceValidated = () => {
   window.location.reload()
 }
 
-const handleAttendanceInvalidated = () => {
+const handleAttendanceRejected = () => {
   // Recharger la page pour mettre à jour les données
   router.reload()
 }

@@ -1313,32 +1313,41 @@ class MeetingController extends Controller
     }
 
     /**
-     * Invalider les présences d'une réunion
+     * Rejeter une liste de présence (remet en état rejected avec commentaires)
      */
-    public function invalidateAttendance(Meeting $meeting)
+    public function rejectAttendance(Request $request, Meeting $meeting)
     {
         // Vérifier si l'utilisateur est un sous-préfet ou admin
         if (!Auth::user()->hasRole(['president', 'president', 'admin', 'Admin'])) {
             return response()->json([
-                'message' => 'Vous n\'avez pas les droits pour invalider les présences de cette réunion.'
+                'message' => 'Vous n\'avez pas les droits pour rejeter la liste de présence de cette réunion.'
             ], 403);
         }
 
-        // Vérifier si les présences peuvent être invalidées
+        // Valider les données de la requête
+        $request->validate([
+            'rejection_comments' => 'required|string|max:1000',
+        ]);
+
+        // Vérifier si les présences peuvent être rejetées
         if (!$meeting->isAttendanceValidated()) {
             return response()->json([
                 'message' => 'Les présences ne sont pas validées.'
             ], 400);
         }
 
-        // Mettre à jour la validation des présences
+        // Mettre à jour la validation des présences (remet en état rejected)
         $meeting->update([
+            'attendance_status' => 'rejected',
             'attendance_validated_at' => null,
             'attendance_validated_by' => null,
+            'attendance_rejection_comments' => $request->rejection_comments,
+            'attendance_rejected_at' => now(),
+            'attendance_rejected_by' => Auth::id(),
         ]);
 
         return response()->json([
-            'message' => 'Présences invalidées avec succès.'
+            'message' => 'Liste de présence rejetée avec succès. Le secrétaire peut maintenant la modifier et la resoumettre.'
         ]);
     }
 

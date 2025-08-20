@@ -278,8 +278,8 @@ const getStatusText = (status) => {
                                     <UserIcon class="h-8 w-8 text-white/90" />
                                 </div>
                                 <div class="ml-4">
-                                    <h3 class="text-lg font-semibold">Nouveau représentant</h3>
-                                    <p class="text-purple-100 text-sm">Ajouter un représentant</p>
+                                                    <h3 class="text-lg font-semibold">Nouveau membre</h3>
+                <p class="text-purple-100 text-sm">Ajouter un membre</p>
                                 </div>
                             </div>
                         </div>

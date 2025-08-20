@@ -48,7 +48,7 @@ const loginAsSecretaire = () => {
 };
 
 const loginAsGestionnaire = () => {
-    form.email = 'tresorier@example.com';
+    form.email = 'tresorier@test.com';
     form.password = 'password123';
     submit();
 };

@@ -92,7 +92,7 @@
                       </div>
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div class="grid grid-cols-3 gap-4 mt-4">
                       <div>
                         <InputLabel value="Téléphone" />
                         <TextInput
@@ -100,6 +100,17 @@
                           type="text"
                           class="mt-1 block w-full"
                         />
+                      </div>
+                      <div>
+                        <InputLabel value="Sexe" />
+                        <select
+                          v-model="rep.gender"
+                          class="mt-1 block w-full rounded-md border-gray-300"
+                        >
+                          <option value="">Sélectionner...</option>
+                          <option value="M">Masculin</option>
+                          <option value="F">Féminin</option>
+                        </select>
                       </div>
                       <div>
                         <InputLabel value="Rôle" />
@@ -184,6 +195,7 @@ interface Representative {
   first_name: string;
   last_name: string;
   phone: string;
+  gender?: string;
   role: string;
 }
 
@@ -221,6 +233,7 @@ const openRepresentativeModal = (village: Village) => {
       first_name: '',
       last_name: '',
       phone: '',
+      gender: '',
       role: ''
     }];
   }
@@ -239,6 +252,7 @@ const addRepresentative = () => {
     first_name: '',
     last_name: '',
     phone: '',
+    gender: '',
     role: ''
   });
 };

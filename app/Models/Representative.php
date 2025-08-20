@@ -13,6 +13,7 @@ class Representative extends Model
     protected $fillable = [
         'name',
         'phone',
+        'gender',
         'locality_id',
         'local_committee_id',
         'role',
@@ -31,6 +32,22 @@ class Representative extends Model
         'updatedAt' => 'datetime',
         'lastModified' => 'datetime',
     ];
+
+    /**
+     * Accesseur pour le genre en français
+     */
+    public function getGenderLabelAttribute()
+    {
+        return $this->gender === 'M' ? 'Masculin' : ($this->gender === 'F' ? 'Féminin' : 'Non spécifié');
+    }
+
+    /**
+     * Accesseur pour le genre en format court
+     */
+    public function getGenderShortAttribute()
+    {
+        return $this->gender === 'M' ? 'M' : ($this->gender === 'F' ? 'F' : '-');
+    }
 
     public function locality(): BelongsTo
     {

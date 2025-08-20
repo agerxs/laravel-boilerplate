@@ -42,7 +42,7 @@
       <div class="border rounded-lg p-4">
         <h4 class="text-md font-semibold mb-4">Saisie des résultats</h4>
         <p class="text-sm text-gray-600 mb-4">
-          Saisissez les résultats de chaque village pendant la réunion. Demandez à chaque représentant de village ses chiffres.
+          Saisissez les résultats de chaque village pendant la réunion. Demandez à chaque membre de village ses chiffres.
         </p>
         
         <!-- Formulaire pour tous les villages -->

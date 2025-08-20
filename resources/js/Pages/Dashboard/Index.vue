@@ -137,6 +137,8 @@
         </template>
 
         <!-- Section Statistiques Générales -->
+
+        <template v-if="!user?.roles?.includes('tresorier')">
         <div class="mb-8">
           <h3 class="text-lg font-medium text-gray-900 mb-4">Statistiques Générales</h3>
           
@@ -245,6 +247,7 @@
             </div>
           </div>
         </div>
+        </template>
       </div>
     </div>
   </AppLayout>

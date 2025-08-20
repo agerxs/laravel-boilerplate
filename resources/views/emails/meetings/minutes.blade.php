@@ -4,19 +4,26 @@
 Le compte rendu de la réunion "{{ $meeting->title }}" est disponible.
 
 **Informations générales :**
-- Date : {{ $meeting->start_datetime->format('d/m/Y H:i') }}
-- Lieu : {{ $meeting->location }}
+- Date : {{ $meeting->start_datetime ? $meeting->start_datetime->format('d/m/Y H:i') : 'Date non définie' }}
+- Lieu : {{ $meeting->location ?? 'Lieu non défini' }}
 
 **Participants :**
-@foreach($meeting->participants as $participant)
-- {{ $participant->user ? $participant->user->name : $participant->guest_name }}
+@if(isset($meeting->attendees) && $meeting->attendees->count() > 0)
+@foreach($meeting->attendees as $attendee)
+- {{ $attendee->user ? $attendee->user->name : $attendee->guest_name }}
 @endforeach
+@else
+- Aucun participant enregistré
+@endif
 
-@if($meeting->agenda->count() > 0)
+@if(isset($meeting->agenda) && $meeting->agenda->count() > 0)
 **Ordre du jour :**
 @foreach($meeting->agenda as $item)
 - {{ $item->title }} ({{ $item->duration_minutes }} minutes)
 @endforeach
+@else
+**Ordre du jour :**
+- Aucun ordre du jour défini
 @endif
 
 **Compte rendu :**

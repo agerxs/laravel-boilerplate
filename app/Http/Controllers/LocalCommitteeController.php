@@ -123,6 +123,9 @@ class LocalCommitteeController extends Controller
             'locality_id' => 'required',
             'status' => 'required|string|in:active,inactive',
             'members' => 'required',
+            'decree_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,xlsx,xls|max:10240', // 10MB max
+            'installation_minutes_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,xlsx,xls|max:10240', // 10MB max
+            'attendance_list_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,xlsx,xls|max:10240', // 10MB max
         ]);
         
         // Créer le comité local
@@ -287,7 +290,9 @@ class LocalCommitteeController extends Controller
             'members.*.first_name' => 'required_if:members.*.is_user,false|string|max:255|nullable',
             'members.*.last_name' => 'required_if:members.*.is_user,false|string|max:255|nullable',
             'members.*.phone' => 'nullable|string|max:20',
-        
+            'decree_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,xlsx,xls|max:10240', // 10MB max
+            'installation_minutes_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,xlsx,xls|max:10240', // 10MB max
+            'attendance_list_file' => 'nullable|file|mimes:pdf,jpg,jpeg,png,xlsx,xls|max:10240', // 10MB max
         ]);
         $localCommittee->update([
             'name' => $validated['name'],

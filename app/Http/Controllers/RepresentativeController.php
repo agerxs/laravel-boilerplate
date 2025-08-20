@@ -52,6 +52,10 @@ class RepresentativeController extends Controller
             $query->whereIn('locality_id', $localities);
         }
 
+        if ($request->filled('gender')) {
+            $query->where('gender', $request->gender);
+        }
+
         $userSubPrefecture = $user->locality;
         
         $villages = Locality::where('locality_type_id', 6)
@@ -69,7 +73,7 @@ class RepresentativeController extends Controller
             'representatives' => $query->paginate(15)->withQueryString(),
             'villages' => $villages,
             'localCommittees' => $localCommittees,
-            'filters' => $request->only(['search', 'local_committee_id', 'locality_id']),
+            'filters' => $request->only(['search', 'local_committee_id', 'locality_id', 'gender']),
         ]);
     }
 
@@ -81,6 +85,7 @@ class RepresentativeController extends Controller
             'local_committee_id' => 'required|exists:local_committees,id',
             'role' => 'required|string|max:255',
             'phone' => 'required|max:255',
+            'gender' => 'nullable|in:M,F',
         ]);
         
         $representative = Representative::create($validated);
@@ -96,6 +101,7 @@ class RepresentativeController extends Controller
             'local_committee_id' => 'required|exists:local_committees,id',
             'role' => 'required|string|max:255',
             'phone' => 'required|max:255',
+            'gender' => 'nullable|in:M,F',
         ]);
 
         $representative->update($validated);

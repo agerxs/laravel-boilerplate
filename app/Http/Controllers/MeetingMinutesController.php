@@ -17,6 +17,8 @@ class MeetingMinutesController extends Controller
     {
         $validated = $request->validate([
             'content' => 'required|string',
+            'difficulties' => 'required|string|min:10',
+            'recommendations' => 'required|string|min:10',
             // Nouveaux champs pour les résultats des villages
             'people_to_enroll_count' => 'nullable|integer|min:0',
             'people_enrolled_count' => 'nullable|integer|min:0',
@@ -54,6 +56,8 @@ class MeetingMinutesController extends Controller
         $minutes = $meeting->minutes()->create([
             'content' => $validated['content'],
             'status' => 'draft',
+            'difficulties' => $validated['difficulties'],
+            'recommendations' => $validated['recommendations'],
             'people_to_enroll_count' => $validated['people_to_enroll_count'] ?? null,
             'people_enrolled_count' => $validated['people_enrolled_count'] ?? null,
             'cmu_cards_available_count' => $validated['cmu_cards_available_count'] ?? null,
@@ -75,6 +79,8 @@ class MeetingMinutesController extends Controller
         $validated = $request->validate([
             'content' => 'required|string',
             'status' => 'required|in:draft,published,pending_validation,validated',
+            'difficulties' => 'required|string|min:10',
+            'recommendations' => 'required|string|min:10',
             // Nouveaux champs pour les résultats des villages
             'people_to_enroll_count' => 'nullable|integer|min:0',
             'people_enrolled_count' => 'nullable|integer|min:0',

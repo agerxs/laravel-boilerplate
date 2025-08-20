@@ -129,7 +129,7 @@
       </div>
     </div>
 
-    <!-- Modal des représentants par village -->
+              <!-- Modal des membres par village -->
     <div v-if="showRepresentativesModal" class="fixed inset-0 z-50 overflow-y-auto">
       <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
         <div class="fixed inset-0 transition-opacity" @click="showRepresentativesModal = false">
@@ -147,7 +147,7 @@
               <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                 <div class="flex justify-between items-center">
                   <h3 class="text-lg leading-6 font-medium text-gray-900">
-                    Représentants par village - {{ selectedCommittee?.name }}
+                    Membres par village - {{ selectedCommittee?.name }}
                   </h3>
                   <button
                     @click="showRepresentativesModal = false"
@@ -292,7 +292,7 @@ const openRepresentativesModal = async (committee: Committee) => {
     representativesByVillage.value = response.data;
     showRepresentativesModal.value = true;
   } catch (error) {
-    console.error('Erreur lors de la récupération des représentants:', error);
+            console.error('Erreur lors de la récupération des membres:', error);
   }
 };
 

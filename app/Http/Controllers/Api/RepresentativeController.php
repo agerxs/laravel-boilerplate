@@ -38,6 +38,7 @@ class RepresentativeController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
+            'gender' => 'nullable|in:M,F',
             'localite_id' => 'required|exists:localite,id',
             'localCommitteeId' => 'required|exists:local_committees,id',
             'role' => 'required|string|max:255'

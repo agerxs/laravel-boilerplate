@@ -41,7 +41,7 @@
                   <option value="prefet">Préfet</option>
                   <option value="sous_prefet">Président</option>
                   <option value="secretaire">Secrétaire</option>
-                  <option value="representant">Représentant</option>
+                                          <option value="membre">Membre</option>
                 </select>
                 <InputError :message="form.errors.role" class="mt-2" />
               </div>

@@ -8,11 +8,11 @@
       </h1>
 
       <div class="mb-8">
-        <h2 class="text-2xl font-semibold text-indigo-600">Villages et représentants</h2>
+        <h2 class="text-2xl font-semibold text-indigo-600">Villages et membres</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div v-for="village in committee.locality?.children" :key="village.id" class="bg-white shadow-md rounded-lg p-4">
             <h3 class="text-xl font-medium text-gray-800">
-              {{ village.name }} <span class="text-sm text-gray-500">({{ village.representatives.length }} représentants)</span>
+              {{ village.name }} <span class="text-sm text-gray-500">({{ village.representatives.length }} membres)</span>
             </h3>
             <ul class="list-none mt-2">
               <li v-for="rep in village.representatives" :key="rep.id" class="flex items-center space-x-4 py-2">

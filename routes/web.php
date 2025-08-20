@@ -177,7 +177,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/local-committees/{localCommittee}/edit', [LocalCommitteeController::class, 'edit'])
         ->name('local-committees.edit')
         ->middleware('check.locality');
-    Route::post('/local-committees/{localCommittee}', [\App\Http\Controllers\LocalCommitteeController::class, 'update'])
+    Route::put('/local-committees/{localCommittee}', [\App\Http\Controllers\LocalCommitteeController::class, 'update'])
         ->name('local-committees.update')
         ->middleware('check.locality');
     Route::delete('/local-committees/{localCommittee}', [LocalCommitteeController::class, 'destroy'])
@@ -305,7 +305,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/{meeting}/prevalidate', [MeetingController::class, 'prevalidate'])->name('prevalidate');
         Route::post('/{meeting}/validate', [MeetingController::class, 'validateMeeting'])->name('validate');
 Route::post('/{meeting}/validate-attendance', [MeetingController::class, 'validateAttendance'])->name('validate-attendance');
-Route::post('/{meeting}/invalidate-attendance', [MeetingController::class, 'invalidateAttendance'])->name('invalidate-attendance');
+Route::post('/{meeting}/reject-attendance', [MeetingController::class, 'rejectAttendance'])->name('reject-attendance');
 Route::post('/{meeting}/submit-attendance', [MeetingController::class, 'submitAttendance'])->name('submit-attendance');
 Route::post('/{meeting}/cancel-attendance-submission', [MeetingController::class, 'cancelAttendanceSubmission'])->name('cancel-attendance-submission');
         // ... other meeting routes ...
