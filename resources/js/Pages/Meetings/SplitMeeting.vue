@@ -31,22 +31,7 @@
                 <label class="block text-sm font-medium text-gray-700">Titre</label>
                 <p class="mt-1 text-sm text-gray-900">{{ meeting.title }}</p>
               </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Date</label>
-                <p class="mt-1 text-sm text-gray-900">{{ formatDate(meeting.scheduled_date) }}</p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Lieu</label>
-                <p class="mt-1 text-sm text-gray-900">{{ meeting.location }}</p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700">Participants attendus</label>
-                <p class="mt-1 text-sm text-gray-900">{{ meeting.target_enrollments }}</p>
-              </div>
-              <div v-if="meeting.description">
-                <label class="block text-sm font-medium text-gray-700">Description</label>
-                <p class="mt-1 text-sm text-gray-900">{{ meeting.description }}</p>
-              </div>
+              
               <div>
                 <label class="block text-sm font-medium text-gray-700">Comité local</label>
                 <p class="mt-1 text-sm text-gray-900">{{ meeting.local_committee.name }}</p>

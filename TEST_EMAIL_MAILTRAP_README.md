@@ -266,3 +266,4 @@ php artisan test:email-sending --email=votre-email@mailtrap.io --type=minutes
 Vérifiez votre boîte Mailtrap et confirmez que la configuration des emails fonctionne parfaitement ! 🎯✨
 
 
+

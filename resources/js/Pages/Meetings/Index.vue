@@ -160,9 +160,10 @@
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div class="flex items-center justify-end space-x-2">
                              <Link :href="route('meetings.show', { meeting: meeting.id })" class="flex items-center justify-center w-8 h-8 text-blue-600 hover:text-blue-900 rounded transition-colors hover:bg-blue-50" title="Voir"><EyeIcon class="h-5 w-5" /></Link>
-                             <button v-if="isSecretary && !isSubPrefect && (meeting.status === 'scheduled' || meeting.status === 'planned')" @click="cancelMeeting(meeting)" class="flex items-center justify-center w-8 h-8 text-red-600 hover:text-red-900 rounded transition-colors hover:bg-red-50" title="Annuler"><XCircleIcon class="h-5 w-5" /></button>
-                             <Link v-if="isSecretary && !isSubPrefect && (meeting.status === 'scheduled' || meeting.status === 'planned')" :href="route('meetings.reschedule', meeting.id)" class="flex items-center justify-center w-8 h-8 text-yellow-600 hover:text-yellow-900 rounded transition-colors hover:bg-yellow-50" title="Reporter"><ClockIcon class="h-5 w-5" /></Link>
+                             <button v-if="isSecretary && !isSubPrefect && (meeting.status === 'scheduled' || meeting.status === 'planned') && canModifyMeeting(meeting)" @click="cancelMeeting(meeting)" class="flex items-center justify-center w-8 h-8 text-red-600 hover:text-red-900 rounded transition-colors hover:bg-red-50" title="Annuler"><XCircleIcon class="h-5 w-5" /></button>
+                             <Link v-if="isSecretary && !isSubPrefect && (meeting.status === 'scheduled' || meeting.status === 'planned') && canModifyMeeting(meeting)" :href="route('meetings.reschedule', meeting.id)" class="flex items-center justify-center w-8 h-8 text-yellow-600 hover:text-yellow-900 rounded transition-colors hover:bg-yellow-50" title="Reporter"><ClockIcon class="h-5 w-5" /></Link>
                              <button v-if="canSplitMeeting(meeting)" @click="splitMeeting(meeting)" class="flex items-center justify-center w-8 h-8 text-purple-600 hover:text-purple-900 rounded transition-colors hover:bg-purple-50" title="Éclater la réunion"><Squares2X2Icon class="h-5 w-5" /></button>
+                             <button v-if="isSecretary && (meeting.status === 'planned' || meeting.status === 'scheduled') && canModifyMeeting(meeting)" @click="deleteMeeting(meeting)" class="flex items-center justify-center w-8 h-8 text-red-800 hover:text-red-900 rounded transition-colors hover:bg-red-100" title="Supprimer"><TrashIcon class="h-5 w-5" /></button>
                              <MeetingValidationButtons :meeting="meeting" />
                         </div>
                     </td>
@@ -207,8 +208,9 @@
                       <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div class="flex items-center justify-end space-x-2">
                                <Link :href="route('meetings.show', { meeting: subMeeting.id })" class="flex items-center justify-center w-8 h-8 text-blue-600 hover:text-blue-900 rounded transition-colors hover:bg-blue-50" title="Voir"><EyeIcon class="h-5 w-5" /></Link>
-                               <button v-if="isSecretary && !isSubPrefect && (subMeeting.status === 'scheduled' || subMeeting.status === 'planned')" @click="cancelMeeting(subMeeting)" class="flex items-center justify-center w-8 h-8 text-red-600 hover:text-red-900 rounded transition-colors hover:bg-red-50" title="Annuler"><XCircleIcon class="h-5 w-5" /></button>
-                               <Link v-if="isSecretary && !isSubPrefect && (subMeeting.status === 'scheduled' || subMeeting.status === 'planned')" :href="route('meetings.reschedule', subMeeting.id)" class="flex items-center justify-center w-8 h-8 text-yellow-600 hover:text-yellow-900 rounded transition-colors hover:bg-yellow-50" title="Reporter"><ClockIcon class="h-5 w-5" /></Link>
+                               <button v-if="isSecretary && !isSubPrefect && (subMeeting.status === 'scheduled' || subMeeting.status === 'planned') && canModifyMeeting(subMeeting)" @click="cancelMeeting(subMeeting)" class="flex items-center justify-center w-8 h-8 text-red-600 hover:text-red-900 rounded transition-colors hover:bg-red-50" title="Annuler"><XCircleIcon class="h-5 w-5" /></button>
+                               <Link v-if="isSecretary && !isSubPrefect && (subMeeting.status === 'scheduled' || subMeeting.status === 'planned') && canModifyMeeting(subMeeting)" :href="route('meetings.reschedule', subMeeting.id)" class="flex items-center justify-center w-8 h-8 text-yellow-600 hover:text-yellow-900 rounded transition-colors hover:bg-yellow-50" title="Reporter"><ClockIcon class="h-5 w-5" /></Link>
+                               <button v-if="isSecretary && (subMeeting.status === 'planned' || subMeeting.status === 'scheduled') && canModifyMeeting(subMeeting)" @click="deleteMeeting(subMeeting)" class="flex items-center justify-center w-8 h-8 text-red-800 hover:text-red-900 rounded transition-colors hover:bg-red-100" title="Supprimer"><TrashIcon class="h-5 w-5" /></button>
                                <MeetingValidationButtons :meeting="subMeeting" />
                           </div>
                       </td>
@@ -236,7 +238,7 @@ import Pagination from '@/Components/Pagination.vue';
 import MeetingStatusBadge from '@/Components/MeetingStatusBadge.vue';
 import MeetingValidationButtons from '@/Components/MeetingValidationButtons.vue';
 import AttendanceStatusBadge from '@/Components/AttendanceStatusBadge.vue';
-import { PlusIcon, EyeIcon, XCircleIcon, ClockIcon, Squares2X2Icon } from '@heroicons/vue/24/outline';
+import { PlusIcon, EyeIcon, XCircleIcon, ClockIcon, Squares2X2Icon, TrashIcon } from '@heroicons/vue/24/outline';
 import { useToast } from '@/Composables/useToast';
 import { hasRole } from '@/Utils/authUtils';
 
@@ -393,15 +395,38 @@ const toggleSubMeetings = (meetingId: number) => {
 };
 
 const canSplitMeeting = (meeting: Meeting) => {
-  // Peut éclater si c'est une réunion parent (pas une sous-réunion) et si le statut le permet
+  // Peut éclater si c'est une réunion parent (pas une sous-réunion), si le statut le permet et si la liste de présence n'est pas soumise
   return !meeting.parent_meeting_id && 
          (meeting.status === 'planned' || meeting.status === 'scheduled') &&
-         isSecretary.value;
+         isSecretary.value &&
+         meeting.attendance_status !== 'submitted' &&
+         meeting.attendance_status !== 'validated';
+};
+
+const canModifyMeeting = (meeting: Meeting) => {
+  // Peut modifier (annuler, reporter, supprimer) si la liste de présence n'est pas soumise ou validée
+  return meeting.attendance_status !== 'submitted' && 
+         meeting.attendance_status !== 'validated';
 };
 
 const splitMeeting = (meeting: Meeting) => {
   // Rediriger vers la page d'éclatement
   window.location.href = route('meetings.split', meeting.id);
+};
+
+const deleteMeeting = (meeting: Meeting) => {
+  if (confirm(`Êtes-vous sûr de vouloir supprimer la réunion "${meeting.title}" ?\n\nCette action est irréversible et supprimera également tous les participants, pièces jointes et comptes rendus associés.`)) {
+    router.delete(route('meetings.destroy', meeting.id), {
+      onSuccess: () => toast.success('Réunion supprimée avec succès.'),
+      onError: (errors) => {
+        if (errors.error) {
+          toast.error(errors.error);
+        } else {
+          toast.error('Erreur lors de la suppression de la réunion.');
+        }
+      },
+    });
+  }
 };
 </script>
 

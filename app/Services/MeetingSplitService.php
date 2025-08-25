@@ -100,7 +100,6 @@ class MeetingSplitService
                 foreach ($existingAttendees as $attendee) {
                     $newAttendee = new MeetingAttendee([
                         'meeting_id' => $subMeeting->id,
-                        'name' => $subMeeting->title, // Ajout steph pour le nom attendee
                         'localite_id' => $attendee->localite_id,
                         'representative_id' => $attendee->representative_id,
                         'attendance_status' => 'expected',

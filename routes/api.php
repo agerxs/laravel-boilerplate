@@ -157,4 +157,16 @@ Route::prefix('app-versions')->group(function () {
     Route::post('/', [\App\Http\Controllers\Api\AppVersionController::class, 'store']);
     Route::get('/latest', [\App\Http\Controllers\Api\AppVersionController::class, 'latest']);
     Route::get('/{id}', [\App\Http\Controllers\Api\AppVersionController::class, 'show']);
+    Route::get('/check-update/{currentVersion}', [\App\Http\Controllers\Api\AppVersionController::class, 'checkUpdate']);
+});
+
+Route::prefix('device-tracking')->group(function () {
+    Route::post('/register', [\App\Http\Controllers\Api\DeviceTrackingController::class, 'registerDevice']);
+    Route::post('/session/start', [\App\Http\Controllers\Api\DeviceTrackingController::class, 'startSession']);
+    Route::post('/session/end', [\App\Http\Controllers\Api\DeviceTrackingController::class, 'endSession']);
+    Route::post('/download/start', [\App\Http\Controllers\Api\DeviceTrackingController::class, 'startDownload']);
+    Route::post('/download/complete', [\App\Http\Controllers\Api\DeviceTrackingController::class, 'completeDownload']);
+    Route::post('/download/fail', [\App\Http\Controllers\Api\DeviceTrackingController::class, 'failDownload']);
+    Route::get('/stats/devices', [\App\Http\Controllers\Api\DeviceTrackingController::class, 'getDeviceStats']);
+    Route::get('/stats/downloads', [\App\Http\Controllers\Api\DeviceTrackingController::class, 'getDownloadStats']);
 });

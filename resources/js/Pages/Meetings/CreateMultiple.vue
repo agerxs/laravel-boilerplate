@@ -19,7 +19,23 @@
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <InputLabel for="local_committee_id" value="Comité local" />
+                  <div v-if="userCommittee" class="mt-1">
+                    <!-- Comité local fixé pour le secrétaire connecté -->
+                    <div class="flex items-center p-3 bg-blue-50 border border-blue-200 rounded-md">
+                      <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                      </div>
+                      <div class="ml-3">
+                        <p class="text-sm font-medium text-blue-800">{{ userCommittee.name }}</p>
+                        <p class="text-xs text-blue-600">Comité local de votre localité</p>
+                      </div>
+                    </div>
+                    <input type="hidden" v-model="form.local_committee_id" />
+                  </div>
                   <select
+                    v-else
                     id="local_committee_id"
                     v-model="form.local_committee_id"
                     class="mt-1 block w-full rounded-md border-gray-300"
@@ -243,6 +259,7 @@ interface LocalCommittee {
 
 const props = defineProps<{ 
   localCommittees: LocalCommittee[]
+  userCommittee?: LocalCommittee | null
   flash?: {
     imported_meetings?: any[]
     selected_committee?: string
@@ -267,6 +284,11 @@ const commonAttachments = ref([])
 
 // Pré-remplir avec les données importées si disponibles
 onMounted(() => {
+  // Pré-remplir le comité local de l'utilisateur connecté s'il existe
+  if (props.userCommittee) {
+    form.local_committee_id = props.userCommittee.id
+  }
+  
   if (props.flash?.imported_meetings) {
     form.meetings = props.flash.imported_meetings.map((meeting: any) => ({
       ...meeting,
@@ -343,6 +365,11 @@ const importFile = () => {
   if (!selectedFile.value) {
     alert('Veuillez sélectionner un fichier à importer.')
     return
+  }
+
+  // Si l'utilisateur a un comité local fixé, l'utiliser automatiquement
+  if (props.userCommittee && !form.local_committee_id) {
+    form.local_committee_id = props.userCommittee.id
   }
 
   if (!form.local_committee_id) {

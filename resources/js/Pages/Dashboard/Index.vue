@@ -148,7 +148,7 @@
               <div class="mt-2 text-3xl font-semibold text-gray-900">{{ stats.total_meetings }}</div>
               <div class="mt-2 flex items-center text-sm text-green-600">
                 <ArrowUpIcon class="h-4 w-4 mr-1" />
-                <span>12% ce mois</span>
+                <span>réunions</span>
               </div>
             </div>
 
@@ -328,11 +328,10 @@ const chartData = computed(() => ({
     }]
   },
   byStatus: {
-    labels: ['Planifiée', 'Prévalidée', 'Validée', 'Terminée', 'Annulée'],
+    labels: ['Planifiée', 'Validée', 'Terminée', 'Annulée'],
     datasets: [{
       data: [
         (props.meetingsByStatus['scheduled'] || 0) + (props.meetingsByStatus['planned'] || 0),
-        props.meetingsByStatus['prevalidated'] || 0,
         props.meetingsByStatus['validated'] || 0,
         props.meetingsByStatus['completed'] || 0,
         props.meetingsByStatus['cancelled'] || 0

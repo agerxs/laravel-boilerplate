@@ -25,6 +25,34 @@ class AppVersionController extends Controller
         return response()->json($version);
     }
 
+    public function checkUpdate($currentVersion)
+    {
+        $currentVersionCode = (int) $currentVersion;
+        $latestVersion = AppVersion::orderByDesc('version_code')->first();
+
+        if (!$latestVersion) {
+            return response()->json([
+                'update_available' => false,
+                'message' => 'Aucune version disponible'
+            ]);
+        }
+
+        $updateAvailable = $latestVersion->version_code > $currentVersionCode;
+
+        return response()->json([
+            'update_available' => $updateAvailable,
+            'current_version' => $currentVersionCode,
+            'latest_version' => $latestVersion->version_code,
+            'latest_version_name' => $latestVersion->version_name,
+            'download_url' => $updateAvailable ? url('/storage/' . $latestVersion->apk_file) : null,
+            'release_notes' => $latestVersion->release_notes,
+            'force_update' => false, // Vous pouvez ajouter ce champ dans la table si nécessaire
+            'message' => $updateAvailable 
+                ? 'Une nouvelle version est disponible' 
+                : 'Vous avez la dernière version'
+        ]);
+    }
+
     public function store(Request $request)
     {
         $request->validate([

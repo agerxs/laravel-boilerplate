@@ -231,8 +231,15 @@ class MeetingController extends Controller
 
         $localCommittees = $query->get();
         
+        // Récupérer le comité local de l'utilisateur connecté (pour les secrétaires)
+        $userCommittee = null;
+        if ($user->hasRole(['secretaire', 'Secrétaire'])) {
+            $userCommittee = LocalCommittee::where('locality_id', $user->locality_id)->first();
+        }
+        
         return Inertia::render('Meetings/CreateMultiple', [
             'localCommittees' => $localCommittees,
+            'userCommittee' => $userCommittee,
             'flash' => [
                 'imported_meetings' => session('imported_meetings'),
                 'selected_committee' => session('selected_committee'),
@@ -717,9 +724,6 @@ class MeetingController extends Controller
                         foreach ($village->representatives as $representative) {
                             $meeting->attendees()->create([
                                 'representative_id' => $representative->id,
-                                'name' => $representative->first_name . ' ' . $representative->last_name,
-                                'role' => $representative->role,
-                                'phone' => $representative->phone,
                                 'localite_id' => $village->id
                             ]);
                         }
@@ -800,6 +804,14 @@ class MeetingController extends Controller
 
     public function cancel(Meeting $meeting)
     {
+        // Vérifier que la liste de présence n'est pas soumise ou validée
+        if (in_array($meeting->attendance_status, ['submitted', 'validated'])) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Impossible d\'annuler une réunion dont la liste de présence a été soumise ou validée'
+            ], 400);
+        }
+        
         $meeting->update(['status' => 'cancelled']);
         
         return response()->json(['status' => 'success']);
@@ -1575,8 +1587,46 @@ class MeetingController extends Controller
         }
     }
 
-    public function deleteMeeting(Request $request, $id)
+    /**
+     * Supprimer une réunion
+     */
+    public function destroy(Meeting $meeting)
     {
+        // Vérifier les permissions (seuls les secrétaires et admins peuvent supprimer)
+        if (!auth()->user()->hasRole(['secretaire', 'Secrétaire', 'admin', 'Admin'])) {
+            return back()->withErrors(['error' => 'Vous n\'avez pas les permissions pour supprimer cette réunion']);
+        }
         
+        // Vérifier que la réunion n'est pas encore terminée
+        if (in_array($meeting->status, ['completed', 'validated'])) {
+            return back()->withErrors(['error' => 'Impossible de supprimer une réunion déjà terminée']);
+        }
+        
+        // Vérifier qu'il n'y a pas de sous-réunions
+        if ($meeting->subMeetings()->count() > 0) {
+            return back()->withErrors(['error' => 'Impossible de supprimer une réunion qui a des sous-réunions. Supprimez d\'abord les sous-réunions.']);
+        }
+        
+        try {
+            // Supprimer les participants de la réunion
+            $meeting->attendees()->delete();
+            
+            // Supprimer les pièces jointes
+            $meeting->attachments()->delete();
+            
+            // Supprimer les comptes rendus
+            $meeting->minutes()->delete();
+            
+            // Supprimer les commentaires
+            $meeting->comments()->delete();
+            
+            // Supprimer la réunion
+            $meeting->delete();
+            
+            return redirect()->route('meetings.index')
+                ->with('success', 'Réunion supprimée avec succès');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Erreur lors de la suppression de la réunion: ' . $e->getMessage()]);
+        }
     }
 } 

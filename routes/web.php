@@ -304,10 +304,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/{meeting}/confirm', [MeetingController::class, 'confirm'])->name('confirm');
         Route::post('/{meeting}/prevalidate', [MeetingController::class, 'prevalidate'])->name('prevalidate');
         Route::post('/{meeting}/validate', [MeetingController::class, 'validateMeeting'])->name('validate');
-Route::post('/{meeting}/validate-attendance', [MeetingController::class, 'validateAttendance'])->name('validate-attendance');
-Route::post('/{meeting}/reject-attendance', [MeetingController::class, 'rejectAttendance'])->name('reject-attendance');
-Route::post('/{meeting}/submit-attendance', [MeetingController::class, 'submitAttendance'])->name('submit-attendance');
-Route::post('/{meeting}/cancel-attendance-submission', [MeetingController::class, 'cancelAttendanceSubmission'])->name('cancel-attendance-submission');
+        Route::post('/{meeting}/validate-attendance', [MeetingController::class, 'validateAttendance'])->name('validate-attendance');
+        Route::post('/{meeting}/reject-attendance', [MeetingController::class, 'rejectAttendance'])->name('reject-attendance');
+        Route::post('/{meeting}/submit-attendance', [MeetingController::class, 'submitAttendance'])->name('submit-attendance');
+        Route::post('/{meeting}/cancel-attendance-submission', [MeetingController::class, 'cancelAttendanceSubmission'])->name('cancel-attendance-submission');
+        Route::delete('/{meeting}', [MeetingController::class, 'destroy'])->name('destroy');
         // ... other meeting routes ...
     });
 
@@ -336,6 +337,13 @@ Route::middleware(['auth'])->prefix('admin/app-versions')->group(function () {
     Route::get('/', [\App\Http\Controllers\AppVersionController::class, 'adminIndex'])->name('admin.app_versions.index');
     Route::post('/', [\App\Http\Controllers\AppVersionController::class, 'adminStore'])->name('admin.app_versions.store');
     Route::delete('/{id}', [\App\Http\Controllers\AppVersionController::class, 'adminDestroy'])->name('admin.app_versions.destroy');
+});
+
+Route::middleware(['auth'])->prefix('admin/device-stats')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Admin\DeviceStatsController::class, 'index'])->name('admin.device_stats.index');
+    Route::get('/refresh', [\App\Http\Controllers\Admin\DeviceStatsController::class, 'refreshStats'])->name('admin.device_stats.refresh');
+    Route::get('/device/{deviceId}', [\App\Http\Controllers\Admin\DeviceStatsController::class, 'showDevice'])->name('admin.device_stats.device');
+    Route::get('/downloads/details', [\App\Http\Controllers\Admin\DeviceStatsController::class, 'downloadDetails'])->name('admin.device_stats.downloads');
 });
 
 Route::resource('payment-rates', PaymentRateController::class);

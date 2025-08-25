@@ -2,6 +2,7 @@
 import {
     Bars3Icon,
     CalendarIcon,
+    ChartBarIcon,
     Cog6ToothIcon,
     DocumentIcon,
     HomeIcon,
@@ -90,7 +91,7 @@ const navigation: NavigationItem[] = [
     gradient: 'from-emerald-500 to-emerald-600'
   },
   { 
-    name: 'Représentants', 
+    name: 'Membres', 
     href: route('representatives.index'), 
     icon: UserIcon,
     roles: ['president', 'secretaire'],
@@ -136,6 +137,14 @@ const navigation: NavigationItem[] = [
     roles: ['admin'],
     color: 'text-slate-600',
     gradient: 'from-slate-500 to-slate-600'
+  },
+  { 
+    name: 'Statistiques des Tablettes', 
+    href: route('admin.device_stats.index'), 
+    icon: ChartBarIcon, 
+    roles: ['admin'],
+    color: 'text-indigo-600',
+    gradient: 'from-indigo-500 to-indigo-600'
   },
   {
     name: 'Paramétrage',

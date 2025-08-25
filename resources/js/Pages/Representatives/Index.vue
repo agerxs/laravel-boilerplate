@@ -8,18 +8,19 @@
           <div class="flex space-x-4 border-b mb-4">
             <button
               class="px-4 py-2 -mb-px border-b-2"
-              :class="{ 'border-indigo-600 text-indigo-600 font-bold': activeTab === 'reps', 'border-transparent text-gray-500': activeTab !== 'reps' }"
-              @click="activeTab = 'reps'"
-            >
-              Par membre
-            </button>
-            <button
-              class="px-4 py-2 -mb-px border-b-2"
               :class="{ 'border-indigo-600 text-indigo-600 font-bold': activeTab === 'villages', 'border-transparent text-gray-500': activeTab !== 'villages' }"
               @click="activeTab = 'villages'"
             >
               Par village
             </button>
+            <button
+              class="px-4 py-2 -mb-px border-b-2"
+              :class="{ 'border-indigo-600 text-indigo-600 font-bold': activeTab === 'reps', 'border-transparent text-gray-500': activeTab !== 'reps' }"
+              @click="activeTab = 'reps'"
+            >
+              Par membre
+            </button>
+            
           </div>
         </div>
 
@@ -357,7 +358,7 @@ const page = usePage();
 
 const isModalOpen = ref(false);
 const isEditing = ref(false);
-const activeTab = ref<'reps' | 'villages'>('reps');
+const activeTab = ref<'reps' | 'villages'>('villages');
 const showModal = ref(false);
 const selectedVillage = ref<any>(null);
 
