@@ -5,7 +5,8 @@ namespace App\Services;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 use Exception;
 
 class ImageCompressionService
@@ -13,22 +14,33 @@ class ImageCompressionService
     /**
      * Qualité de compression par défaut (0-100)
      */
-    protected int $defaultQuality = 80;
+    protected int $defaultQuality;
 
     /**
      * Largeur maximale par défaut
      */
-    protected int $defaultMaxWidth = 1200;
+    protected int $defaultMaxWidth;
 
     /**
      * Hauteur maximale par défaut
      */
-    protected int $defaultMaxHeight = 1200;
+    protected int $defaultMaxHeight;
 
     /**
      * Formats supportés pour la compression
      */
-    protected array $supportedFormats = ['jpg', 'jpeg', 'png', 'webp'];
+    protected array $supportedFormats;
+
+    /**
+     * Constructeur
+     */
+    public function __construct()
+    {
+        $this->defaultQuality = config('image.quality', 80);
+        $this->defaultMaxWidth = config('image.max_width', 1200);
+        $this->defaultMaxHeight = config('image.max_height', 1200);
+        $this->supportedFormats = config('image.supported_formats', ['jpg', 'jpeg', 'png', 'webp']);
+    }
 
     /**
      * Compresse et optimise une image
@@ -49,14 +61,14 @@ class ImageCompressionService
             $disk = $options['disk'] ?? 'public';
             $path = $options['path'] ?? 'compressed-images';
 
-            // Créer l'instance Intervention Image
-            $img = Image::make($image->getRealPath());
+            // Créer l'instance Intervention Image avec le nouveau manager
+            $manager = new ImageManager(new Driver());
+            $img = $manager->read($image->getRealPath());
 
             // Redimensionner l'image si nécessaire
             $img = $this->resizeImage($img, $maxWidth, $maxHeight);
 
-            // Optimiser l'image selon le format
-            $img = $this->optimizeImage($img, $format, $quality);
+            // L'optimisation se fait maintenant dans encodeImage()
 
             // Générer un nom de fichier unique
             $filename = $this->generateFilename($image, $format);
@@ -68,8 +80,8 @@ class ImageCompressionService
             // Récupérer les informations sur l'image compressée
             $compressedInfo = $this->getImageInfo($img, $fullPath, $disk);
 
-            // Nettoyer la mémoire
-            $img->destroy();
+            // Nettoyer la mémoire (plus nécessaire avec Intervention Image 3.x)
+            // $img->destroy();
 
             return [
                 'success' => true,
@@ -112,42 +124,12 @@ class ImageCompressionService
         }
 
         // Redimensionner en conservant les proportions
-        $img->resize($maxWidth, $maxHeight, function ($constraint) {
-            $constraint->aspectRatio();
-            $constraint->upsize();
-        });
+        $img = $img->scaleDown($maxWidth, $maxHeight);
 
         return $img;
     }
 
-    /**
-     * Optimise l'image selon le format
-     */
-    protected function optimizeImage($img, string $format, int $quality)
-    {
-        switch (strtolower($format)) {
-            case 'jpg':
-            case 'jpeg':
-                $img->encode('jpg', $quality);
-                break;
 
-            case 'png':
-                // Pour PNG, utiliser une qualité différente (0-9, où 9 est la meilleure compression)
-                $pngQuality = 9 - (($quality / 100) * 9);
-                $img->encode('png', $pngQuality);
-                break;
-
-            case 'webp':
-                $img->encode('webp', $quality);
-                break;
-
-            default:
-                $img->encode('jpg', $quality);
-                break;
-        }
-
-        return $img;
-    }
 
     /**
      * Détermine le format optimal pour l'image
@@ -191,6 +173,29 @@ class ImageCompressionService
     }
 
     /**
+     * Encode l'image dans le format spécifié
+     */
+    protected function encodeImage($img, string $format, int $quality): string
+    {
+        switch (strtolower($format)) {
+            case 'jpg':
+            case 'jpeg':
+                return $img->toJpeg($quality)->toString();
+                
+            case 'png':
+                // Pour PNG, utiliser une qualité différente (0-9, où 9 est la meilleure compression)
+                $pngQuality = 9 - (($quality / 100) * 9);
+                return $img->toPng($pngQuality)->toString();
+                
+            case 'webp':
+                return $img->toWebp($quality)->toString();
+                
+            default:
+                return $img->toJpeg($quality)->toString();
+        }
+    }
+
+    /**
      * Sauvegarde l'image compressée
      */
     protected function saveImage($img, string $path, string $format, int $quality, string $disk)
@@ -204,7 +209,9 @@ class ImageCompressionService
         }
 
         // Sauvegarder l'image
-        $storage->put($path, $img->stream($format, $quality));
+        // Dans Intervention Image 3.x, nous devons d'abord encoder l'image
+        $encodedImage = $this->encodeImage($img, $format, $quality);
+        $storage->put($path, $encodedImage);
     }
 
     /**

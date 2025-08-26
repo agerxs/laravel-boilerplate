@@ -183,4 +183,68 @@ class MeetingSplitTest extends TestCase
         $attendees = MeetingAttendee::where('meeting_id', $subMeetings[0]->id)->get();
         $this->assertCount(1, $attendees);
     }
+
+    public function test_split_meeting_works_with_host_village_id()
+    {
+        $this->actingAs($this->user);
+        
+        // Récupérer les villages créés dans setUp
+        $village1 = Locality::where('name', 'Village A')->first();
+        $village2 = Locality::where('name', 'Village B')->first();
+        
+        $subMeetingsData = [
+            [
+                'location' => 'Salle A',
+                'villages' => [
+                    ['id' => $village1->id, 'name' => $village1->name],
+                    ['id' => $village2->id, 'name' => $village2->name],
+                ],
+                'host_village_id' => $village1->id,
+                'title' => 'Sous-réunion Test'
+            ]
+        ];
+
+        $response = $this->postJson(route('api.meetings.split', $this->parentMeeting->id), [
+            'sub_meetings' => $subMeetingsData
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'message' => 'Réunion éclatée avec succès en 1 sous-réunions'
+        ]);
+        
+        // Vérifier qu'une sous-réunion a été créée
+        $this->assertDatabaseHas('meetings', [
+            'parent_meeting_id' => $this->parentMeeting->id,
+            'title' => 'Sous-réunion Test'
+        ]);
+    }
+
+    public function test_split_meeting_requires_host_village_id()
+    {
+        $this->actingAs($this->user);
+        
+        // Récupérer les villages créés dans setUp
+        $village1 = Locality::where('name', 'Village A')->first();
+        $village2 = Locality::where('name', 'Village B')->first();
+        
+        $subMeetingsData = [
+            [
+                'location' => 'Salle A',
+                'villages' => [
+                    ['id' => $village1->id, 'name' => $village1->name],
+                    ['id' => $village2->id, 'name' => $village2->name],
+                ],
+                // host_village_id manquant intentionnellement
+            ]
+        ];
+
+        $response = $this->postJson(route('api.meetings.split', $this->parentMeeting->id), [
+            'sub_meetings' => $subMeetingsData
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['sub_meetings.0.host_village_id']);
+    }
 } 

@@ -125,7 +125,8 @@ class MeetingPaymentList extends Model
         $this->update([
             'paid_at' => now(),
             'paid_by' => $userId,
-            'export_status' => self::EXPORT_STATUS_PAID
+            'export_status' => self::EXPORT_STATUS_PAID,
+            'status' => 'paid' // Mettre à jour le statut principal aussi
         ]);
     }
 

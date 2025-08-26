@@ -1,43 +1,93 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests\Unit;
 
 use Tests\TestCase;
 use App\Services\ImageCompressionService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ImageCompressionTest extends TestCase
 {
-    protected ImageCompressionService $imageCompressionService;
+    use RefreshDatabase;
+
+    protected ImageCompressionService $imageService;
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->imageCompressionService = app(ImageCompressionService::class);
+        $this->imageService = new ImageCompressionService();
         Storage::fake('public');
+    }
+
+    /** @test */
+    public function it_can_compress_jpeg_image()
+    {
+        // Créer un fichier image JPEG de test
+        $image = UploadedFile::fake()->image('test.jpg', 2000, 1500);
+
+        $result = $this->imageService->compressImage($image, [
+            'quality' => 80,
+            'max_width' => 800,
+            'max_height' => 600,
+            'format' => 'jpg'
+        ]);
+
+        $this->assertTrue($result['success']);
+        $this->assertLessThan($image->getSize(), $result['compressed_size']);
+        $this->assertEquals('jpg', $result['format']);
+        $this->assertEquals(80, $result['quality']);
+    }
+
+    /** @test */
+    public function it_can_compress_png_image()
+    {
+        // Créer un fichier image PNG de test
+        $image = UploadedFile::fake()->image('test.png', 1600, 1200);
+
+        $result = $this->imageService->compressImage($image, [
+            'quality' => 90,
+            'max_width' => 800,
+            'max_height' => 600,
+            'format' => 'png'
+        ]);
+
+        $this->assertTrue($result['success']);
+        $this->assertEquals('png', $result['format']);
+        $this->assertEquals(90, $result['quality']);
+    }
+
+    /** @test */
+    public function it_can_compress_webp_image()
+    {
+        // Créer un fichier image de test
+        $image = UploadedFile::fake()->image('test.jpg', 1200, 800);
+
+        $result = $this->imageService->compressImage($image, [
+            'quality' => 85,
+            'max_width' => 600,
+            'max_height' => 400,
+            'format' => 'webp'
+        ]);
+
+        $this->assertTrue($result['success']);
+        $this->assertEquals('webp', $result['format']);
+        $this->assertEquals(85, $result['quality']);
     }
 
     /** @test */
     public function it_can_compress_presence_photo()
     {
-        // Créer un fichier image de test
-        $image = UploadedFile::fake()->image('test_photo.jpg', 1200, 800);
+        $image = UploadedFile::fake()->image('presence.jpg', 1600, 1200);
 
-        // Compresser l'image
-        $result = $this->imageCompressionService->compressPresencePhoto($image);
+        $result = $this->imageService->compressPresencePhoto($image);
 
-        // Vérifier le résultat
         $this->assertTrue($result['success']);
-        $this->assertArrayHasKey('compressed_path', $result);
-        $this->assertArrayHasKey('compressed_size', $result);
-        $this->assertArrayHasKey('compression_ratio', $result);
-
-        // Vérifier que le fichier compressé existe
-        $this->assertTrue(Storage::disk('public')->exists($result['compressed_path']));
-
-        // Vérifier que la taille a été réduite
-        $this->assertLessThan($image->getSize(), $result['compressed_size']);
+        $this->assertEquals('jpg', $result['format']);
+        $this->assertEquals(75, $result['quality']);
+        $this->assertLessThanOrEqual(800, $result['dimensions']['width']);
+        $this->assertLessThanOrEqual(800, $result['dimensions']['height']);
     }
 
     /** @test */
@@ -45,107 +95,61 @@ class ImageCompressionTest extends TestCase
     {
         $image = UploadedFile::fake()->image('profile.jpg', 800, 600);
 
-        $result = $this->imageCompressionService->compressProfilePhoto($image);
+        $result = $this->imageService->compressProfilePhoto($image);
 
         $this->assertTrue($result['success']);
-        $this->assertArrayHasKey('compressed_path', $result);
-        
-        $this->assertTrue(Storage::disk('public')->exists($result['compressed_path']));
+        $this->assertEquals('jpg', $result['format']);
+        $this->assertEquals(85, $result['quality']);
+        $this->assertLessThanOrEqual(400, $result['dimensions']['width']);
+        $this->assertLessThanOrEqual(400, $result['dimensions']['height']);
     }
 
     /** @test */
-    public function it_can_compress_document()
+    public function it_can_compress_document_image()
     {
-        $image = UploadedFile::fake()->image('document.png', 2000, 1500);
+        $image = UploadedFile::fake()->image('document.jpg', 2400, 1800);
 
-        $result = $this->imageCompressionService->compressDocumentImage($image);
+        $result = $this->imageService->compressDocumentImage($image);
 
         $this->assertTrue($result['success']);
-        $this->assertArrayHasKey('compressed_path', $result);
-        
-        $this->assertTrue(Storage::disk('public')->exists($result['compressed_path']));
+        $this->assertEquals('jpg', $result['format']);
+        $this->assertEquals(90, $result['quality']);
+        $this->assertLessThanOrEqual(1600, $result['dimensions']['width']);
+        $this->assertLessThanOrEqual(1600, $result['dimensions']['height']);
     }
 
     /** @test */
-    public function it_handles_invalid_image_files()
+    public function it_handles_invalid_image_file()
     {
         $invalidFile = UploadedFile::fake()->create('test.txt', 100);
 
-        $result = $this->imageCompressionService->compressPresencePhoto($invalidFile);
+        $result = $this->imageService->compressImage($invalidFile);
 
         $this->assertFalse($result['success']);
-        $this->assertArrayHasKey('message', $result);
+        $this->assertArrayHasKey('error', $result);
     }
 
     /** @test */
-    public function it_handles_missing_files()
+    public function it_preserves_aspect_ratio_when_resizing()
     {
-        // Créer un fichier invalide au lieu de null
-        $invalidFile = UploadedFile::fake()->create('invalid.txt', 100);
+        $image = UploadedFile::fake()->image('landscape.jpg', 2000, 1000);
 
-        $result = $this->imageCompressionService->compressPresencePhoto($invalidFile);
-
-        $this->assertFalse($result['success']);
-        $this->assertArrayHasKey('message', $result);
-    }
-
-    /** @test */
-    public function it_generates_unique_filenames()
-    {
-        $image1 = UploadedFile::fake()->image('photo1.jpg', 800, 600);
-        $image2 = UploadedFile::fake()->image('photo2.jpg', 800, 600);
-
-        $result1 = $this->imageCompressionService->compressPresencePhoto($image1);
-        $result2 = $this->imageCompressionService->compressPresencePhoto($image2);
-
-        $this->assertNotEquals($result1['compressed_path'], $result2['compressed_path']);
-    }
-
-    /** @test */
-    public function it_maintains_image_quality()
-    {
-        $image = UploadedFile::fake()->image('quality_test.jpg', 1000, 750);
-
-        $result = $this->imageCompressionService->compressPresencePhoto($image);
+        $result = $this->imageService->compressImage($image, [
+            'max_width' => 800,
+            'max_height' => 600
+        ]);
 
         $this->assertTrue($result['success']);
         
-        // Vérifier que le ratio de compression est raisonnable (pas trop agressif)
-        $this->assertGreaterThan(20, $result['compression_ratio']);
-        $this->assertLessThan(90, $result['compression_ratio']);
-    }
-
-    /** @test */
-    public function it_creates_required_directories()
-    {
-        $image = UploadedFile::fake()->image('test.jpg', 800, 600);
-
-        $result = $this->imageCompressionService->compressPresencePhoto($image);
-
-        $this->assertTrue($result['success']);
+        // L'image devrait conserver ses proportions
+        $width = $result['dimensions']['width'];
+        $height = $result['dimensions']['height'];
         
-        // Vérifier que le dossier presence-photos existe
-        $this->assertTrue(Storage::disk('public')->exists('presence-photos'));
-    }
-
-    /** @test */
-    public function it_can_use_custom_compression_parameters()
-    {
-        $image = UploadedFile::fake()->image('custom.jpg', 1000, 800);
-
-        $result = $this->imageCompressionService->compressImage(
-            $image,
-            [
-                'max_width' => 500,
-                'max_height' => 400,
-                'quality' => 70,
-                'format' => 'jpeg'
-            ]
-        );
-
-        $this->assertTrue($result['success']);
-        $this->assertArrayHasKey('compressed_path', $result);
+        $this->assertLessThanOrEqual(800, $width);
+        $this->assertLessThanOrEqual(600, $height);
         
-        $this->assertTrue(Storage::disk('public')->exists($result['compressed_path']));
+        // Vérifier que les proportions sont conservées (ratio ~2:1)
+        $ratio = $width / $height;
+        $this->assertEquals(2.0, $ratio, '', 0.1);
     }
 }

@@ -75,6 +75,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/templates/meetings', [TemplateController::class, 'downloadMeetingsTemplate'])->name('templates.meetings');
     Route::resource('meetings', MeetingController::class);
     
+    // Route pour le compte rendu des réunions
+    Route::get('/meetings/{meeting}/minutes', [MeetingController::class, 'showMinutes'])
+        ->name('meetings.minutes')
+        ->middleware('check.locality');
+    
     // Routes pour les imports par lots
     Route::get('/bulk-imports', [BulkImportController::class, 'index'])->name('bulk-imports.index');
     Route::get('/bulk-imports/{bulkImport}', [BulkImportController::class, 'show'])->name('bulk-imports.show');

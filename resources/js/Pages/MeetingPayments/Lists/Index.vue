@@ -236,14 +236,7 @@
                           <DocumentIcon class="h-5 w-5" />
                         </button>
                         
-                        <!-- Bouton pour consulter la liste des personnes à payer -->
-                        <button
-                          @click="openPaymentDetailsModal(list)"
-                          class="p-1 text-blue-600 hover:text-blue-900 transition-colors duration-200 rounded-full hover:bg-blue-100"
-                          title="Consulter la liste des personnes à payer"
-                        >
-                          <UserIcon class="h-5 w-5" />
-                        </button>
+                        
                         
                         <button
                           v-if="canValidateAll && list.status === 'submitted'"
@@ -268,13 +261,6 @@
                         >
                           <EyeIcon class="h-5 w-5" />
                         </Link>
-                        <button
-                          @click="showDetails(list)"
-                          class="p-1 text-indigo-600 hover:text-indigo-900 transition-colors duration-200 rounded-full hover:bg-indigo-100"
-                          title="Voir détails"
-                        >
-                          <DocumentTextIcon class="h-5 w-5" />
-                        </button>
                         
                         <!-- Bouton pour consulter la liste des participants -->
                         <button
@@ -513,9 +499,7 @@
                 <select v-model="newJustification.justification_type" class="w-full border-gray-300 rounded-md shadow-sm" required>
                   <option value="">Sélectionner un type</option>
                   <option value="receipt">Reçu</option>
-                  <option value="quittance">Quittance</option>
                   <option value="transfer_proof">Preuve de virement</option>
-                  <option value="bank_statement">Relevé bancaire</option>
                   <option value="mobile_money_proof">Preuve Mobile Money</option>
                   <option value="other">Autre</option>
                 </select>
@@ -1052,6 +1036,12 @@ import Select2Input from '@/Components/Select2Input.vue'
 import { getStatusText, getStatusClass, translateRole } from '@/Utils/translations'
 import * as XLSX from 'xlsx'
 
+// Fonction utilitaire pour récupérer le token CSRF de manière sûre
+const getCsrfToken = () => {
+  const metaElement = document.querySelector('meta[name="csrf-token"]')
+  return metaElement?.getAttribute('content') || ''
+}
+
 const props = defineProps({
   paymentLists: Object,
   localCommittees: Array,
@@ -1137,7 +1127,8 @@ const statusOptions = [
   { value: 'draft', label: 'Brouillon' },
   { value: 'submitted', label: 'Soumis' },
   { value: 'validated', label: 'Validé' },
-  { value: 'rejected', label: 'Rejeté' }
+  { value: 'rejected', label: 'Rejeté' },
+  { value: 'paid', label: 'Payé' }
 ]
 
 const exportStatusOptions = [
@@ -1457,7 +1448,7 @@ const uploadJustification = async () => {
       method: 'POST',
       body: formData,
       headers: {
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        'X-CSRF-TOKEN': getCsrfToken()
       }
     })
 
@@ -1507,7 +1498,7 @@ const deleteJustification = async (justification) => {
     const response = await fetch(route('meeting-payments.justifications.destroy', [selectedListForJustification.value.id, justification.id]), {
       method: 'DELETE',
       headers: {
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        'X-CSRF-TOKEN': getCsrfToken()
       }
     })
 
@@ -1700,7 +1691,7 @@ const validateParticipantPayment = async (participant) => {
     const response = await fetch(route('meeting-payments.lists.validate-item', [selectedListForParticipants.value.id, participant.payment_item.id]), {
       method: 'POST',
       headers: {
-        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        'X-CSRF-TOKEN': getCsrfToken()
       }
     })
 
@@ -1857,11 +1848,20 @@ const markSelectedAsPaid = async () => {
   }
 
   try {
-    const response = await router.post(route('meeting-payments.lists.mark-paid-multiple'), {
-      ids: selectedLists.value
+    const response = await fetch(route('meeting-payments.export.mark-paid-multiple'), {
+      method: 'POST',
+      headers: {
+        'X-CSRF-TOKEN': getCsrfToken(),
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        payment_list_ids: selectedLists.value
+      })
     });
 
     if (response.ok) {
+      const data = await response.json();
       alert('Les listes sélectionnées ont été marquées comme payées.');
       router.reload(); // Recharger la page pour mettre à jour les statuts
     } else {
@@ -1880,9 +1880,17 @@ const markListAsPaid = async (listId) => {
   }
 
   try {
-    const response = await router.post(route('meeting-payments.lists.mark-paid', listId));
+    const response = await fetch(route('meeting-payments.export.mark-paid', listId), {
+      method: 'POST',
+      headers: {
+        'X-CSRF-TOKEN': getCsrfToken(),
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    });
 
     if (response.ok) {
+      const data = await response.json();
       alert('La liste a été marquée comme payée.');
       router.reload(); // Recharger la page pour mettre à jour le statut
     } else {
