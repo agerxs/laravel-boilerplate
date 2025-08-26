@@ -226,6 +226,7 @@ import { useForm, usePage } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import InputLabel from '@/Components/InputLabel.vue'
 import TextInput from '@/Components/TextInput.vue'
+import Select2Input from '@/Components/Select2Input.vue'
 import axios from 'axios'
 import { hasRole } from '@/Utils/authUtils'
 import { Role } from '@/types/Role'
@@ -248,6 +249,11 @@ onMounted(() => {
 
 const selectedVillage = ref(null)
 const representativeRoles = ['Chef du village', 'Membre des femmes', 'Membre des jeunes']
+
+// Gestion des rôles avec Select2Input
+const roleOptions = ref([])
+const isLoadingRoles = ref(false)
+
 const villageRepresentatives = ref(representativeRoles.map(role => ({
   first_name: '',
   last_name: '',

@@ -51,17 +51,20 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [MeetingPaymentListController::class, 'index'])->name('index');
         Route::get('/create/{meeting}', [MeetingPaymentListController::class, 'create'])->name('create');
         Route::get('/export', [MeetingPaymentListController::class, 'exportPaymentLists'])->name('export');
-        Route::get('/export-single/{meeting}', [MeetingPaymentListController::class, 'exportSingleMeeting'])->name('export-single');
         Route::post('/validate-all', [MeetingPaymentListController::class, 'validateAll'])->name('validate-all');
-        Route::post('/items/{item}/validate', [MeetingPaymentListController::class, 'validateItem'])->name('validate-item');
-        Route::post('/items/{item}/invalidate', [MeetingPaymentListController::class, 'invalidateItem'])->name('invalidate-item');
         Route::post('/{meeting}', [MeetingPaymentListController::class, 'store'])->name('store');
         Route::get('/{paymentList}', [MeetingPaymentListController::class, 'show'])->name('show');
         Route::post('/{paymentList}/submit', [MeetingPaymentListController::class, 'submit'])->name('submit');
         Route::post('/{paymentList}/validate', [MeetingPaymentListController::class, 'validates'])->name('validate');
         Route::post('/{paymentList}/reject', [MeetingPaymentListController::class, 'reject'])->name('reject');
+        
+        // Route pour récupérer les participants
+        Route::get('/{paymentList}/participants', [MeetingPaymentListController::class, 'getParticipants'])->name('participants');
     });
 });
+
+// Inclure les routes des paiements
+require __DIR__.'/meeting-payments.php';
 
 Route::middleware(['auth', 'verified'])->group(function () {
     

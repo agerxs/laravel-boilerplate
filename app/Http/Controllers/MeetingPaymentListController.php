@@ -13,6 +13,7 @@ use App\Models\MeetingAttendee;
 use App\Models\LocalCommittee;
 use App\Services\PaymentListNotificationService;
 use App\Models\Locality;
+use Illuminate\Support\Facades\Log;
 
 class MeetingPaymentListController extends Controller
 {
@@ -31,7 +32,7 @@ class MeetingPaymentListController extends Controller
             $localities = array_merge($localities, [$user->locality_id]);
             $localities =  array_merge($localities, Locality::whereIn('parent_id', $localities)->pluck('id')->toArray());
 
-            \Log::info('User Locality:', ['localities' => $localities]);
+            Log::info('User Locality:', ['localities' => $localities]);
 
             // Récuperation des commités locaux par localite id 
             $localCommittees = LocalCommittee::whereIn('locality_id', $localities)->pluck('id')->toArray();
@@ -600,5 +601,65 @@ class MeetingPaymentListController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Liste de paiement validée.');
+    }
+
+    /**
+     * Récupère la liste des participants d'une liste de paiement
+     */
+    public function getParticipants(MeetingPaymentList $paymentList)
+    {
+        $user = Auth::user();
+        
+        if (!in_array('tresorier', $user->roles->pluck('name')->toArray()) && !in_array('Tresorier', $user->roles->pluck('name')->toArray())) {
+            return response()->json(['message' => 'Accès non autorisé'], 403);
+        }
+
+        try {
+            // Charger la réunion avec les participants et leurs éléments de paiement
+            $paymentList->load([
+                'meeting.attendees.representative',
+                'meeting.attendees.paymentItems' => function($query) use ($paymentList) {
+                    $query->where('meeting_payment_list_id', $paymentList->id);
+                }
+            ]);
+
+            $participants = $paymentList->meeting->attendees->map(function($attendee) use ($paymentList) {
+                // Trouver l'élément de paiement correspondant
+                $paymentItem = $attendee->paymentItems->first();
+                
+                return [
+                    'id' => $attendee->id,
+                    'representative' => $attendee->representative,
+                    'role' => $attendee->role,
+                    'attendance_status' => $attendee->attendance_status,
+                    'attendance_time' => $attendee->attendance_time,
+                    'presence_photo' => $attendee->presence_photo,
+                    'presence_location' => $attendee->presence_location,
+                    'phone' => $attendee->phone,
+                    'payment_item' => $paymentItem ? [
+                        'id' => $paymentItem->id,
+                        'amount' => $paymentItem->amount,
+                        'payment_status' => $paymentItem->payment_status,
+                        'role' => $paymentItem->role
+                    ] : null
+                ];
+            });
+
+            return response()->json([
+                'participants' => $participants,
+                'meeting' => $paymentList->meeting,
+                'payment_list' => $paymentList
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error("Erreur lors de la récupération des participants", [
+                'payment_list_id' => $paymentList->id,
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'message' => 'Erreur lors de la récupération des participants: ' . $e->getMessage()
+            ], 500);
+        }
     }
 } 

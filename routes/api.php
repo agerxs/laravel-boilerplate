@@ -110,6 +110,19 @@ Route::middleware(['auth:sanctum'])->group(function () {
         
     });
 
+    // Routes pour la gestion des rôles
+    Route::prefix('roles')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Api\RoleController::class, 'index']);
+        Route::get('/suggested', [\App\Http\Controllers\Api\RoleController::class, 'suggested']);
+        Route::get('/search', [\App\Http\Controllers\Api\RoleController::class, 'search']);
+        Route::get('/statistics', [\App\Http\Controllers\Api\RoleController::class, 'statistics']);
+        Route::get('/by-category', [\App\Http\Controllers\Api\RoleController::class, 'byCategory']);
+        Route::get('/recent', [\App\Http\Controllers\Api\RoleController::class, 'recent']);
+        Route::get('/suggestions', [\App\Http\Controllers\Api\RoleController::class, 'suggestions']);
+        Route::post('/normalize', [\App\Http\Controllers\Api\RoleController::class, 'normalize']);
+        Route::post('/exists', [\App\Http\Controllers\Api\RoleController::class, 'exists']);
+    });
+
     // Endpoint villages pour l'utilisateur connecté
     Route::get('/localities/villages', [LocalityController::class, 'villages']);
     
