@@ -6,6 +6,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./data/storage:/var/www/html/storage
+      - .env:/var/www/html/.env
     networks:
       - colocs
     ports:
