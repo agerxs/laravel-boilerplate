@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Meeting;
+use App\Services\ImageCompressionService;
 use Illuminate\Http\Request;
 use App\Http\Utils\Constants;
 use Illuminate\Support\Facades\Auth;
@@ -12,6 +13,13 @@ use Illuminate\Support\Facades\DB;
 
 class MeetingController extends Controller
 {
+    protected ImageCompressionService $imageCompressionService;
+
+    public function __construct(ImageCompressionService $imageCompressionService)
+    {
+        $this->imageCompressionService = $imageCompressionService;
+    }
+
     /**
      * Liste des réunions avec filtres
      */
@@ -664,19 +672,25 @@ class MeetingController extends Controller
                 info('Extension: ' . $photo->getClientOriginalExtension());
                 
                 try {
-                    // Créer le dossier s'il n'existe pas
-                    $storagePath = storage_path('app/public/presence-photos');
-                    if (!file_exists($storagePath)) {
-                        mkdir($storagePath, 0755, true);
-                        info('Dossier créé: ' . $storagePath);
+                    // Compresser la photo de présence
+                    $compressionResult = $this->imageCompressionService->compressPresencePhoto($photo);
+                    
+                    if (!$compressionResult['success']) {
+                        info('Erreur lors de la compression de la photo: ' . $compressionResult['message']);
+                        continue;
                     }
                     
-                    $photoPath = $photo->store('presence-photos', 'public');
+                    $photoPath = $compressionResult['compressed_path'];
                     $updateData['presence_photo'] = $photoPath;
-                    info('Photo sauvegardée avec succès: ' . $photoPath);
+                    
+                    info('Photo compressée et sauvegardée avec succès: ' . $photoPath);
+                    info('Taille originale: ' . $photo->getSize() . ' bytes');
+                    info('Taille compressée: ' . $compressionResult['compressed_size'] . ' bytes');
+                    info('Ratio de compression: ' . $compressionResult['compression_ratio'] . '%');
+                    
                     $photoFound = true;
                 } catch (\Exception $e) {
-                    info('Erreur lors de la sauvegarde de la photo: ' . $e->getMessage());
+                    info('Erreur lors de la compression/sauvegarde de la photo: ' . $e->getMessage());
                 }
             } else {
                 info('Aucune photo trouvée pour cet attendance');

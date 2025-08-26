@@ -13,6 +13,7 @@ use App\Models\MeetingAttendee;
 use App\Models\LocalCommittee;
 use App\Services\PaymentListNotificationService;
 use App\Models\Locality;
+use Illuminate\Support\Facades\Log;
 
 class MeetingPaymentListController extends Controller
 {
@@ -31,7 +32,7 @@ class MeetingPaymentListController extends Controller
             $localities = array_merge($localities, [$user->locality_id]);
             $localities =  array_merge($localities, Locality::whereIn('parent_id', $localities)->pluck('id')->toArray());
 
-            \Log::info('User Locality:', ['localities' => $localities]);
+            Log::info('User Locality:', ['localities' => $localities]);
 
             // Récuperation des commités locaux par localite id 
             $localCommittees = LocalCommittee::whereIn('locality_id', $localities)->pluck('id')->toArray();
@@ -438,7 +439,7 @@ class MeetingPaymentListController extends Controller
             ->with('success', 'Liste de paiement mise à jour avec succès.');
     }
 
-    public function exportSingleMeeting(Request $request, Meeting $meeting)
+    public function exportSingleMeeting(Request $request, MeetingPaymentList $meeting)
     {
         $user = Auth::user();
         
@@ -452,7 +453,7 @@ class MeetingPaymentListController extends Controller
             'submitter',
             'validator'
         ])
-        ->where('meeting_id', $meeting->id)
+        ->where('id', $meeting->id)
         ->first();
 
         if (!$paymentList) {
@@ -474,11 +475,18 @@ class MeetingPaymentListController extends Controller
             ];
         }
 
+        // Marquer la liste comme exportée
+        $exportReference = 'EXP_' . date('Ymd_His') . '_' . $paymentList->id;
+        $paymentList->markAsExported($exportReference, $user->id);
+
         return response()->json([
             'data' => $mobileMoneyData,
             'total_amount' => $paymentList->total_amount,
             'meeting_title' => $paymentList->meeting->title,
-            'total_items' => count($mobileMoneyData)
+            'total_items' => count($mobileMoneyData),
+            'export_reference' => $exportReference,
+            'export_status' => $paymentList->export_status,
+            'exported_at' => $paymentList->exported_at
         ]);
     }
 
@@ -518,6 +526,7 @@ class MeetingPaymentListController extends Controller
 
         // Préparation des données pour l'export mobile money
         $mobileMoneyData = [];
+        $exportedLists = [];
         
         foreach ($paymentLists as $list) {
             foreach ($list->paymentItems as $item) {
@@ -529,12 +538,25 @@ class MeetingPaymentListController extends Controller
                     'Type d\'opération' => 'transfert-mobile-money'
                 ];
             }
+            
+            // Marquer la liste comme exportée
+            $exportReference = 'EXP_' . date('Ymd_His') . '_' . $list->id;
+            $list->markAsExported($exportReference, $user->id);
+            
+            $exportedLists[] = [
+                'id' => $list->id,
+                'meeting_title' => $list->meeting->title,
+                'export_reference' => $exportReference,
+                'export_status' => $list->export_status,
+                'exported_at' => $list->exported_at
+            ];
         }
 
         return response()->json([
             'data' => $mobileMoneyData,
             'total_amount' => $paymentLists->sum('total_amount'),
-            'total_items' => count($mobileMoneyData)
+            'total_items' => count($mobileMoneyData),
+            'exported_lists' => $exportedLists
         ]);
     }
 
@@ -600,5 +622,127 @@ class MeetingPaymentListController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Liste de paiement validée.');
+    }
+
+    /**
+     * Récupère la liste des participants d'une liste de paiement
+     */
+    public function getParticipants(MeetingPaymentList $paymentList)
+    {
+        $user = Auth::user();
+        
+        if (!in_array('tresorier', $user->roles->pluck('name')->toArray()) && !in_array('Tresorier', $user->roles->pluck('name')->toArray())) {
+            return response()->json(['message' => 'Accès non autorisé'], 403);
+        }
+
+        try {
+            // Charger la réunion avec les participants et leurs éléments de paiement
+            $paymentList->load([
+                'meeting.attendees.representative',
+                'meeting.attendees.paymentItems' => function($query) use ($paymentList) {
+                    $query->where('meeting_payment_list_id', $paymentList->id);
+                }
+            ]);
+
+            $participants = $paymentList->meeting->attendees->map(function($attendee) use ($paymentList) {
+                // Trouver l'élément de paiement correspondant
+                $paymentItem = $attendee->paymentItems->first();
+                
+                return [
+                    'id' => $attendee->id,
+                    'representative' => $attendee->representative,
+                    'role' => $attendee->role,
+                    'attendance_status' => $attendee->attendance_status,
+                    'attendance_time' => $attendee->attendance_time,
+                    'presence_photo' => $attendee->presence_photo,
+                    'presence_location' => $attendee->presence_location,
+                    'phone' => $attendee->phone,
+                    'payment_item' => $paymentItem ? [
+                        'id' => $paymentItem->id,
+                        'amount' => $paymentItem->amount,
+                        'payment_status' => $paymentItem->payment_status,
+                        'role' => $paymentItem->role
+                    ] : null
+                ];
+            });
+
+            return response()->json([
+                'participants' => $participants,
+                'meeting' => $paymentList->meeting,
+                'payment_list' => $paymentList
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error("Erreur lors de la récupération des participants", [
+                'payment_list_id' => $paymentList->id,
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'message' => 'Erreur lors de la récupération des participants: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Marque une liste de paiement comme payée
+     */
+    public function markAsPaid(MeetingPaymentList $paymentList)
+    {
+        $user = Auth::user();
+        
+        if (!in_array('tresorier', $user->roles->pluck('name')->toArray()) && !in_array('Tresorier', $user->roles->pluck('name')->toArray())) {
+            return response()->json(['message' => 'Accès non autorisé'], 403);
+        }
+
+        if ($paymentList->export_status !== MeetingPaymentList::EXPORT_STATUS_EXPORTED) {
+            return response()->json(['message' => 'Cette liste doit d\'abord être exportée avant d\'être marquée comme payée'], 400);
+        }
+
+        $paymentList->markAsPaid($user->id);
+
+        return response()->json([
+            'message' => 'Liste de paiement marquée comme payée',
+            'payment_list' => $paymentList->fresh()
+        ]);
+    }
+
+    /**
+     * Marque plusieurs listes de paiement comme payées
+     */
+    public function markMultipleAsPaid(Request $request)
+    {
+        $user = Auth::user();
+        
+        if (!in_array('tresorier', $user->roles->pluck('name')->toArray()) && !in_array('Tresorier', $user->roles->pluck('name')->toArray())) {
+            return response()->json(['message' => 'Accès non autorisé'], 403);
+        }
+
+        $request->validate([
+            'payment_list_ids' => 'required|array',
+            'payment_list_ids.*' => 'exists:meeting_payment_lists,id'
+        ]);
+
+        $paymentLists = MeetingPaymentList::whereIn('id', $request->payment_list_ids)
+            ->where('export_status', MeetingPaymentList::EXPORT_STATUS_EXPORTED)
+            ->get();
+
+        $markedCount = 0;
+        $errors = [];
+
+        foreach ($paymentLists as $paymentList) {
+            try {
+                $paymentList->markAsPaid($user->id);
+                $markedCount++;
+            } catch (\Exception $e) {
+                $errors[] = "Erreur pour la liste {$paymentList->id}: " . $e->getMessage();
+            }
+        }
+
+        return response()->json([
+            'message' => "{$markedCount} listes marquées comme payées",
+            'marked_count' => $markedCount,
+            'errors' => $errors
+        ]);
     }
 } 

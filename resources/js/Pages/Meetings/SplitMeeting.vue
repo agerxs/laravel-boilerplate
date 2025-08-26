@@ -114,18 +114,84 @@
                     </button>
                   </div>
 
-                  <!-- Lieu de la sous-réunion -->
-                  <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
-                      Lieu de la sous-réunion *
-                    </label>
-                    <input
-                      type="text"
-                      v-model="subMeeting.location"
-                      placeholder="Ex: Salle polyvalente de [Nom du village principal]"
-                      class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                      required
-                    />
+                  <!-- Lieu et village hôte de la sous-réunion -->
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Lieu de la sous-réunion *
+                      </label>
+                      <input
+                        type="text"
+                        v-model="subMeeting.location"
+                        placeholder="Ex: Salle polyvalente, Mairie, etc."
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Village hôte *
+                      </label>
+                      <select
+                        v-model="subMeeting.host_village_id"
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                        required
+                      >
+                        <option value="">Sélectionner le village hôte</option>
+                        <option 
+                          v-for="village in subMeeting.villages" 
+                          :key="village.id" 
+                          :value="village.id"
+                        >
+                          {{ village.name }}
+                        </option>
+                      </select>
+                      <p class="text-xs text-gray-500 mt-1">
+                        Le village qui accueillera la réunion
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Date et heure de la sous-réunion -->
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Date (optionnel)
+                      </label>
+                      <input
+                        type="date"
+                        v-model="subMeeting.scheduled_date"
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                        :min="formatDateForInput(meeting.scheduled_date)"
+                      />
+                      <p class="text-xs text-gray-500 mt-1">
+                        Laissez vide pour utiliser la date de la réunion principale
+                      </p>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Heure (optionnel)
+                      </label>
+                      <input
+                        type="time"
+                        v-model="subMeeting.scheduled_time"
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      />
+                      <p class="text-xs text-gray-500 mt-1">
+                        Laissez vide pour utiliser l'heure de la réunion principale
+                      </p>
+                    </div>
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-1">
+                        Titre personnalisé (optionnel)
+                      </label>
+                      <input
+                        type="text"
+                        v-model="subMeeting.title"
+                        placeholder="Laissez vide pour le titre automatique"
+                        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    </div>
                   </div>
 
                   <!-- Villages sélectionnés pour cette sous-réunion -->
@@ -272,7 +338,7 @@ const splitResult = ref(null)
 
 // Computed properties
 const totalSubMeetings = computed(() => {
-  return subMeetings.value.filter(sm => sm.villages.length > 0 && sm.location).length
+  return subMeetings.value.filter(sm => sm.villages.length > 0 && sm.location && sm.host_village_id).length
 })
 
 const totalSelectedVillages = computed(() => {
@@ -290,8 +356,10 @@ const hasDuplicateVillages = computed(() => {
 })
 
 const canSplitMeeting = computed(() => {
-  // Vérifier qu'il y a au moins une sous-réunion avec des villages et un lieu
-  const validSubMeetings = subMeetings.value.filter(sm => sm.villages.length > 0 && sm.location)
+  // Vérifier qu'il y a au moins une sous-réunion avec des villages, un lieu et un village hôte
+  const validSubMeetings = subMeetings.value.filter(sm => 
+    sm.villages.length > 0 && sm.location && sm.host_village_id
+  )
   
   if (validSubMeetings.length === 0) return false
   
@@ -331,7 +399,11 @@ const loadVillages = async () => {
 const addSubMeeting = () => {
   subMeetings.value.push({
     location: '',
-    villages: []
+    villages: [],
+    host_village_id: '',
+    scheduled_date: '',
+    scheduled_time: '',
+    title: ''
   })
 }
 
@@ -343,6 +415,11 @@ const removeSubMeeting = (index) => {
 // Ajouter un village à une sous-réunion
 const addVillageToSubMeeting = (subMeetingIndex, village) => {
   subMeetings.value[subMeetingIndex].villages.push(village)
+  // Réinitialiser le village hôte si le village actuel n'est plus dans la liste
+  const subMeeting = subMeetings.value[subMeetingIndex]
+  if (subMeeting.host_village_id && !subMeeting.villages.find(v => v.id === subMeeting.host_village_id)) {
+    subMeeting.host_village_id = ''
+  }
 }
 
 // Retirer un village d'une sous-réunion
@@ -364,17 +441,21 @@ const availableVillagesForSubMeeting = (subMeetingIndex) => {
 // Éclater la réunion
 const splitMeeting = async () => {
   if (!canSplitMeeting.value) {
-    alert('Veuillez créer au moins une sous-réunion avec des villages et un lieu.')
+    alert('Veuillez créer au moins une sous-réunion avec des villages, un lieu et un village hôte.')
     return
   }
 
   processing.value = true
   try {
     const subMeetingsData = subMeetings.value
-      .filter(sm => sm.villages.length > 0 && sm.location)
+      .filter(sm => sm.villages.length > 0 && sm.location && sm.host_village_id)
       .map(sm => ({
         location: sm.location,
-        villages: sm.villages.map(v => ({ id: v.id, name: v.name }))
+        villages: sm.villages.map(v => ({ id: v.id, name: v.name })),
+        host_village_id: sm.host_village_id,
+        scheduled_date: sm.scheduled_date || null,
+        scheduled_time: sm.scheduled_time || null,
+        title: sm.title || null
       }))
 
     const response = await axios.post(route('api.meetings.split', props.meeting.id), {
@@ -406,6 +487,13 @@ const formatDate = (dateString) => {
     month: 'long',
     day: 'numeric'
   })
+}
+
+// Formater une date pour l'attribut min (YYYY-MM-DD)
+const formatDateForInput = (dateString) => {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  return date.toISOString().split('T')[0]
 }
 
 onMounted(() => {

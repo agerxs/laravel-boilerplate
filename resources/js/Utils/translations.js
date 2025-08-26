@@ -3,6 +3,7 @@ export const STATUS_MEETING = {
   submitted: 'Soumis',
   validated: 'Validé',
   rejected: 'Rejeté',
+  paid: 'Payé',
   completed: 'Publiée',
   cancelled: 'Annulée',
   scheduled: 'Planifiée',

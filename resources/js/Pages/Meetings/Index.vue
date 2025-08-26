@@ -86,12 +86,42 @@
             <table class="min-w-full divide-y divide-gray-200">
               <thead class="bg-gray-50">
                 <tr>
-                    <th @click="sortBy('title')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Titre</th>
-                    <th @click="sortBy('scheduled_date')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Date</th>
-                    <th @click="sortBy('status')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Statut</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Présences</th>
-                    <th @click="sortBy('local_committee')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Comité Local</th>
-                    <th @click="sortBy('updated_at')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer">Date de modification</th>
+                    <th @click="sortBy('title')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors">
+                      <div class="flex items-center space-x-1">
+                        <span>Titre</span>
+                        <SortIcon :active="sortColumn === 'title'" :direction="sortColumn === 'title' ? sortDirection : null" />
+                      </div>
+                    </th>
+                    <th @click="sortBy('scheduled_date')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors">
+                      <div class="flex items-center space-x-1">
+                        <span>Date</span>
+                        <SortIcon :active="sortColumn === 'scheduled_date'" :direction="sortColumn === 'scheduled_date' ? sortDirection : null" />
+                      </div>
+                    </th>
+                    <th @click="sortBy('status')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors">
+                      <div class="flex items-center space-x-1">
+                        <span>Statut</span>
+                        <SortIcon :active="sortColumn === 'status'" :direction="sortColumn === 'status' ? sortDirection : null" />
+                      </div>
+                    </th>
+                    <th @click="sortBy('attendance_status')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors">
+                      <div class="flex items-center space-x-1">
+                        <span>Présences</span>
+                        <SortIcon :active="sortColumn === 'attendance_status'" :direction="sortColumn === 'attendance_status' ? sortDirection : null" />
+                      </div>
+                    </th>
+                    <th @click="sortBy('local_committee')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors">
+                      <div class="flex items-center space-x-1">
+                        <span>Comité Local</span>
+                        <SortIcon :active="sortColumn === 'local_committee'" :direction="sortColumn === 'local_committee' ? sortDirection : null" />
+                      </div>
+                    </th>
+                    <th @click="sortBy('updated_at')" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors">
+                      <div class="flex items-center space-x-1">
+                        <span>Date de modification</span>
+                        <SortIcon :active="sortColumn === 'updated_at'" :direction="sortColumn === 'updated_at' ? sortDirection : null" />
+                      </div>
+                    </th>
                     <th class="relative px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
               </thead>
@@ -238,6 +268,7 @@ import Pagination from '@/Components/Pagination.vue';
 import MeetingStatusBadge from '@/Components/MeetingStatusBadge.vue';
 import MeetingValidationButtons from '@/Components/MeetingValidationButtons.vue';
 import AttendanceStatusBadge from '@/Components/AttendanceStatusBadge.vue';
+import SortIcon from '@/Components/SortIcon.vue';
 import { PlusIcon, EyeIcon, XCircleIcon, ClockIcon, Squares2X2Icon, TrashIcon } from '@heroicons/vue/24/outline';
 import { useToast } from '@/Composables/useToast';
 import { hasRole } from '@/Utils/authUtils';

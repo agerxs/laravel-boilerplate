@@ -61,6 +61,10 @@ class MeetingSplitController extends Controller
                 'sub_meetings.*.villages' => 'required|array|min:1',
                 'sub_meetings.*.villages.*.id' => 'required|exists:localite,id',
                 'sub_meetings.*.villages.*.name' => 'required|string',
+                'sub_meetings.*.host_village_id' => 'required|exists:localite,id',
+                'sub_meetings.*.scheduled_date' => 'nullable|date',
+                'sub_meetings.*.scheduled_time' => 'nullable|date_format:H:i',
+                'sub_meetings.*.title' => 'nullable|string|max:255',
             ]);
 
             if (!$meeting->canBeSplit()) {

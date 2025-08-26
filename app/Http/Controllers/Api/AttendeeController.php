@@ -5,11 +5,20 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Meeting;
 use App\Models\MeetingAttendee;
+use App\Services\ImageCompressionService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class AttendeeController extends Controller
 {
+    protected ImageCompressionService $imageCompressionService;
+
+    public function __construct(ImageCompressionService $imageCompressionService)
+    {
+        $this->imageCompressionService = $imageCompressionService;
+    }
+
     /**
      * Formater les données d'un attendee
      */
@@ -151,8 +160,15 @@ class AttendeeController extends Controller
         ]);
 
         try {
-            // Stocker la photo
-            $photoPath = $request->file('photo')->store('presence-photos', 'public');
+            // Compresser et optimiser la photo
+            $compressionResult = $this->imageCompressionService->compressPresencePhoto($request->file('photo'));
+            
+            if (!$compressionResult['success']) {
+                throw new \Exception('Erreur lors de la compression de l\'image: ' . $compressionResult['error']);
+            }
+
+            // Récupérer le chemin de l'image compressée
+            $photoPath = $compressionResult['compressed_path'];
 
             // Enregistrer les informations de présence
             $attendee->update([
@@ -167,17 +183,52 @@ class AttendeeController extends Controller
                 'arrival_time' => $request->timestamp
             ]);
 
+            // Log des informations de compression
+            Log::info('Photo de présence compressée avec succès', [
+                'attendee_id' => $attendee->id,
+                'original_size' => $this->formatBytes($compressionResult['original_size']),
+                'compressed_size' => $this->formatBytes($compressionResult['compressed_size']),
+                'compression_ratio' => $compressionResult['compression_ratio'] . '%',
+                'path' => $photoPath
+            ]);
+
             return response()->json([
                 'message' => 'Présence confirmée avec succès',
-                'attendee' => $this->formatAttendee($attendee)
+                'attendee' => $this->formatAttendee($attendee),
+                'compression_info' => [
+                    'original_size' => $this->formatBytes($compressionResult['original_size']),
+                    'compressed_size' => $this->formatBytes($compressionResult['compressed_size']),
+                    'compression_ratio' => $compressionResult['compression_ratio'] . '%',
+                    'space_saved' => $this->formatBytes($compressionResult['original_size'] - $compressionResult['compressed_size'])
+                ]
             ]);
 
         } catch (\Exception $e) {
+            Log::error('Erreur lors de la confirmation de présence avec photo', [
+                'attendee_id' => $attendee->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
             return response()->json([
                 'message' => 'Erreur lors de la confirmation de présence',
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    /**
+     * Formate les bytes en format lisible
+     */
+    private function formatBytes(int $bytes): string
+    {
+        $units = ['B', 'KB', 'MB', 'GB'];
+        
+        for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
+            $bytes /= 1024;
+        }
+        
+        return round($bytes, 2) . ' ' . $units[$i];
     }
 
     /**

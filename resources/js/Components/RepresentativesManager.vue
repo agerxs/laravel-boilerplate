@@ -113,18 +113,15 @@
                         </select>
                       </div>
                       <div>
-                        <InputLabel value="Rôle" />
-                        <select
+                        <Select2Input
                           v-model="rep.role"
-                          class="mt-1 block w-full rounded-md border-gray-300"
-                          required
-                        >
-                          <option value="">Sélectionner un rôle</option>
-                          <option value="Chef du village">Chef du village</option>
-                          <option value="Représentant des femmes">Représentant des femmes</option>
-                          <option value="Représentant des jeunes">Représentant des jeunes</option>
-                          <option value="Autre">Autre</option>
-                        </select>
+                          :options="roleOptions"
+                          label="Rôle"
+                          placeholder="Tapez pour rechercher un rôle..."
+                          help-text="Sélectionnez un rôle existant ou tapez un nouveau rôle"
+                          :isRequired="true"
+                          @custom-value="handleCustomRole"
+                        />
                       </div>
                     </div>
                     
@@ -182,6 +179,7 @@
 import { ref, computed } from 'vue'
 import InputLabel from '@/Components/InputLabel.vue'
 import TextInput from '@/Components/TextInput.vue'
+import Select2Input from '@/Components/Select2Input.vue'
 import { hasRole } from '@/Utils/authUtils'
 import { Role } from '@/types/Role'
 
@@ -217,6 +215,10 @@ const showRepresentativeModal = ref(false);
 const selectedVillage = ref<Village | null>(null);
 const villageRepresentatives = ref<Representative[]>([]);
 
+// Gestion des rôles
+const roleOptions = ref<Array<{value: string, label: string, count?: number}>>([]);
+const isLoadingRoles = ref(false);
+
 const unaddedVillages = computed(() => {
   return props.villages.filter(village => !props.addedVillages.some(added => added.id === village.id));
 });
@@ -237,6 +239,9 @@ const openRepresentativeModal = (village: Village) => {
       role: ''
     }];
   }
+  
+  // Charger les rôles disponibles
+  loadRoleOptions();
   
   showRepresentativeModal.value = true;
 };
@@ -305,7 +310,70 @@ const removeVillage = (index: number) => {
 const editVillageRepresentatives = (village: Village) => {
   selectedVillage.value = village;
   villageRepresentatives.value = [...village.representatives || []];
+  
+  // Charger les rôles disponibles
+  loadRoleOptions();
+  
   showRepresentativeModal.value = true;
+};
+
+// Méthodes pour la gestion des rôles
+const loadRoleOptions = async () => {
+  if (isLoadingRoles.value) return;
+  
+  try {
+    isLoadingRoles.value = true;
+    
+    // Charger les rôles suggérés (les plus populaires)
+    const response = await fetch('/api/roles/suggested?limit=20');
+    if (response.ok) {
+      const data = await response.json();
+      if (data.success) {
+        roleOptions.value = data.data;
+      }
+    }
+  } catch (error) {
+    console.error('Erreur lors du chargement des rôles:', error);
+  } finally {
+    isLoadingRoles.value = false;
+  }
+};
+
+const handleCustomRole = (customRole: string) => {
+  // Ajouter le nouveau rôle aux options
+  const newRole = {
+    value: customRole,
+    label: customRole,
+    count: 1
+  };
+  
+  // Vérifier si le rôle n'existe pas déjà
+  const exists = roleOptions.value.some(role => 
+    role.value.toLowerCase() === customRole.toLowerCase()
+  );
+  
+  if (!exists) {
+    roleOptions.value.unshift(newRole);
+  }
+  
+  // Optionnel : Envoyer le nouveau rôle au serveur pour traçabilité
+  logNewRole(customRole);
+};
+
+const logNewRole = async (role: string) => {
+  try {
+    await fetch('/api/roles/normalize', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+      },
+      body: JSON.stringify({ role })
+    });
+  } catch (error) {
+    console.error('Erreur lors de la journalisation du nouveau rôle:', error);
+  }
 };
 </script>
 

@@ -90,7 +90,7 @@ class MeetingController extends Controller
         $direction = $request->input('direction', 'desc');
         
         // Valider la colonne de tri pour éviter les injections SQL
-        $allowedColumns = ['title', 'scheduled_date', 'status', 'updated_at'];
+        $allowedColumns = ['title', 'scheduled_date', 'status', 'attendance_status', 'updated_at'];
         
         if (in_array($sortColumn, $allowedColumns)) {
             $query->orderBy($sortColumn, $direction);
@@ -100,6 +100,23 @@ class MeetingController extends Controller
                   ->join('localities', 'local_committees.locality_id', '=', 'localities.id')
                   ->orderBy('localities.name', $direction)
                   ->select('meetings.*'); // Important pour éviter les conflits de colonnes
+        }
+        
+        // Tri par défaut selon la priorité métier si aucun tri spécifique n'est demandé
+        if ($sortColumn === 'scheduled_date' && $direction === 'desc') {
+            // Priorité 1: Listes de présence soumises (attendance_status = 'submitted')
+            // Priorité 2: Comptes rendus soumis (minutes_status = 'submitted')
+            // Priorité 3: Brouillons (status = 'draft')
+            // Priorité 4: Date programmée (plus récente en premier)
+            $query->orderByRaw("
+                CASE 
+                    WHEN attendance_status = 'submitted' THEN 1
+                    WHEN minutes_status = 'submitted' THEN 2
+                    WHEN status = 'draft' THEN 3
+                    ELSE 4
+                END
+            ")
+            ->orderBy('scheduled_date', 'desc');
         }
         
         $meetings = $query->paginate(10)
@@ -894,6 +911,10 @@ class MeetingController extends Controller
                 'sub_meetings.*.villages' => 'required|array|min:1',
                 'sub_meetings.*.villages.*.id' => 'required|exists:localite,id',
                 'sub_meetings.*.villages.*.name' => 'required|string',
+                'sub_meetings.*.host_village_id' => 'required|exists:localite,id',
+                'sub_meetings.*.scheduled_date' => 'nullable|date',
+                'sub_meetings.*.scheduled_time' => 'nullable|date_format:H:i',
+                'sub_meetings.*.title' => 'nullable|string|max:255',
             ]);
 
             if (!$meeting->canBeSplit()) {
@@ -1540,6 +1561,10 @@ class MeetingController extends Controller
             'sub_regions.*.villages' => 'required|array|min:1',
             'sub_regions.*.villages.*.id' => 'required|exists:localite,id',
             'sub_regions.*.location' => 'nullable|string',
+            'sub_regions.*.host_village_id' => 'required|exists:localite,id',
+            'sub_regions.*.scheduled_date' => 'nullable|date',
+            'sub_regions.*.scheduled_time' => 'nullable|date_format:H:i',
+            'sub_regions.*.title' => 'nullable|string|max:255',
         ]);
 
         try {
@@ -1628,5 +1653,41 @@ class MeetingController extends Controller
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Erreur lors de la suppression de la réunion: ' . $e->getMessage()]);
         }
+    }
+
+    /**
+     * Afficher la page de création/édition du compte rendu d'une réunion
+     */
+    public function showMinutes(Meeting $meeting)
+    {
+        // Vérifier les permissions
+        $this->authorize('view', $meeting);
+        
+        // Récupérer les minutes existantes s'il y en a
+        $minutes = $meeting->minutes;
+        
+        return Inertia::render('Meetings/Minutes', [
+            'meeting' => [
+                'id' => $meeting->id,
+                'title' => $meeting->title,
+                'scheduled_date' => $meeting->scheduled_date,
+                'scheduled_time' => $meeting->scheduled_time,
+                'location' => $meeting->location,
+                'status' => $meeting->status,
+            ],
+            'minutes' => $minutes ? [
+                'id' => $minutes->id,
+                'content' => $minutes->content,
+                'status' => $minutes->status,
+                'difficulties' => $minutes->difficulties,
+                'recommendations' => $minutes->recommendations,
+                'people_to_enroll_count' => $minutes->people_to_enroll_count,
+                'people_enrolled_count' => $minutes->people_enrolled_count,
+                'cmu_cards_available_count' => $minutes->cmu_cards_available_count,
+                'cmu_cards_distributed_count' => $minutes->cmu_cards_distributed_count,
+                'complaints_received_count' => $minutes->complaints_received_count,
+                'complaints_processed_count' => $minutes->complaints_processed_count,
+            ] : null,
+        ]);
     }
 } 

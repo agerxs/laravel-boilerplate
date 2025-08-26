@@ -218,20 +218,17 @@
 
                 <!-- Rôle -->
                 <div>
-                    <label for="role" class="block text-sm font-medium text-gray-700 mb-1">Rôle *</label>
-                    <select
-                        id="role"
+                    <Select2Input
                         v-model="form.role"
-                        required
-                        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        :class="{ 'border-red-500': form.errors.role }"
-                    >
-                        <option value="">Sélectionner un rôle</option>
-                        <option value="Chef du village">Chef du village</option>
-                                            <option value="Membre des femmes">Membre des femmes</option>
-                    <option value="Membre des jeunes">Membre des jeunes</option>
-                        <option value="Autre">Autre</option>
-                    </select>
+                        :options="roleOptions"
+                        label="Rôle *"
+                        placeholder="Tapez pour rechercher un rôle..."
+                        help-text="Sélectionnez un rôle existant ou tapez un nouveau rôle"
+                        :isRequired="true"
+                        :allowCustom="true"
+                        :showCounts="true"
+                        @custom-value="handleCustomRole"
+                    />
                     <p v-if="form.errors.role" class="mt-1 text-sm text-red-600">{{ form.errors.role }}</p>
                 </div>
 
@@ -315,17 +312,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { Head, Link, router, usePage, useForm } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import Pagination from '@/Components/Pagination.vue';
 import Modal from '@/Components/Modal.vue';
 import GenderBadge from '@/Components/GenderBadge.vue';
 import GenderFilter from '@/Components/GenderFilter.vue';
+import Select2Input from '@/Components/Select2Input.vue';
 import { PlusIcon, PencilIcon, TrashIcon, EyeIcon } from '@heroicons/vue/24/outline';
 
 // Interfaces
-interface Locality { id: number; name: string; }
+interface Locality { 
+  id: number; 
+  name: string; 
+  representatives?: Representative[];
+}
 interface LocalCommittee { id: number; name: string; }
 
 interface Representative {
@@ -362,6 +364,10 @@ const activeTab = ref<'reps' | 'villages'>('villages');
 const showModal = ref(false);
 const selectedVillage = ref<any>(null);
 
+// Gestion des rôles avec Select2Input
+const roleOptions = ref<Array<{value: string, label: string, count?: number}>>([]);
+const isLoadingRoles = ref(false);
+
 const form = useForm({
   id: null as number | null,
   name: '',
@@ -396,6 +402,8 @@ const openModal = (representative: Representative | null = null, created: boolea
 
   form.reset();
   
+  // Charger les rôles disponibles
+  loadRoleOptions();
 
   if (created && !representative) {
     // Mode création - pas de représentant existant
@@ -461,6 +469,70 @@ function editVillageRep(rep: any) {
   isModalOpen.value = true;
   showModal.value = false;
 }
+
+// Méthodes pour la gestion des rôles
+const loadRoleOptions = async () => {
+  if (isLoadingRoles.value) return;
+  
+  try {
+    isLoadingRoles.value = true;
+    
+    // Charger les rôles suggérés (les plus populaires)
+    const response = await fetch('/api/roles/suggested?limit=20');
+    if (response.ok) {
+      const data = await response.json();
+      if (data.success) {
+        roleOptions.value = data.data;
+      }
+    }
+  } catch (error) {
+    console.error('Erreur lors du chargement des rôles:', error);
+  } finally {
+    isLoadingRoles.value = false;
+  }
+};
+
+const handleCustomRole = (customRole: string) => {
+  // Ajouter le nouveau rôle aux options
+  const newRole = {
+    value: customRole,
+    label: customRole,
+    count: 1
+  };
+  
+  // Vérifier si le rôle n'existe pas déjà
+  const exists = roleOptions.value.some(role => 
+    role.value.toLowerCase() === customRole.toLowerCase()
+  );
+  
+  if (!exists) {
+    roleOptions.value.unshift(newRole);
+  }
+  
+  // Optionnel : Envoyer le nouveau rôle au serveur pour traçabilité
+  logNewRole(customRole);
+};
+
+const logNewRole = async (role: string) => {
+  try {
+    await fetch('/api/roles/normalize', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+      },
+      body: JSON.stringify({ role })
+    });
+  } catch (error) {
+    console.error('Erreur lors de la journalisation du nouveau rôle:', error);
+  }
+};
+
+// Initialisation des rôles au chargement de la page
+onMounted(() => {
+  loadRoleOptions();
+});
 </script>
 
 <style>

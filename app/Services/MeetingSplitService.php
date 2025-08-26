@@ -52,15 +52,29 @@ class MeetingSplitService
      */
     private function createSubMeeting(Meeting $parentMeeting, array $subMeetingData): Meeting
     {
-        // Créer un titre basé sur les villages
-        $villageNames = array_column($subMeetingData['villages'], 'name');
-        $title = $parentMeeting->title . ' - ' . implode(', ', $villageNames);
+        // Créer un titre basé sur les villages ou utiliser le titre personnalisé
+        $title = $subMeetingData['title'] ?? $parentMeeting->title . ' - ' . implode(', ', array_column($subMeetingData['villages'], 'name'));
+        
+        // Déterminer la date et l'heure de la sous-réunion
+        $scheduledDateTime = $this->determineSubMeetingDateTime($parentMeeting, $subMeetingData);
+        
+        // Vérifier que le village hôte fait partie des villages participants
+        $hostVillageId = $subMeetingData['host_village_id'];
+        $participatingVillageIds = array_column($subMeetingData['villages'], 'id');
+        
+        if (!in_array($hostVillageId, $participatingVillageIds)) {
+            throw new \Exception("Le village hôte doit faire partie des villages participants");
+        }
+        
+        // Obtenir le nom du village hôte pour le lieu
+        $hostVillage = Locality::find($hostVillageId);
+        $locationWithHost = $subMeetingData['location'] . ' - ' . $hostVillage->name;
         
         $subMeeting = new Meeting([
             'title' => $title,
             'local_committee_id' => $parentMeeting->local_committee_id,
-            'scheduled_date' => $parentMeeting->scheduled_date,
-            'location' => $subMeetingData['location'],
+            'scheduled_date' => $scheduledDateTime,
+            'location' => $locationWithHost,
             'target_enrollments' => 0, // Sera calculé lors de l'assignation des participants
             'actual_enrollments' => 0,
             'status' => 'planned',
@@ -70,6 +84,28 @@ class MeetingSplitService
 
         $subMeeting->save();
         return $subMeeting;
+    }
+
+    /**
+     * Déterminer la date et l'heure de la sous-réunion
+     */
+    private function determineSubMeetingDateTime(Meeting $parentMeeting, array $subMeetingData): string
+    {
+        // Si une date spécifique est fournie, l'utiliser
+        if (!empty($subMeetingData['scheduled_date'])) {
+            $date = $subMeetingData['scheduled_date'];
+            
+            // Si une heure spécifique est fournie, la combiner avec la date
+            if (!empty($subMeetingData['scheduled_time'])) {
+                return $date . ' ' . $subMeetingData['scheduled_time'];
+            }
+            
+            // Sinon, utiliser l'heure de la réunion parent
+            return $date . ' ' . $parentMeeting->scheduled_date->format('H:i:s');
+        }
+        
+        // Si aucune date spécifique n'est fournie, utiliser la date de la réunion parent
+        return $parentMeeting->scheduled_date->format('Y-m-d H:i:s');
     }
 
     /**
