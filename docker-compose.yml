@@ -28,8 +28,8 @@ services:
       PMA_PORT: ${DB_PORT:-3306}
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
       UPLOAD_LIMIT: 10M
-    ports:
-      - "5050:80"
+    #ports:
+    #  - "5050:80"
     networks:
       - colocs
     depends_on:
@@ -46,8 +46,8 @@ services:
       MYSQL_DATABASE: ${DB_DATABASE:-app}
       MYSQL_USER: ${DB_USERNAME:-laravel}
       MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
-    ports:
-      - "${DB_PORT:-3306}:3306"
+    #ports:
+    #  - "${DB_PORT:-3306}:3306"
     volumes:
       - ./data/mysql:/var/lib/mysql
     networks:
