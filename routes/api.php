@@ -67,7 +67,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 
     Route::post('/attachments/upload', [AttachmentController::class, 'upload']);
-    Route::resource('attachments', AttachmentController::class);
+    Route::resource('attachments', AttachmentController::class)->names('api.attachments');
     Route::post('/attachments/upload-mobile', [AttachmentController::class, 'uploadFromMobile']);
     // Routes pour les participants
     Route::get('/meetings/{meeting}/attendees', [AttendeeController::class, 'index']);
@@ -137,10 +137,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 });
 
-Route::get('/meetings/create', [MeetingController::class, 'create'])->name('meetings.create');
-Route::get('/meetings/{meeting}/edit', [MeetingController::class, 'edit'])->name('meetings.edit');
-Route::put('/meetings/{meeting}/reschedule', [MeetingController::class, 'reschedule'])->name('meetings.reschedule');
-Route::get('/meetings/{meeting}/reschedule', [MeetingController::class, 'showRescheduleForm'])->name('meetings.reschedule.form');
+Route::get('/meetings/create', [MeetingController::class, 'create'])->name('api.meetings.create');
+Route::get('/meetings/{meeting}/edit', [MeetingController::class, 'edit'])->name('api.meetings.edit');
+Route::put('/meetings/{meeting}/reschedule', [MeetingController::class, 'reschedule'])->name('api.meetings.reschedule');
+Route::get('/meetings/{meeting}/reschedule', [MeetingController::class, 'showRescheduleForm'])->name('api.meetings.reschedule.form');
 
     // Routes pour les localités
     Route::prefix('localities')->group(function () {

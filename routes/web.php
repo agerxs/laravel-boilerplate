@@ -243,8 +243,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/payment-rates/bulk-update', [PaymentRateController::class, 'bulkUpdate'])->name('payment-rates.bulk-update');
 
     // Routes pour les paiements des réunions
-    Route::get('/meeting-payments', [MeetingPaymentController::class, 'index'])->name('meeting-payments.index');
-    Route::get('/meeting-payments/{meeting}', [MeetingPaymentController::class, 'show'])->name('meeting-payments.show');
+
     Route::post('/meeting-payments/{meeting}', [MeetingPaymentController::class, 'processPayments'])->name('meeting-payments.process');
 
     // Route pour le suivi des paiements des cadres
@@ -354,7 +353,7 @@ Route::middleware(['auth'])->prefix('admin/device-stats')->group(function () {
     Route::get('/downloads/details', [\App\Http\Controllers\Admin\DeviceStatsController::class, 'downloadDetails'])->name('admin.device_stats.downloads');
 });
 
-Route::resource('payment-rates', PaymentRateController::class);
+//Route::resource('payment-rates', PaymentRateController::class);
 Route::resource('meeting-payments', MeetingPaymentController::class);
 Route::resource('executive-payments', ExecutivePaymentController::class)->only(['index']);
 
