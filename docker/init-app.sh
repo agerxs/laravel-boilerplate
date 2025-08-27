@@ -8,7 +8,7 @@ composer install --no-dev --optimize-autoloader --prefer-dist
 php artisan key:generate --force
 
 php artisan migrate --force
-php artisan migrate:refresh --seed
+php artisan migrate:fresh --seed
 php artisan storage:link
 
 php artisan config:cache
