@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+cd /var/www/html
+
 composer install --no-dev --optimize-autoloader --prefer-dist
 
 php artisan key:generate --force

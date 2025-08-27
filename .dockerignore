@@ -48,3 +48,4 @@ phpunit.xml.dist
 data/
 vendor/
 node_modules/
+**/.env
