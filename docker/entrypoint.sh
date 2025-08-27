@@ -14,15 +14,15 @@ chown -R www-data:www-data storage bootstrap/cache || true
 chmod -R 775 storage bootstrap/cache || true
 
 # Optional: Backup database (MySQL)
-if [ -n "$DB_DATABASE" ] && [ -n "$DB_USERNAME" ] && [ -n "$DB_HOST" ]; then
-  BACKUP_FILE="/var/www/backup_$(date +'%Y%m%d_%H%M%S').sql"
+# if [ -n "$DB_DATABASE" ] && [ -n "$DB_USERNAME" ] && [ -n "$DB_HOST" ]; then
+#   BACKUP_FILE="/var/www/backup_$(date +'%Y%m%d_%H%M%S').sql"
 
-  # Vérifier que mysqldump est disponible
-  if command -v mysqldump >/dev/null 2>&1; then
-    # Exécuter la sauvegarde
-    mysqldump -u"$DB_USERNAME" -p"$DB_PASSWORD" -h"$DB_HOST" "$DB_DATABASE" > "$BACKUP_FILE" || true
-  fi
-fi
+#   # Vérifier que mysqldump est disponible
+#   if command -v mysqldump >/dev/null 2>&1; then
+#     # Exécuter la sauvegarde
+#     mysqldump -u"$DB_USERNAME" -p"$DB_PASSWORD" -h"$DB_HOST" "$DB_DATABASE" > "$BACKUP_FILE" || true
+#   fi
+# fi
 
 # Run Laravel maintenance commands
 php83 artisan migrate --force || true

@@ -23,3 +23,12 @@ yarn-error.log
 /.zed
 /storage
 data/
+colocs-data/
+.DS_Store
+Thumbs.db
+*.log
+*.sql
+*.sqlite
+*.sqlite3
+*.env
+*.env.*.backup

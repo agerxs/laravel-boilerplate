@@ -100,7 +100,6 @@ RUN apk update && apk upgrade --no-cache && \
         php83-posix \
         php83-pcntl \
         php83-exif \
-        mariadb-client \
         gzip \
         supervisor \
         cronie \
