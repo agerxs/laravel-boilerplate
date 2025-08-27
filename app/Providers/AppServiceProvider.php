@@ -10,6 +10,7 @@ use App\Models\PaymentRate;
 use Filament\Facades\Filament;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -26,6 +27,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
+
         Vite::prefetch(concurrency: 3);
         Gate::before(function (User $user, string $ability) {
             return $user->isSuperAdmin() ? true: null;
