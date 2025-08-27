@@ -111,7 +111,7 @@ class MeetingController extends Controller
             $query->orderByRaw("
                 CASE 
                     WHEN attendance_status = 'submitted' THEN 1
-                    WHEN minutes_status = 'submitted' THEN 2
+                    WHEN status = 'submitted' THEN 2
                     WHEN status = 'draft' THEN 3
                     ELSE 4
                 END

@@ -92,43 +92,7 @@
               </div>
             </div>
 
-            <!-- Pièces jointes communes -->
-            <div class="mb-8">
-              <h3 class="text-lg font-medium text-gray-900 mb-4">Pièces jointes communes</h3>
-              <div class="bg-gray-50 p-4 rounded-lg border">
-                <div class="mb-4">
-                  <InputLabel for="common_attachments" value="Fichiers à joindre à toutes les réunions" />
-                  <input
-                    id="common_attachments"
-                    type="file"
-                    @change="handleCommonAttachments"
-                    multiple
-                    class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                  />
-                  <p class="text-sm text-gray-600 mt-2">
-                    Ces fichiers seront joints à toutes les réunions créées
-                  </p>
-                </div>
-                <div v-if="commonAttachments.length > 0" class="mt-4">
-                  <h4 class="text-sm font-medium text-gray-700 mb-2">Fichiers sélectionnés:</h4>
-                  <div class="space-y-2">
-                    <div v-for="(file, index) in commonAttachments" :key="index" 
-                         class="flex items-center justify-between bg-white p-2 rounded border">
-                      <span class="text-sm text-gray-600">{{ file.name }}</span>
-                      <button
-                        type="button"
-                        @click="removeCommonAttachment(index)"
-                        class="text-red-600 hover:text-red-800"
-                      >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            
 
             <!-- Liste des réunions -->
             <div class="mb-8">
@@ -218,6 +182,44 @@
 
               <div v-if="form.meetings.length === 0" class="text-center py-8 text-gray-500">
                 <p>Aucune réunion ajoutée. Cliquez sur "Ajouter une réunion" pour commencer.</p>
+              </div>
+            </div>
+
+            <!-- Pièces jointes communes -->
+            <div class="mb-8">
+              <h3 class="text-lg font-medium text-gray-900 mb-4">Pièces justificatves des réunions</h3>
+              <div class="bg-gray-50 p-4 rounded-lg border">
+                <div class="mb-4">
+                  <InputLabel for="common_attachments" value="Fichiers à joindre à toutes les réunions" />
+                  <input
+                    id="common_attachments"
+                    type="file"
+                    @change="handleCommonAttachments"
+                    multiple
+                    class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  />
+                  <p class="text-sm text-gray-600 mt-2">
+                    Ces fichiers seront joints à toutes les réunions créées
+                  </p>
+                </div>
+                <div v-if="commonAttachments.length > 0" class="mt-4">
+                  <h4 class="text-sm font-medium text-gray-700 mb-2">Fichiers sélectionnés:</h4>
+                  <div class="space-y-2">
+                    <div v-for="(file, index) in commonAttachments" :key="index" 
+                         class="flex items-center justify-between bg-white p-2 rounded border">
+                      <span class="text-sm text-gray-600">{{ file.name }}</span>
+                      <button
+                        type="button"
+                        @click="removeCommonAttachment(index)"
+                        class="text-red-600 hover:text-red-800"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
