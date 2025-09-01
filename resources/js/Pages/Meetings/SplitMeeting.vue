@@ -114,6 +114,117 @@
                     </button>
                   </div>
 
+                  <!-- AJOUTER DES VILLAGES - DÉPLACÉ EN PREMIER -->
+                  <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                      Ajouter des villages à cette sous-réunion
+                    </label>
+                    
+                    <div v-if="availableVillagesForSubMeeting(subMeetingIndex).length === 0" class="text-center py-4 bg-gray-50 rounded-md">
+                      <div class="text-sm text-gray-500">
+                        <MapIcon class="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                        Tous les villages ont été assignés à d'autres sous-réunions
+                      </div>
+                    </div>
+                    
+                    <div v-else>
+                      <!-- Barre de recherche -->
+                      <div class="mb-3">
+                        <input
+                          type="text"
+                          v-model="subMeeting.villageSearch"
+                          placeholder="Rechercher un village..."
+                          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
+                        />
+                      </div>
+                      
+                      <!-- Liste des villages disponibles avec sélection multiple -->
+                      <div class="max-h-48 overflow-y-auto border border-gray-200 rounded-md bg-white">
+                        <div class="p-2">
+                          <!-- Bouton "Sélectionner tous les villages disponibles" -->
+                          <div class="mb-3 pb-2 border-b border-gray-200">
+                            <button
+                              @click="selectAllAvailableVillages(subMeetingIndex)"
+                              class="w-full text-left px-2 py-1 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded"
+                            >
+                              ✓ Sélectionner tous les villages disponibles
+                            </button>
+                          </div>
+                          
+                          <!-- Villages filtrés -->
+                          <div class="space-y-1">
+                            <label
+                              v-for="village in filteredAvailableVillages(subMeetingIndex)"
+                              :key="village.id"
+                              class="flex items-center px-2 py-1 hover:bg-gray-50 rounded cursor-pointer"
+                            >
+                              <input
+                                type="checkbox"
+                                :value="village.id"
+                                :checked="subMeeting.selectedVillages.includes(village.id)"
+                                @change="toggleVillageSelection(subMeetingIndex, village)"
+                                class="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                              />
+                              <span class="text-sm text-gray-700">{{ village.name }}</span>
+                            </label>
+                          </div>
+                          
+                          <!-- Message si aucun village trouvé -->
+                          <div v-if="filteredAvailableVillages(subMeetingIndex).length === 0" class="text-center py-4 text-gray-500 text-sm">
+                            Aucun village trouvé avec cette recherche
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <!-- Bouton pour ajouter les villages sélectionnés -->
+                      <div class="mt-3">
+                        <button
+                          @click="addSelectedVillagesToSubMeeting(subMeetingIndex)"
+                          :disabled="subMeeting.selectedVillages.length === 0"
+                          class="inline-flex items-center px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          <PlusIcon class="w-4 h-4 mr-2" />
+                          Ajouter {{ subMeeting.selectedVillages.length }} village(s) sélectionné(s)
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- VILLAGES SÉLECTIONNÉS - AFFICHÉ APRÈS LA SÉLECTION -->
+                  <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-3">
+                      Villages de cette sous-réunion ({{ subMeeting.villages.length }} sélectionnés)
+                    </label>
+                    
+                    <!-- Villages sélectionnés avec possibilité de suppression -->
+                    <div v-if="subMeeting.villages.length > 0" class="mb-4">
+                      <div class="flex flex-wrap gap-2">
+                        <div
+                          v-for="village in subMeeting.villages"
+                          :key="village.id"
+                          class="inline-flex items-center gap-2 px-3 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium border border-blue-200"
+                        >
+                          <span>{{ village.name }}</span>
+                          <button
+                            @click="removeVillageFromSubMeeting(subMeetingIndex, village)"
+                            class="text-blue-600 hover:text-blue-800 text-lg font-bold leading-none"
+                            title="Retirer ce village"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Message si aucun village sélectionné -->
+                    <div v-else class="text-center py-4 bg-yellow-50 rounded-md border border-yellow-200">
+                      <div class="text-sm text-yellow-700">
+                        <MapIcon class="h-6 w-6 mx-auto mb-2 text-yellow-500" />
+                        Aucun village sélectionné pour cette sous-réunion
+                      </div>
+                    </div>
+                  </div>
+
                   <!-- Lieu et village hôte de la sous-réunion -->
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
@@ -132,20 +243,56 @@
                       <label class="block text-sm font-medium text-gray-700 mb-1">
                         Village hôte *
                       </label>
-                      <select
-                        v-model="subMeeting.host_village_id"
-                        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                        required
-                      >
-                        <option value="">Sélectionner le village hôte</option>
-                        <option 
-                          v-for="village in subMeeting.villages" 
-                          :key="village.id" 
-                          :value="village.id"
+                      
+                      <!-- Sélecteur de village hôte avec recherche -->
+                      <div class="relative">
+                        <input
+                          type="text"
+                          v-model="subMeeting.hostVillageSearch"
+                          @input="filterHostVillages(subMeetingIndex)"
+                          @focus="subMeeting.showHostVillageDropdown = true"
+                          @blur="setTimeout(() => subMeeting.showHostVillageDropdown = false, 200)"
+                          placeholder="Rechercher le village hôte..."
+                          class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                          required
+                        />
+                        
+                        <!-- Dropdown des villages hôtes -->
+                        <div 
+                          v-if="subMeeting.showHostVillageDropdown && subMeeting.villages.length > 0"
+                          class="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-48 overflow-y-auto"
                         >
-                          {{ village.name }}
-                        </option>
-                      </select>
+                          <div class="p-2">
+                            <div
+                              v-for="village in filteredHostVillages(subMeetingIndex)"
+                              :key="village.id"
+                              @click="selectHostVillage(subMeetingIndex, village)"
+                              class="px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 cursor-pointer rounded"
+                            >
+                              {{ village.name }}
+                            </div>
+                            
+                            <!-- Message si aucun village trouvé -->
+                            <div v-if="filteredHostVillages(subMeetingIndex).length === 0" class="px-3 py-2 text-sm text-gray-500">
+                              Aucun village trouvé
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <!-- Village hôte sélectionné -->
+                      <div v-if="subMeeting.host_village_id" class="mt-2">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+                          <span>🏠 Village hôte : {{ getHostVillageName(subMeetingIndex) }}</span>
+                          <button
+                            @click="clearHostVillage(subMeetingIndex)"
+                            class="text-green-600 hover:text-green-800 text-sm"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      </div>
+                      
                       <p class="text-xs text-gray-500 mt-1">
                         Le village qui accueillera la réunion
                       </p>
@@ -194,52 +341,6 @@
                     </div>
                   </div>
 
-                  <!-- Villages sélectionnés pour cette sous-réunion -->
-                  <div class="mb-4">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                      Villages de cette sous-réunion ({{ subMeeting.villages.length }} sélectionnés)
-                    </label>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                      <div
-                        v-for="village in subMeeting.villages"
-                        :key="village.id"
-                        class="flex items-center justify-between p-2 bg-gray-50 rounded border"
-                      >
-                        <span class="text-sm text-gray-700">{{ village.name }}</span>
-                        <button
-                          @click="removeVillageFromSubMeeting(subMeetingIndex, village)"
-                          class="text-red-500 hover:text-red-700 text-xs"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                                     <!-- Ajouter des villages à cette sous-réunion -->
-                   <div>
-                     <label class="block text-sm font-medium text-gray-700 mb-2">
-                       Ajouter des villages
-                     </label>
-                     <div v-if="availableVillagesForSubMeeting(subMeetingIndex).length === 0" class="text-sm text-gray-500 italic">
-                       Tous les villages ont été assignés à d'autres sous-réunions
-                     </div>
-                     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                       <div
-                         v-for="village in availableVillagesForSubMeeting(subMeetingIndex)"
-                         :key="village.id"
-                         class="flex items-center justify-between p-2 bg-white border border-gray-200 rounded hover:bg-gray-50"
-                       >
-                         <span class="text-sm text-gray-700">{{ village.name }}</span>
-                         <button
-                           @click="addVillageToSubMeeting(subMeetingIndex, village)"
-                           class="text-blue-600 hover:text-blue-800 text-xs"
-                         >
-                           +
-                         </button>
-                       </div>
-                     </div>
-                   </div>
                 </div>
 
                 <!-- Bouton pour ajouter une nouvelle sous-réunion -->
@@ -400,7 +501,11 @@ const addSubMeeting = () => {
   subMeetings.value.push({
     location: '',
     villages: [],
+    selectedVillages: [], // Nouveau : villages sélectionnés via checkboxes
+    villageSearch: '', // Nouveau : terme de recherche pour les villages
     host_village_id: '',
+    hostVillageSearch: '', // Nouveau : recherche pour le village hôte
+    showHostVillageDropdown: false, // Nouveau : affichage du dropdown
     scheduled_date: '',
     scheduled_time: '',
     title: ''
@@ -436,6 +541,103 @@ const availableVillagesForSubMeeting = (subMeetingIndex) => {
   // Récupérer tous les villages déjà sélectionnés dans toutes les sous-réunions
   const allSelectedVillageIds = subMeetings.value.flatMap(sm => sm.villages.map(v => v.id))
   return villages.value.filter(village => !allSelectedVillageIds.includes(village.id))
+}
+
+// Filtrer les villages disponibles selon la recherche
+const filteredAvailableVillages = (subMeetingIndex) => {
+  const subMeeting = subMeetings.value[subMeetingIndex]
+  const available = availableVillagesForSubMeeting(subMeetingIndex)
+  
+  if (!subMeeting.villageSearch) {
+    return available
+  }
+  
+  const searchTerm = subMeeting.villageSearch.toLowerCase()
+  return available.filter(village => 
+    village.name.toLowerCase().includes(searchTerm)
+  )
+}
+
+// Basculer la sélection d'un village
+const toggleVillageSelection = (subMeetingIndex, village) => {
+  const subMeeting = subMeetings.value[subMeetingIndex]
+  const index = subMeeting.selectedVillages.indexOf(village.id)
+  
+  if (index > -1) {
+    subMeeting.selectedVillages.splice(index, 1)
+  } else {
+    subMeeting.selectedVillages.push(village.id)
+  }
+}
+
+// Sélectionner tous les villages disponibles
+const selectAllAvailableVillages = (subMeetingIndex) => {
+  const subMeeting = subMeetings.value[subMeetingIndex]
+  const available = availableVillagesForSubMeeting(subMeetingIndex)
+  subMeeting.selectedVillages = available.map(v => v.id)
+}
+
+// Ajouter les villages sélectionnés à la sous-réunion
+const addSelectedVillagesToSubMeeting = (subMeetingIndex) => {
+  const subMeeting = subMeetings.value[subMeetingIndex]
+  const available = availableVillagesForSubMeeting(subMeetingIndex)
+  
+  // Ajouter seulement les villages qui sont encore disponibles
+  const villagesToAdd = available.filter(v => 
+    subMeeting.selectedVillages.includes(v.id)
+  )
+  
+  subMeeting.villages.push(...villagesToAdd)
+  
+  // Réinitialiser la sélection et la recherche
+  subMeeting.selectedVillages = []
+  subMeeting.villageSearch = ''
+  
+  // Réinitialiser le village hôte si le village actuel n'est plus dans la liste
+  if (subMeeting.host_village_id && !subMeeting.villages.find(v => v.id === subMeeting.host_village_id)) {
+    subMeeting.host_village_id = ''
+  }
+}
+
+// Filtrer les villages hôtes selon la recherche
+const filteredHostVillages = (subMeetingIndex) => {
+  const subMeeting = subMeetings.value[subMeetingIndex]
+  
+  if (!subMeeting.hostVillageSearch) {
+    return subMeeting.villages
+  }
+  
+  const searchTerm = subMeeting.hostVillageSearch.toLowerCase()
+  return subMeeting.villages.filter(village => 
+    village.name.toLowerCase().includes(searchTerm)
+  )
+}
+
+// Sélectionner un village hôte
+const selectHostVillage = (subMeetingIndex, village) => {
+  const subMeeting = subMeetings.value[subMeetingIndex]
+  subMeeting.host_village_id = village.id
+  subMeeting.hostVillageSearch = village.name
+  subMeeting.showHostVillageDropdown = false
+}
+
+// Obtenir le nom du village hôte
+const getHostVillageName = (subMeetingIndex) => {
+  const subMeeting = subMeetings.value[subMeetingIndex]
+  const hostVillage = subMeeting.villages.find(v => v.id === subMeeting.host_village_id)
+  return hostVillage ? hostVillage.name : ''
+}
+
+// Effacer le village hôte
+const clearHostVillage = (subMeetingIndex) => {
+  const subMeeting = subMeetings.value[subMeetingIndex]
+  subMeeting.host_village_id = ''
+  subMeeting.hostVillageSearch = ''
+}
+
+// Filtrer les villages hôtes (pour la compatibilité)
+const filterHostVillages = (subMeetingIndex) => {
+  // Cette méthode est appelée par l'input, mais la logique est dans filteredHostVillages
 }
 
 // Éclater la réunion

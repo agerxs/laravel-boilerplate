@@ -90,6 +90,38 @@ class User extends Authenticatable
         return $this->roles()->first();
     }
 
+    /**
+     * Vérifie si l'utilisateur est un super admin
+     */
+    public function isSuperAdmin(): bool
+    {
+        return $this->is_super_admin || $this->hasRole('super_admin');
+    }
+
+    /**
+     * Vérifie si l'utilisateur est un admin simple
+     */
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin') && !$this->isSuperAdmin();
+    }
+
+    /**
+     * Vérifie si l'utilisateur peut modifier les éléments du dashboard
+     */
+    public function canModifyDashboard(): bool
+    {
+        return $this->isSuperAdmin();
+    }
+
+    /**
+     * Vérifie si l'utilisateur peut voir le dashboard
+     */
+    public function canViewDashboard(): bool
+    {
+        return $this->isSuperAdmin() || $this->isAdmin();
+    }
+
     public function submittedPaymentLists(): HasMany
     {
         return $this->hasMany(MeetingPaymentList::class, 'submitted_by');

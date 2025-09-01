@@ -126,49 +126,40 @@
                 <template v-for="meeting in meetings.data" :key="meeting.id">
                   <!-- Réunion principale (ne montrer que les réunions parent ou normales) -->
                   <tr v-if="!meeting.parent_meeting_id" :class="getMeetingRowClass(meeting)">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 max-w-xs">
-                      <div class="flex items-center">
-                        <!-- Bouton expand/collapse pour les réunions parent -->
-                        <button 
-                          v-if="meeting.sub_meetings_count && meeting.sub_meetings_count > 0"
-                          @click="toggleSubMeetings(meeting.id)"
-                          class="mr-2 text-blue-500 hover:text-blue-700 transition-colors"
-                          :title="expandedMeetings.includes(meeting.id) ? 'Réduire' : 'Développer'"
-                        >
-                          <svg 
-                            class="h-4 w-4 transition-transform" 
-                            :class="{ 'rotate-90': expandedMeetings.includes(meeting.id) }"
-                            fill="none" 
-                            stroke="currentColor" 
-                            viewBox="0 0 24 24"
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="flex flex-col">
+                        <div class="text-sm font-medium text-gray-900">
+                          <Link 
+                            :href="route('meetings.show', { meeting: meeting.id })" 
+                            class="text-blue-700 hover:underline"
+                            :title="meeting.title"
                           >
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                          </svg>
-                        </button>
-                        <div v-else class="mr-2 w-4"></div>
-                        
-                        <Link 
-                          :href="route('meetings.show', { meeting: meeting.id })" 
-                          class="text-blue-700 hover:underline"
-                          :title="meeting.title"
-                        >
-                          {{ meeting.title }}
-                        </Link>
-                        
-                        <!-- Badge pour indiquer le type -->
-                        <span v-if="meeting.parent_meeting_id" class="ml-2 px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">
-                          Sous-réunion
-                        </span>
-                        <span v-else-if="meeting.sub_meetings_count && meeting.sub_meetings_count > 0" class="ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-600 rounded">
-                          Sous-réunions ({{ meeting.sub_meetings_count }})
-                        </span>
+                            {{ meeting.title }}
+                          </Link>
+                          
+                          <!-- Badge pour indiquer le type -->
+                          <span v-if="meeting.sub_meetings_count && meeting.sub_meetings_count > 0" class="ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-600 rounded">
+                            Réunion éclatée ({{ meeting.sub_meetings_count }})
+                          </span>
+                        </div>
                       </div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDate(meeting.scheduled_date) }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
+                    <!-- Date - masquée si réunion parent éclatée -->
+                    <td v-if="!(meeting.sub_meetings_count && meeting.sub_meetings_count > 0)" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {{ formatDate(meeting.scheduled_date) }}
+                    </td>
+                    <td v-else class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      -
+                    </td>
+                    <!-- Statut - masqué si réunion parent éclatée -->
+                    <td v-if="!(meeting.sub_meetings_count && meeting.sub_meetings_count > 0)" class="px-6 py-4 whitespace-nowrap">
                         <MeetingStatusBadge :status="meeting.status" :scheduled-date="meeting.scheduled_date" />
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
+                    <td v-else class="px-6 py-4 whitespace-nowrap">
+                      -
+                    </td>
+                    <!-- Statut de présence - masqué si réunion parent éclatée -->
+                    <td v-if="!(meeting.sub_meetings_count && meeting.sub_meetings_count > 0)" class="px-6 py-4 whitespace-nowrap">
                         <!-- Affichage direct du statut -->
                         <div class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border"
                              :class="{
@@ -179,22 +170,35 @@
                           {{ meeting.attendance_status === 'submitted' ? 'Soumis' : meeting.attendance_status === 'validated' ? 'Validé' : 'Brouillon' }}
                         </div>
                     </td>
+                    <td v-else class="px-6 py-4 whitespace-nowrap">
+                      -
+                    </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ meeting.locality_name }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ formatDateTime(meeting.updated_at) }}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div class="flex items-center justify-end space-x-2">
+                             <!-- Bouton Voir - toujours affiché -->
                              <Link :href="route('meetings.show', { meeting: meeting.id })" class="flex items-center justify-center w-8 h-8 text-blue-600 hover:text-blue-900 rounded transition-colors hover:bg-blue-50" title="Voir"><EyeIcon class="h-5 w-5" /></Link>
-                             <button v-if="isSecretary && !isSubPrefect && (meeting.status === 'scheduled' || meeting.status === 'planned') && canModifyMeeting(meeting)" @click="cancelMeeting(meeting)" class="flex items-center justify-center w-8 h-8 text-red-600 hover:text-red-900 rounded transition-colors hover:bg-red-50" title="Annuler"><XCircleIcon class="h-5 w-5" /></button>
-                             <Link v-if="isSecretary && !isSubPrefect && (meeting.status === 'scheduled' || meeting.status === 'planned') && canModifyMeeting(meeting)" :href="route('meetings.reschedule', meeting.id)" class="flex items-center justify-center w-8 h-8 text-yellow-600 hover:text-yellow-900 rounded transition-colors hover:bg-yellow-50" title="Reporter"><ClockIcon class="h-5 w-5" /></Link>
-                             <button v-if="canSplitMeeting(meeting)" @click="splitMeeting(meeting)" class="flex items-center justify-center w-8 h-8 text-purple-600 hover:text-purple-900 rounded transition-colors hover:bg-purple-50" title="Éclater la réunion"><Squares2X2Icon class="h-5 w-5" /></button>
-                             <button v-if="isSecretary && (meeting.status === 'planned' || meeting.status === 'scheduled') && canModifyMeeting(meeting)" @click="deleteMeeting(meeting)" class="flex items-center justify-center w-8 h-8 text-red-800 hover:text-red-900 rounded transition-colors hover:bg-red-100" title="Supprimer"><TrashIcon class="h-5 w-5" /></button>
-                             <MeetingValidationButtons :meeting="meeting" />
+                             
+                             <!-- Pour les réunions parent éclatées, afficher seulement le bouton d'éclatement (désactivé) -->
+                             <template v-if="meeting.sub_meetings_count && meeting.sub_meetings_count > 0">
+                              <button @click="splitMeeting(meeting)" class="flex items-center justify-center w-8 h-8 text-purple-600 hover:text-purple-900 rounded transition-colors hover:bg-purple-50" title="Éclater la réunion"><Squares2X2Icon class="h-5 w-5" /></button>
+                            </template>
+                             
+                             <!-- Pour les réunions normales (non éclatées), afficher tous les boutons -->
+                             <template v-else>
+                                 <button v-if="isSecretary && !isSubPrefect && (meeting.status === 'scheduled' || meeting.status === 'planned') && canModifyMeeting(meeting)" @click="cancelMeeting(meeting)" class="flex items-center justify-center w-8 h-8 text-red-600 hover:text-red-900 rounded transition-colors hover:bg-red-50" title="Annuler"><XCircleIcon class="h-5 w-5" /></button>
+                                 <Link v-if="isSecretary && !isSubPrefect && (meeting.status === 'scheduled' || meeting.status === 'planned') && canModifyMeeting(meeting)" :href="route('meetings.reschedule', meeting.id)" class="flex items-center justify-center w-8 h-8 text-yellow-600 hover:text-yellow-900 rounded transition-colors hover:bg-yellow-50" title="Reporter"><ClockIcon class="h-5 w-5" /></Link>
+                                 <button v-if="canSplitMeeting(meeting)" @click="splitMeeting(meeting)" class="flex items-center justify-center w-8 h-8 text-purple-600 hover:text-purple-900 rounded transition-colors hover:bg-purple-50" title="Éclater la réunion"><Squares2X2Icon class="h-5 w-5" /></button>
+                                 <button v-if="isSecretary && (meeting.status === 'planned' || meeting.status === 'scheduled') && canModifyMeeting(meeting)" @click="deleteMeeting(meeting)" class="flex items-center justify-center w-8 h-8 text-red-800 hover:text-red-900 rounded transition-colors hover:bg-red-100" title="Supprimer"><TrashIcon class="h-5 w-5" /></button>
+                                 <MeetingValidationButtons :meeting="meeting" />
+                             </template>
                         </div>
                     </td>
                   </tr>
                   
-                  <!-- Sous-réunions (si développées) -->
-                  <template v-if="expandedMeetings.includes(meeting.id) && meeting.sub_meetings">
+                  <!-- Sous-réunions (toujours affichées si elles existent) -->
+                  <template v-if="meeting.sub_meetings && meeting.sub_meetings.length > 0">
                     <tr v-for="subMeeting in meeting.sub_meetings" :key="subMeeting.id" class="bg-gray-50">
                       <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 max-w-xs">
                         <div class="flex items-center min-w-0">
@@ -420,12 +424,14 @@ const toggleSubMeetings = (meetingId: number) => {
 };
 
 const canSplitMeeting = (meeting: Meeting) => {
-  // Peut éclater si c'est une réunion parent (pas une sous-réunion), si le statut le permet et si la liste de présence n'est pas soumise
+  // Peut éclater si c'est une réunion parent (pas une sous-réunion), si le statut le permet, 
+  // si la liste de présence n'est pas soumise et si elle n'a pas déjà été éclatée
   return !meeting.parent_meeting_id && 
          (meeting.status === 'planned' || meeting.status === 'scheduled') &&
          isSecretary.value &&
          meeting.attendance_status !== 'submitted' &&
-         meeting.attendance_status !== 'validated';
+         meeting.attendance_status !== 'validated' &&
+         (!meeting.sub_meetings_count || meeting.sub_meetings_count === 0);
 };
 
 const canModifyMeeting = (meeting: Meeting) => {

@@ -43,10 +43,14 @@ class DashboardController extends Controller
             $committeeQuery->where('locality_id', $user->locality_id);
         }
 
+        // Appliquer le filtre pour exclure les réunions parent avec des sous-réunions
+        $query = $this->filterParentMeetings($query);
+
         // Statistiques générales
         $stats = [
             'total_meetings' => $query->count(),
             'upcoming_meetings' => $query->where('scheduled_date', '>', now()->format('Y-m-d'))->count(),
+            'meetings_to_validate' => $query->where('status', 'submitted')->count(),
             'total_users' => User::count(),
             'total_committees' => $committeeQuery->count(),
         ];
@@ -67,6 +71,10 @@ class DashboardController extends Controller
             ->whereHas('localCommittee', function($q) use ($user) {
                 $q->where('locality_id', $user->locality_id);
             })
+            ->where(function ($q) {
+                $q->whereDoesntHave('subMeetings') // Réunions sans sous-réunions
+                  ->orWhereNotNull('parent_meeting_id'); // Inclure toutes les sous-réunions
+            })
             ->selectRaw('COUNT(*) as count, MONTH(scheduled_date) as month')
             ->whereYear('scheduled_date', date('Y'))
             ->groupBy(DB::raw('MONTH(scheduled_date)'))
@@ -79,6 +87,10 @@ class DashboardController extends Controller
         $meetingsByStatus = Meeting::query()
             ->whereHas('localCommittee', function($q) use ($user) {
                 $q->where('locality_id', $user->locality_id);
+            })
+            ->where(function ($q) {
+                $q->whereDoesntHave('subMeetings') // Réunions sans sous-réunions
+                  ->orWhereNotNull('parent_meeting_id'); // Inclure toutes les sous-réunions
             })
             ->selectRaw('COUNT(*) as count, status')
             ->whereYear('scheduled_date', date('Y'))
@@ -128,16 +140,30 @@ class DashboardController extends Controller
             // Réunions avec paiements en attente
             $stats['meetings_with_pending_payments'] = Meeting::whereHas('paymentList', function($query) {
                 $query->where('status', 'submitted');
+            })->where(function ($q) {
+                $q->whereDoesntHave('subMeetings') // Réunions sans sous-réunions
+                  ->orWhereNotNull('parent_meeting_id'); // Inclure toutes les sous-réunions
             })->count();
 
             // Comités locaux avec paiements en attente
             $stats['committees_with_pending_payments'] = LocalCommittee::whereHas('meetings.paymentList', function($query) {
                 $query->where('status', 'submitted');
+            })->whereHas('meetings', function($meetingQuery) {
+                $meetingQuery->where(function ($q) {
+                    $q->whereDoesntHave('subMeetings') // Réunions sans sous-réunions
+                      ->orWhereNotNull('parent_meeting_id'); // Inclure toutes les sous-réunions
+                });
             })->count();
 
             // Dernières listes de paiement en attente
             $stats['pending_payment_lists'] = MeetingPaymentList::with(['meeting.localCommittee', 'submitter'])
                 ->where('status', 'submitted')
+                ->whereHas('meeting', function($meetingQuery) {
+                    $meetingQuery->where(function ($q) {
+                        $q->whereDoesntHave('subMeetings') // Réunions sans sous-réunions
+                          ->orWhereNotNull('parent_meeting_id'); // Inclure toutes les sous-réunions
+                    });
+                })
                 ->orderBy('submitted_at', 'desc')
                 ->take(5)
                 ->get();
@@ -145,6 +171,12 @@ class DashboardController extends Controller
             // Dernières listes de paiement en brouillon
             $stats['draft_payment_lists'] = MeetingPaymentList::with(['meeting.localCommittee', 'submitter'])
                 ->where('status', 'draft')
+                ->whereHas('meeting', function($meetingQuery) {
+                    $meetingQuery->where(function ($q) {
+                        $q->whereDoesntHave('subMeetings') // Réunions sans sous-réunions
+                          ->orWhereNotNull('parent_meeting_id'); // Inclure toutes les sous-réunions
+                    });
+                })
                 ->orderBy('created_at', 'desc')
                 ->take(5)
                 ->get();
@@ -152,6 +184,12 @@ class DashboardController extends Controller
             // Dernières listes de paiement soumises (pour l'affichage dans le tableau)
             $stats['recent_payment_lists'] = MeetingPaymentList::with(['meeting.localCommittee', 'submitter'])
                 ->whereIn('status', ['submitted', 'validated'])
+                ->whereHas('meeting', function($meetingQuery) {
+                    $meetingQuery->where(function ($q) {
+                        $q->whereDoesntHave('subMeetings') // Réunions sans sous-réunions
+                          ->orWhereNotNull('parent_meeting_id'); // Inclure toutes les sous-réunions
+                    });
+                })
                 ->orderBy('submitted_at', 'desc')
                 ->take(10)
                 ->get();
@@ -185,5 +223,19 @@ class DashboardController extends Controller
             'usersByRole' => $usersByRole,
             'subPrefectures' => $subPrefectures,
         ]);
+    }
+
+    /**
+     * Filtre les réunions pour exclure les réunions parent avec des sous-réunions
+     * et inclure seulement les sous-réunions et les réunions normales
+     */
+    private function filterParentMeetings($query)
+    {
+        return $query->where(function ($q) {
+            $q->whereDoesntHave('subMeetings') // Réunions sans sous-réunions
+              ->orWhereHas('subMeetings', function ($subQ) {
+                  $subQ->whereRaw('1 = 0'); // Condition impossible pour exclure les réunions parent
+              });
+        })->orWhereNotNull('parent_meeting_id'); // Inclure toutes les sous-réunions
     }
 } 

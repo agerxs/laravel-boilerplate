@@ -28,6 +28,26 @@ class UserResource extends Resource
     protected static ?string $navigationLabel = 'Utilisateurs';
     protected static ?int $navigationSort = 1;
 
+    public static function canCreate(): bool
+    {
+        return false; // Seuls les super admins peuvent créer des utilisateurs
+    }
+
+    public static function canEdit($record): bool
+    {
+        return false; // Seuls les super admins peuvent modifier des utilisateurs
+    }
+
+    public static function canDelete($record): bool
+    {
+        return false; // Seuls les super admins peuvent supprimer des utilisateurs
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return false; // Seuls les super admins peuvent supprimer des utilisateurs
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -187,12 +207,17 @@ class UserResource extends Resource
                     }),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->visible(fn () => static::canViewAny()),
+                Tables\Actions\EditAction::make()
+                    ->visible(fn () => static::canEdit(null)),
+                Tables\Actions\DeleteAction::make()
+                    ->visible(fn () => static::canDelete(null)),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->visible(fn () => static::canDeleteAny()),
                 ]),
             ]);
     }

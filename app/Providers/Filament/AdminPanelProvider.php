@@ -60,8 +60,8 @@ class AdminPanelProvider extends PanelProvider
                 NavigationItem::make('Accueil du site')
                     ->url('/', shouldOpenInNewTab: true)
                     ->icon('heroicon-o-home')
-            ]);
-           // ->plugin(FilamentSpatieRolesPermissionsPlugin::make())
+            ])
+            ->plugin(FilamentSpatieRolesPermissionsPlugin::make())
             ;
     }
 }

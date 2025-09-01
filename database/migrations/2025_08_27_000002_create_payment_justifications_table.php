@@ -26,7 +26,6 @@ return new class extends Migration
             $table->date('payment_date')->nullable(); // date du paiement
             $table->timestamps();
             $table->softDeletes();
-
             $table->foreign('meeting_payment_list_id')->references('id')->on('meeting_payment_lists')->onDelete('cascade');
             $table->foreign('uploaded_by')->references('id')->on('users')->onDelete('cascade');
         });

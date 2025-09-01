@@ -128,12 +128,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
     
     // Routes pour les résultats des villages
     Route::prefix('meetings/{meeting}/village-results')->group(function () {
-        Route::get('/', [App\Http\Controllers\VillageResultController::class, 'index'])->name('api.village-results.index');
-        Route::get('/{village}', [App\Http\Controllers\VillageResultController::class, 'show'])->name('api.village-results.show');
-        Route::post('/{village}', [App\Http\Controllers\VillageResultController::class, 'store'])->name('api.village-results.store');
-        Route::post('/{village}/submit', [App\Http\Controllers\VillageResultController::class, 'submit'])->name('api.village-results.submit');
-        Route::post('/{village}/validate', [App\Http\Controllers\VillageResultController::class, 'validateResults'])->name('api.village-results.validate');
-        Route::delete('/{village}', [App\Http\Controllers\VillageResultController::class, 'destroy'])->name('api.village-results.destroy');
+        Route::get('/', [App\Http\Controllers\Api\VillageResultController::class, 'index']);
+        Route::post('/', [App\Http\Controllers\Api\VillageResultController::class, 'store']);
+        Route::get('/{villageResult}', [App\Http\Controllers\Api\VillageResultController::class, 'show']);
+        Route::put('/{villageResult}', [App\Http\Controllers\Api\VillageResultController::class, 'update']);
+        Route::delete('/{villageResult}', [App\Http\Controllers\Api\VillageResultController::class, 'destroy']);
     });
 });
 

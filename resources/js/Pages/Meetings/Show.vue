@@ -167,7 +167,7 @@
                 @click="showValidationModal = true"
                 class="inline-flex items-center px-4 py-2 bg-white border border-violet-300 text-violet-700 rounded-md text-sm font-medium hover:bg-violet-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500"
               >
-                Valider
+                Valider le compte rendu
               </button>
               
               <!-- Bouton pour invalider -->
@@ -220,21 +220,7 @@
                       Localité non définie
                     </div>
                   </p>
-                  <p class="text-sm text-gray-600">
-                    <span class="font-medium">Organisateur :</span>
-                    {{ meeting.organizer?.name }}
-                  </p>
-                  <p class="text-sm text-gray-600">
-                    <span class="font-medium">Nombre de personnes à enrôler :</span>
-                    {{ meeting.target_enrollments || 0 }}
-                  </p>
-                  <p class="text-sm text-gray-600">
-                    <span class="font-medium">Nombre de personnes enrôlées :</span>
-                    {{ meeting.actual_enrollments || 0 }}
-                    <span v-if="meeting.target_enrollments" class="ml-2 text-xs inline-block bg-emerald-100 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full">
-                      {{ meeting.actual_enrollments }}/{{ meeting.target_enrollments }}
-                    </span>
-                  </p>
+                 
                   
                   <!-- Informations sur les sous-réunions -->
                   <div v-if="meeting.sub_meetings && meeting.sub_meetings.length > 0" class="mt-4 pt-4 border-t border-gray-200">

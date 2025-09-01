@@ -24,6 +24,8 @@ class DatabaseSeeder extends Seeder
             SecretarySeeder::class,
             SubPrefectSeeder::class,
             LocalCommitteeSeeder::class,
+            FilamentUserSeeder::class, // Créer l'utilisateur admin Filament
+            AdminUsersSeeder::class, // Créer les utilisateurs admin avec les 2 niveaux
             TestUsersSeeder::class, // Ajouter le seeder des utilisateurs de test
             //MeetingSeeder::class,
             

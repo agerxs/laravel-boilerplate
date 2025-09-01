@@ -52,35 +52,7 @@
               </Link>
             </div>
 
-            <!-- Détails des paiements par rôle -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <Link
-                :href="route('meeting-payments.lists.index', { role: 'sous_prefet' })"
-                class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 hover:bg-gray-50 transition-colors duration-200"
-              >
-                <h3 class="text-sm font-medium text-gray-500">Paiements présidents</h3>
-                <p class="mt-2 text-2xl font-bold text-blue-600">{{ formatCurrency(stats.sub_prefet_payments) }}</p>
-                <p class="mt-2 text-xs text-gray-500">50.000 FCFA par 2 réunions</p>
-              </Link>
-
-              <Link
-                :href="route('meeting-payments.lists.index', { role: 'secretaire' })"
-                class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 hover:bg-gray-50 transition-colors duration-200"
-              >
-                <h3 class="text-sm font-medium text-gray-500">Paiements Secrétaires</h3>
-                <p class="mt-2 text-2xl font-bold text-purple-600">{{ formatCurrency(stats.secretary_payments) }}</p>
-                <p class="mt-2 text-xs text-gray-500">25.000 FCFA par 2 réunions</p>
-              </Link>
-
-              <Link
-                :href="route('meeting-payments.lists.index', { role: 'participant' })"
-                class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 hover:bg-gray-50 transition-colors duration-200"
-              >
-                <h3 class="text-sm font-medium text-gray-500">Paiements Participants</h3>
-                <p class="mt-2 text-2xl font-bold text-green-600">{{ formatCurrency(stats.participant_payments) }}</p>
-                <p class="mt-2 text-xs text-gray-500">15.000 FCFA par réunion</p>
-              </Link>
-            </div>
+           
 
             <!-- Dernières listes de paiement -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
@@ -142,7 +114,7 @@
         <div class="mb-8">
           <h3 class="text-lg font-medium text-gray-900 mb-4">Statistiques Générales</h3>
           
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div class="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
             <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6">
               <div class="text-sm font-medium text-gray-500">Total Réunions</div>
               <div class="mt-2 text-3xl font-semibold text-gray-900">{{ stats.total_meetings }}</div>
@@ -158,6 +130,15 @@
               <div class="mt-2 flex items-center text-sm text-indigo-600">
                 <CalendarIcon class="h-4 w-4 mr-1" />
                 <span>Cette semaine</span>
+              </div>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow-sm rounded-lg p-6">
+              <div class="text-sm font-medium text-gray-500">Réunions à valider</div>
+              <div class="mt-2 text-3xl font-semibold text-orange-600">{{ stats.meetings_to_validate }}</div>
+              <div class="mt-2 flex items-center text-sm text-orange-600">
+                <ClockIcon class="h-4 w-4 mr-1" />
+                <span>En attente</span>
               </div>
             </div>
 
@@ -261,7 +242,8 @@ import {
   ArrowUpIcon,
   CalendarIcon,
   UserGroupIcon,
-  BuildingOfficeIcon
+  BuildingOfficeIcon,
+  ClockIcon
 } from '@heroicons/vue/24/outline'
 import LineChart from '@/Components/Charts/LineChart.vue'
 import DoughnutChart from '@/Components/Charts/DoughnutChart.vue'
@@ -291,6 +273,7 @@ const props = defineProps<{
   stats: {
     total_meetings: number
     upcoming_meetings: number
+    meetings_to_validate: number
     total_users: number
     total_committees: number
     total_payments: number

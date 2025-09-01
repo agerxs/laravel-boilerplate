@@ -37,14 +37,7 @@
                 <CheckIcon class="h-4 w-4 mr-2 inline-block" />
                 Marquer comme Payé ({{ selectedLists.length }})
               </button>
-              
-              <button
-                @click="exportLists"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
-              >
-                <ArrowDownTrayIcon class="h-4 w-4 mr-2 inline-block" />
-                Exporter Tout
-              </button>
+            
               <button
                 v-if="canValidateAll"
                 @click="validateAll"

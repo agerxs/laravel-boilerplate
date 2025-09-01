@@ -144,15 +144,22 @@ class TestUsersSeeder extends Seeder
                         'locality_id' => $locality->id
                     ]);
                 } else {
-                    // Créer un nouvel utilisateur
-                    $user = User::create([
-                        'name' => $userData['name'],
-                        'email' => $userData['email'],
-                        'password' => bcrypt('password123'),
-                        'locality_id' => $locality->id,
-                        'phone' => $userData['phone'],
-                        'email_verified_at' => now()
-                    ]);
+                                    // Créer un nouvel utilisateur
+                $user = User::create([
+                    'name' => $userData['name'],
+                    'email' => $userData['email'],
+                    'password' => bcrypt('password123'),
+                    'locality_id' => $locality->id,
+                    'phone' => $userData['phone'],
+                    'email_verified_at' => now()
+                ]);
+
+                // Gérer le niveau d'administration selon la configuration
+                if (isset($userData['is_super_admin'])) {
+                    $user->update(['is_super_admin' => $userData['is_super_admin']]);
+                    $level = $userData['is_super_admin'] ? 'Super Admin (Niveau 1)' : 'Admin Simple (Niveau 2)';
+                    $this->command->info("Utilisateur {$userData['name']} configuré comme {$level}");
+                }
 
                     $this->command->info("Utilisateur {$userData['name']} créé avec succès");
                 }
@@ -206,12 +213,22 @@ class TestUsersSeeder extends Seeder
     {
         return [
             [
+                'name' => 'Super Admin Test',
+                'email' => 'superadmin@test.com',
+                'phone' => '0700000001',
+                'role' => 'super_admin',
+                'description' => 'Super administrateur système (Niveau 1)',
+                'add_to_committee' => false,
+                'is_super_admin' => true
+            ],
+            [
                 'name' => 'Admin Test',
                 'email' => 'admin@test.com',
-                'phone' => '0700000001',
+                'phone' => '0700000002',
                 'role' => 'admin',
-                'description' => 'Administrateur système',
-                'add_to_committee' => false
+                'description' => 'Administrateur simple (Niveau 2)',
+                'add_to_committee' => false,
+                'is_super_admin' => false
             ],
             [
                 'name' => 'Président Test',

@@ -48,8 +48,18 @@
                     :class="attr.customData.classes"
                     @click="showMeetingDetails(attr.customData.meeting)"
                   >
-                    {{ attr.customData.meeting.title }}
-                    {{ formatTime(attr.customData.meeting.scheduled_date) }}
+                    <div class="flex items-center space-x-1">
+                      <span v-if="attr.customData.meeting.is_sub_meeting" 
+                            class="text-xs bg-blue-100 text-blue-700 px-1 rounded-full">
+                        ⚡
+                      </span>
+                      <span class="truncate">
+                        {{ attr.customData.meeting.title }}
+                      </span>
+                    </div>
+                    <div class="text-xs opacity-75">
+                      {{ formatTime(attr.customData.meeting.scheduled_date) }}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -64,7 +74,20 @@
       <div class="p-6" v-if="selectedMeeting">
         <h3 class="text-lg font-medium text-gray-900 mb-4">
           {{ selectedMeeting.title }}
+          <span v-if="selectedMeeting.is_sub_meeting" 
+                class="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+            ⚡ Sous-réunion
+          </span>
         </h3>
+        
+        <!-- Afficher la réunion parent si c'est une sous-réunion -->
+        <div v-if="selectedMeeting.is_sub_meeting && selectedMeeting.parent_meeting_title" 
+             class="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+          <p class="text-sm text-blue-800">
+            <strong>Réunion principale :</strong> {{ selectedMeeting.parent_meeting_title }}
+          </p>
+        </div>
+        
         <div class="space-y-3">
           <p class="text-sm text-gray-600">
             <ClockIcon class="h-5 w-5 inline mr-2" />
@@ -121,6 +144,8 @@ interface Meeting {
   end_datetime: string
   location: string
   status: string
+  is_sub_meeting: boolean
+  parent_meeting_title?: string
   local_committee?: {
     id: number
     name: string

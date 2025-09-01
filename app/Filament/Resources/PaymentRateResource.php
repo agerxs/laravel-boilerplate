@@ -35,6 +35,26 @@ class PaymentRateResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Taux de paiement';
 
+    public static function canCreate(): bool
+    {
+        return false; // Seuls les super admins peuvent créer des taux de paiement
+    }
+
+    public static function canEdit($record): bool
+    {
+        return false; // Seuls les super admins peuvent modifier des taux de paiement
+    }
+
+    public static function canDelete($record): bool
+    {
+        return false; // Seuls les super admins peuvent supprimer des taux de paiement
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return false; // Seuls les super admins peuvent supprimer des taux de paiement
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -117,12 +137,17 @@ class PaymentRateResource extends Resource
                     ]),
             ])
             ->actions([
-                EditAction::make(),
-                DeleteAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->visible(fn () => static::canViewAny()),
+                EditAction::make()
+                    ->visible(fn () => static::canEdit(null)),
+                DeleteAction::make()
+                    ->visible(fn () => static::canDelete(null)),
             ])
             ->bulkActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()
+                        ->visible(fn () => static::canDeleteAny()),
                 ]),
             ]);
     }

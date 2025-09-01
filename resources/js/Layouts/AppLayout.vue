@@ -233,7 +233,7 @@ const { toasts } = useToast();
                         <div class="w-8 h-8 bg-white/20 rounded-lg mr-3 flex items-center justify-center">
                             <span class="text-white font-bold text-lg">C</span>
                         </div>
-                        Colocs
+                        COLOCS-CMU
                     </div>
                     <button
                         @click="showingNavigationDropdown = false"
@@ -338,7 +338,7 @@ const { toasts } = useToast();
                             <span class="text-white font-bold text-xl">C</span>
                         </div>
                         <div class="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                            Colocs
+                            COLOCS-CMU
                         </div>
                     </div>
                     <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto" role="navigation" aria-label="Navigation principale">

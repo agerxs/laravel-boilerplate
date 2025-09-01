@@ -61,6 +61,7 @@ class Kernel extends HttpKernel
         'role_or_permission' => \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware::class,
         'dashboard.access' => \App\Http\Middleware\DashboardAccess::class,
         'check.locality' => \App\Http\Middleware\CheckLocality::class,
+        'filament.access' => \App\Http\Middleware\FilamentAccessMiddleware::class,
     ];
 
     /**
