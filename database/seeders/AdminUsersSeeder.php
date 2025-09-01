@@ -39,24 +39,7 @@ class AdminUsersSeeder extends Seeder
                 'is_super_admin' => true,
                 'description' => 'Super administrateur principal avec accès complet'
             ],
-            [
-                'name' => 'Administrateur Principal',
-                'email' => 'admin@colocs.ci',
-                'password' => 'password',
-                'phone' => '+225070000001',
-                'role' => 'admin',
-                'is_super_admin' => false,
-                'description' => 'Administrateur principal avec accès en lecture seule'
-            ],
-            [
-                'name' => 'Super Admin Test',
-                'email' => 'superadmin.test@colocs.ci',
-                'password' => 'password',
-                'phone' => '+225070000002',
-                'role' => 'super_admin',
-                'is_super_admin' => true,
-                'description' => 'Super administrateur de test'
-            ],
+          
             [
                 'name' => 'Admin Test',
                 'email' => 'admin.test@colocs.ci',

@@ -213,37 +213,29 @@ class TestUsersSeeder extends Seeder
     {
         return [
             [
-                'name' => 'Super Admin Test',
-                'email' => 'superadmin@test.com',
+                'name' => 'Admin Filament',
+                'email' => 'filament.admin@colocs.ci',
                 'phone' => '0700000001',
                 'role' => 'super_admin',
-                'description' => 'Super administrateur système (Niveau 1)',
+                'description' => 'Super administrateur Filament (Niveau 1)',
                 'add_to_committee' => false,
                 'is_super_admin' => true
             ],
             [
-                'name' => 'Admin Test',
-                'email' => 'admin@test.com',
+                'name' => 'Admin Simple Filament',
+                'email' => 'filament.admin.simple@colocs.ci',
                 'phone' => '0700000002',
                 'role' => 'admin',
-                'description' => 'Administrateur simple (Niveau 2)',
+                'description' => 'Administrateur simple Filament (Niveau 2)',
                 'add_to_committee' => false,
                 'is_super_admin' => false
             ],
             [
                 'name' => 'Président Test',
                 'email' => 'president@test.com',
-                'phone' => '0700000002',
-                'role' => 'president',
-                'description' => 'Président du comité local',
-                'add_to_committee' => true
-            ],
-            [
-                'name' => 'Sous-Préfet Test',
-                'email' => 'sousprefet@test.com',
                 'phone' => '0700000003',
                 'role' => 'president',
-                'description' => 'Sous-préfet de la localité',
+                'description' => 'Président du comité local',
                 'add_to_committee' => true
             ],
             [
@@ -255,28 +247,12 @@ class TestUsersSeeder extends Seeder
                 'add_to_committee' => true
             ],
             [
-                'name' => 'Tresorier Test',
+                'name' => 'Trésorier Test',
                 'email' => 'tresorier@test.com',
                 'phone' => '0700000005',
                 'role' => 'tresorier',
-                'description' => 'Tresorier des réunions',
-                'add_to_committee' => true
-            ],
-            [
-                'name' => 'Trésorier Test',
-                'email' => 'tresorier@test.com',
-                'phone' => '0700000006',
-                'role' => 'tresorier',
                 'description' => 'Trésorier du comité local',
                 'add_to_committee' => true
-            ],
-            [
-                'name' => 'Superviseur Test',
-                'email' => 'superviseur@test.com',
-                'phone' => '0700000007',
-                'role' => 'superviseur',
-                'description' => 'Superviseur régional',
-                'add_to_committee' => false
             ]
         ];
     }

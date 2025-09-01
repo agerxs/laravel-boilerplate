@@ -60,7 +60,7 @@ class AppServiceProvider extends ServiceProvider
 
         Filament::registerNavigationGroups([
             'Gestion des utilisateurs',
-            'Rôles et Permissions',
+            'Rôles et Permissionas',
             'Configuration',
         ]);
     }

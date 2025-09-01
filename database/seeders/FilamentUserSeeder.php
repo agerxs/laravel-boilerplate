@@ -2,16 +2,15 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
 
 class FilamentUserSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Exécuter le seeder.
      */
     public function run(): void
     {
@@ -29,13 +28,12 @@ class FilamentUserSeeder extends Seeder
             ['guard_name' => 'web']
         );
 
-        // Créer l'utilisateur super admin
+        // Créer l'utilisateur super admin pour Filament
         $superAdminUser = User::firstOrCreate(
-            ['email' => 'admin@colocs.ci'],
+            ['email' => 'filament.admin@colocs.ci'],
             [
-                'name' => 'Administrateur Système',
+                'name' => 'Admin Filament',
                 'password' => Hash::make('password'),
-                'phone' => '+225070000000',
                 'email_verified_at' => now(),
             ]
         );
@@ -43,19 +41,18 @@ class FilamentUserSeeder extends Seeder
         // Assigner le rôle super_admin à l'utilisateur super admin
         if (!$superAdminUser->hasRole('super_admin')) {
             $superAdminUser->assignRole('super_admin');
-            $this->command->info("Rôle super_admin assigné à l'utilisateur super admin");
+            $this->command->info("Rôle super_admin assigné à l'utilisateur admin Filament");
         }
 
         // Marquer l'utilisateur comme super admin Filament
         $superAdminUser->update(['is_super_admin' => true]);
 
-        // Créer l'utilisateur admin simple
+        // Créer l'utilisateur admin simple pour Filament
         $adminUser = User::firstOrCreate(
-            ['email' => 'admin.simple@colocs.ci'],
+            ['email' => 'filament.admin.simple@colocs.ci'],
             [
-                'name' => 'Administrateur Simple',
+                'name' => 'Admin Simple Filament',
                 'password' => Hash::make('password'),
-                'phone' => '+225070000001',
                 'email_verified_at' => now(),
             ]
         );
@@ -63,35 +60,19 @@ class FilamentUserSeeder extends Seeder
         // Assigner le rôle admin à l'utilisateur admin simple
         if (!$adminUser->hasRole('admin')) {
             $adminUser->assignRole('admin');
-            $this->command->info("Rôle admin assigné à l'utilisateur admin simple");
+            $this->command->info("Rôle admin assigné à l'utilisateur admin simple Filament");
         }
 
         // Ne PAS marquer comme super admin (niveau 2)
         $adminUser->update(['is_super_admin' => false]);
 
-        // Créer un utilisateur admin simple de test
-        $adminTestUser = User::firstOrCreate(
-            ['email' => 'admin.test@colocs.ci'],
-            [
-                'name' => 'Admin Test Colocs',
-                'password' => Hash::make('password'),
-                'phone' => '+225070000002',
-                'email_verified_at' => now(),
-            ]
-        );
-
-        // Assigner le rôle admin à l'utilisateur admin de test
-        if (!$adminTestUser->hasRole('admin')) {
-            $adminTestUser->assignRole('admin');
-            $this->command->info("Rôle admin assigné à l'utilisateur admin de test");
-        }
-
-        // Ne PAS marquer comme super admin (niveau 2)
-        $adminTestUser->update(['is_super_admin' => false]);
-
         $this->command->info("Utilisateurs admin Filament créés avec succès:");
-        $this->command->info("- Super Admin: {$superAdminUser->email}");
-        $this->command->info("- Admin Simple: {$adminUser->email}");
-        $this->command->info("- Admin Test: {$adminTestUser->email}");
+        $this->command->info("- Super Admin Filament: {$superAdminUser->email} (mot de passe: password)");
+        $this->command->info("- Admin Simple Filament: {$adminUser->email} (mot de passe: password)");
+        $this->command->info("");
+        $this->command->info("IMPORTANT: Utilisez ces identifiants pour accéder à l'interface Filament:");
+        $this->command->info("URL: /admin");
+        $this->command->info("Email: filament.admin@colocs.ci");
+        $this->command->info("Mot de passe: password");
     }
 }
