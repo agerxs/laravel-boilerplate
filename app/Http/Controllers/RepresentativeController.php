@@ -67,7 +67,7 @@ class RepresentativeController extends Controller
         if ($user->hasRole(['president', 'President', 'secretaire', 'Secrétaire'])) {
             $committeeQuery->where('locality_id', $user->locality_id);
         }
-        $localCommittees = $committeeQuery->get();
+        $localCommittees = $committeeQuery->select('id', 'name', 'locality_id')->get();
 
         return Inertia::render('Representatives/Index', [
             'representatives' => $query->paginate(15)->withQueryString(),

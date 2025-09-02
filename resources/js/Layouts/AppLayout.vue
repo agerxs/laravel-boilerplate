@@ -134,7 +134,7 @@ const navigation: NavigationItem[] = [
     name: 'Gestion des APKs', 
     href: route('admin.app_versions.index'), 
     icon: DocumentIcon, 
-    roles: ['admin'],
+    roles: ['admin', 'super_admin'],
     color: 'text-slate-600',
     gradient: 'from-slate-500 to-slate-600'
   },
@@ -142,7 +142,7 @@ const navigation: NavigationItem[] = [
     name: 'Statistiques des Tablettes', 
     href: route('admin.device_stats.index'), 
     icon: ChartBarIcon, 
-    roles: ['admin'],
+    roles: ['admin', 'super_admin'],
     color: 'text-indigo-600',
     gradient: 'from-indigo-500 to-indigo-600'
   },
@@ -150,7 +150,7 @@ const navigation: NavigationItem[] = [
     name: 'Paramétrage',
     href: '/admin',
     icon: Cog6ToothIcon,
-    roles: ['admin'],
+    roles: ['admin', 'super_admin'],
     color: 'text-amber-600',
     gradient: 'from-amber-500 to-amber-600'
   }

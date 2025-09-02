@@ -118,15 +118,9 @@ class TestUsersSeeder extends Seeder
 
     private function createTestUsers($locality, $committee)
     {
-        // Récupérer la configuration des utilisateurs de test
-        $testUsers = config('test-users.users', []);
-        $defaultPassword = config('test-users.default_password', 'password123');
-        $options = config('test-users.options', []);
-        
-        if (empty($testUsers)) {
-            $this->command->warn('Aucun utilisateur de test configuré. Utilisation des utilisateurs par défaut.');
-            $testUsers = $this->getDefaultTestUsers();
-        }
+        // Toujours utiliser les utilisateurs par défaut pour s'assurer d'avoir les bons admins
+        $testUsers = $this->getDefaultTestUsers();
+        $defaultPassword = 'password123';
 
         foreach ($testUsers as $userData) {
             try {
@@ -213,20 +207,20 @@ class TestUsersSeeder extends Seeder
     {
         return [
             [
-                'name' => 'Admin Filament',
-                'email' => 'filament.admin@colocs.ci',
+                'name' => 'Super Admin',
+                'email' => 'superadmin@colocs.ci', 
                 'phone' => '0700000001',
                 'role' => 'super_admin',
-                'description' => 'Super administrateur Filament (Niveau 1)',
+                'description' => 'Super administrateur (Niveau 1)',
                 'add_to_committee' => false,
                 'is_super_admin' => true
             ],
             [
-                'name' => 'Admin Simple Filament',
-                'email' => 'filament.admin.simple@colocs.ci',
+                'name' => 'Admin',
+                'email' => 'admin@colocs.ci',
                 'phone' => '0700000002',
                 'role' => 'admin',
-                'description' => 'Administrateur simple Filament (Niveau 2)',
+                'description' => 'Administrateur (Niveau 2)',
                 'add_to_committee' => false,
                 'is_super_admin' => false
             ],

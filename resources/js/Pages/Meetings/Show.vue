@@ -662,7 +662,7 @@
                 </label>
                 <textarea
                   id="difficulties"
-                  v-model="form.minutes.difficulties"
+                  v-model="form.meeting.difficulties"
                   rows="4"
                   required
                   minlength="10"
@@ -681,7 +681,7 @@
                 </label>
                 <textarea
                   id="recommendations"
-                  v-model="form.minutes.recommendations"
+                  v-model="form.meeting.recommendations"
                   rows="4"
                   required
                   minlength="10"
@@ -836,18 +836,18 @@
               </div>
               
               <!-- Difficultés rencontrées -->
-              <div v-if="form.minutes.difficulties" class="mt-6">
+              <div v-if="form.meeting.difficulties" class="mt-6">
                 <h4 class="text-lg font-semibold text-gray-900 mb-3">Difficultés rencontrées</h4>
                 <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                  <div class="text-sm text-gray-700 whitespace-pre-wrap">{{ form.minutes.difficulties }}</div>
+                  <div class="text-sm text-gray-700 whitespace-pre-wrap">{{ form.meeting.difficulties }}</div>
                 </div>
               </div>
 
               <!-- Recommandations -->
-              <div v-if="form.minutes.recommendations" class="mt-6">
+              <div v-if="form.meeting.recommendations" class="mt-6">
                 <h4 class="text-lg font-semibold text-gray-900 mb-3">Recommandations</h4>
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <div class="text-sm text-gray-700 whitespace-pre-wrap">{{ form.minutes.recommendations }}</div>
+                  <div class="text-sm text-gray-700 whitespace-pre-wrap">{{ form.meeting.recommendations }}</div>
                 </div>
               </div>
 
@@ -1608,6 +1608,10 @@ const form = useForm({
         ...item,
         order: index
     })) || [],
+    meeting: {
+        difficulties: props.meeting.difficulties || '',
+        recommendations: props.meeting.recommendations || '',
+    },
     minutes: {
         content: props.meeting.minutes?.content || '',
         status: props.meeting.minutes?.status || 'draft',
@@ -1877,8 +1881,8 @@ const publishMinutes = async () => {
 const cancelEditMinutes = () => {
   editingMinutes.value = false
   form.reset()
-  form.minutes.difficulties = props.meeting.minutes?.difficulties || ''
-  form.minutes.recommendations = props.meeting.minutes?.recommendations || ''
+  form.meeting.difficulties = props.meeting.difficulties || ''
+  form.meeting.recommendations = props.meeting.recommendations || ''
 }
 
 const handleValidationError = (errors) => {
@@ -1894,12 +1898,12 @@ const handleResultsUpdated = () => {
 const saveAll = async () => {
   try {
     // Validation côté client des champs obligatoires
-    if (!form.minutes.difficulties || form.minutes.difficulties.trim().length < 10) {
+    if (!form.meeting.difficulties || form.meeting.difficulties.trim().length < 10) {
       toast.error('Le champ "Difficultés rencontrées" est obligatoire et doit contenir au moins 10 caractères');
       return;
     }
     
-    if (!form.minutes.recommendations || form.minutes.recommendations.trim().length < 10) {
+    if (!form.meeting.recommendations || form.meeting.recommendations.trim().length < 10) {
       toast.error('Le champ "Recommandations" est obligatoire et doit contenir au moins 10 caractères');
       return;
     }
@@ -1909,8 +1913,8 @@ const saveAll = async () => {
       // Création d'un nouveau compte rendu
       await axios.post(route('minutes.store', props.meeting.id), {
         content: form.minutes.content || 'Compte rendu de réunion',
-        difficulties: form.minutes.difficulties,
-        recommendations: form.minutes.recommendations,
+        difficulties: form.meeting.difficulties,
+        recommendations: form.meeting.recommendations,
         people_to_enroll_count: form.minutes.people_to_enroll_count,
         people_enrolled_count: form.minutes.people_enrolled_count,
         cmu_cards_available_count: form.minutes.cmu_cards_available_count,
@@ -1923,8 +1927,8 @@ const saveAll = async () => {
       await axios.put(route('minutes.update', props.meeting.minutes.id), {
         content: form.minutes.content || 'Compte rendu de réunion',
         status: form.minutes.status,
-        difficulties: form.minutes.difficulties,
-        recommendations: form.minutes.recommendations,
+        difficulties: form.meeting.difficulties,
+        recommendations: form.meeting.recommendations,
         people_to_enroll_count: form.minutes.people_to_enroll_count,
         people_enrolled_count: form.minutes.people_enrolled_count,
         cmu_cards_available_count: form.minutes.cmu_cards_available_count,

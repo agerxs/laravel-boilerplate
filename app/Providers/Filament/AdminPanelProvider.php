@@ -19,6 +19,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Illuminate\Support\Facades\Auth;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -32,6 +33,8 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->authGuard('web')
+            ->authPasswordBroker('users')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
@@ -63,5 +66,14 @@ class AdminPanelProvider extends PanelProvider
             ])
             // ->plugin(FilamentSpatieRolesPermissionsPlugin::make())
             ;
+    }
+
+    public static function canAccess(): bool
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        
+        // Autoriser l'accès si l'utilisateur est super admin ou a le rôle admin
+        return $user && ($user->is_super_admin || $user->hasRole('admin'));
     }
 }

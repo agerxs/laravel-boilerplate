@@ -30,7 +30,7 @@ const submit = () => {
 
 // Fonctions pour la connexion rapide
 const loginAsAdmin = () => {
-    form.email = 'superadmin@test.com';
+    form.email = 'superadmin@colocs.ci';
     form.password = 'password123';
     submit();
 };
@@ -54,7 +54,7 @@ const loginAsGestionnaire = () => {
 };
 
 const loginAsAdminSimple = () => {
-    form.email = 'admin@test.com';
+    form.email = 'admin@colocs.ci';
     form.password = 'password123';
     submit();
 };
@@ -145,14 +145,14 @@ const loginAsAdminSimple = () => {
                     @click="loginAsAdmin"
                     class="flex w-full items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                 >
-                    SuperAdmin
+                    Super Admin
                 </button>
                 <button
                     type="button"
                     @click="loginAsAdminSimple"
                     class="flex w-full items-center justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                 >
-                    Admin Colocs
+                    Admin
                 </button>
                 <button
                     type="button"

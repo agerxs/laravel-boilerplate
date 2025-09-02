@@ -23,9 +23,6 @@ class MeetingMinutes extends Model
         'cmu_cards_distributed_count',
         'complaints_received_count',
         'complaints_processed_count',
-        // Nouveaux champs pour les difficultés et recommandations
-        'difficulties',
-        'recommendations',
     ];
 
     protected $casts = [

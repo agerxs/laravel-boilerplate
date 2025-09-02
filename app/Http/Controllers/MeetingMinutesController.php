@@ -53,11 +53,15 @@ class MeetingMinutesController extends Controller
             }
         }
 
+        // Sauvegarder les difficultés et recommandations dans la table meetings
+        $meeting->update([
+            'difficulties' => $validated['difficulties'],
+            'recommendations' => $validated['recommendations'],
+        ]);
+
         $minutes = $meeting->minutes()->create([
             'content' => $validated['content'],
             'status' => 'draft',
-            'difficulties' => $validated['difficulties'],
-            'recommendations' => $validated['recommendations'],
             'people_to_enroll_count' => $validated['people_to_enroll_count'] ?? null,
             'people_enrolled_count' => $validated['people_enrolled_count'] ?? null,
             'cmu_cards_available_count' => $validated['cmu_cards_available_count'] ?? null,
@@ -115,7 +119,17 @@ class MeetingMinutesController extends Controller
             }
         }
 
-        $minutes->update($validated);
+        // Séparer les champs pour les sauvegarder dans les bonnes tables
+        $minutesData = collect($validated)->except(['difficulties', 'recommendations'])->toArray();
+        $meetingData = collect($validated)->only(['difficulties', 'recommendations'])->toArray();
+
+        // Sauvegarder les difficultés et recommandations dans la table meetings
+        if (!empty($meetingData)) {
+            $minutes->meeting->update($meetingData);
+        }
+
+        // Sauvegarder les autres données dans la table meeting_minutes
+        $minutes->update($minutesData);
 
         if ($validated['status'] === 'published' && !$minutes->published_at) {
             $minutes->update(['published_at' => now()]);

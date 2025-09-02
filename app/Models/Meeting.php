@@ -42,6 +42,8 @@ class Meeting extends Model
         'created_by',
         'bulk_import_id',
         'parent_meeting_id',
+        'difficulties',
+        'recommendations',
     ];
 
     protected $casts = [

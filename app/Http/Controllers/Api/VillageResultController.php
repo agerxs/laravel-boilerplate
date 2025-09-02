@@ -23,17 +23,19 @@ class VillageResultController extends Controller
             
             // Validation des données
             $validator = Validator::make($request->all(), [
-                'meeting_id' => 'required|integer|exists:meetings,id',
-                'locality_id' => 'required|integer|exists:localities,id',
-                'people_to_enroll_count' => 'nullable|integer|min:0',
-                'people_enrolled_count' => 'nullable|integer|min:0',
-                'cmu_cards_available_count' => 'nullable|integer|min:0',
-                'cmu_cards_distributed_count' => 'nullable|integer|min:0',
-                'complaints_received_count' => 'nullable|integer|min:0',
-                'complaints_processed_count' => 'nullable|integer|min:0',
+                'meetingId' => 'required|integer|exists:meetings,id',
+                'localityId' => 'required|integer|exists:localite,id',
+                'peopleToEnrollCount' => 'nullable|integer|min:0',
+                'peopleEnrolledCount' => 'nullable|integer|min:0',
+                'cmuCardsAvailableCount' => 'nullable|integer|min:0',
+                'cmuCardsDistributedCount' => 'nullable|integer|min:0',
+                'complaintsReceivedCount' => 'nullable|integer|min:0',
+                'complaintsProcessedCount' => 'nullable|integer|min:0',
                 'comments' => 'nullable|string|max:1000',
                 'status' => 'nullable|string|in:draft,submitted,validated',
             ]);
+
+           
 
             if ($validator->fails()) {
                 return response()->json([
@@ -43,20 +45,22 @@ class VillageResultController extends Controller
                 ], 422);
             }
 
+            $validatedData = $validator->validated();
+
             // Vérifier si un résultat existe déjà pour cette réunion et cette localité
-            $existingResult = VillageResult::where('meeting_id', $meetingId)
-                ->where('localite_id', $request->locality_id)
+            $existingResult = VillageResult::where('meeting_id', $request->meetingId)
+                ->where('localite_id', $request->localityId)
                 ->first();
 
             if ($existingResult) {
                 // Mettre à jour le résultat existant
                 $existingResult->update([
-                    'people_to_enroll_count' => $request->people_to_enroll_count,
-                    'people_enrolled_count' => $request->people_enrolled_count,
-                    'cmu_cards_available_count' => $request->cmu_cards_available_count,
-                    'cmu_cards_distributed_count' => $request->cmu_cards_distributed_count,
-                    'complaints_received_count' => $request->complaints_received_count,
-                    'complaints_processed_count' => $request->complaints_processed_count,
+                    'people_to_enroll_count' => $request->peopleToEnrollCount,
+                    'people_enrolled_count' => $request->peopleEnrolledCount,
+                    'cmu_cards_available_count' => $request->cmuCardsAvailableCount,
+                    'cmu_cards_distributed_count' => $request->cmuCardsDistributedCount,
+                    'complaints_received_count' => $request->complaintsReceivedCount,
+                    'complaints_processed_count' => $request->complaintsProcessedCount,
                     'comments' => $request->comments,
                     'status' => $request->status ?? 'submitted',
                     'submitted_by' => Auth::id(),
@@ -72,8 +76,8 @@ class VillageResultController extends Controller
 
             // Créer un nouveau résultat
             $villageResult = VillageResult::create([
-                'meeting_id' => $meetingId,
-                'localite_id' => $request->locality_id,
+                'meeting_id' => $request->meetingId,
+                'localite_id' => $request->localityId,
                 'people_to_enroll_count' => $request->people_to_enroll_count,
                 'people_enrolled_count' => $request->people_enrolled_count,
                 'cmu_cards_available_count' => $request->cmu_cards_available_count,

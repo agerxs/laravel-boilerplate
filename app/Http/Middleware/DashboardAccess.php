@@ -16,8 +16,8 @@ class DashboardAccess
             return redirect()->route('login');
         }
 
-        // L'administrateur a toujours accès
-        if ($user->hasRole(['admin', 'Admin'])) {
+        // L'administrateur et le super admin ont toujours accès
+        if ($user->hasRole(['admin', 'Admin', 'super_admin'])) {
             return $next($request);
         }
 
@@ -28,8 +28,8 @@ class DashboardAccess
             ], 403);
         }
 
-        // Vérifier si l'utilisateur a une localité assignée (sauf pour l'admin)
-        if (!$user->locality_id) {
+        // Vérifier si l'utilisateur a une localité assignée (sauf pour l'admin et super admin)
+        if (!$user->locality_id && !$user->hasRole(['admin', 'Admin', 'super_admin'])) {
             return response()->view('errors.unauthorized', [
                 'message' => 'Votre compte n\'est pas correctement configuré. Veuillez contacter l\'administrateur.'
             ], 403);

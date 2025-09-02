@@ -276,6 +276,8 @@ class MeetingController extends Controller
             'location' => 'sometimes|required|string|max:255',
             'status' => 'sometimes|required|string',
             'localCommitteeId' => 'nullable|integer|exists:local_committees,id',
+            'difficulties' => 'nullable|string',
+            'recommendations' => 'nullable|string',
             // Ajoute ici les autres champs nécessaires
             'attendees' => 'nullable|array',
         ]);
@@ -342,6 +344,29 @@ class MeetingController extends Controller
                 if (array_key_exists('paymentStatus',$attendeeData)) {
                     unset($attendeeData['paymentStatus']);
                 }
+
+                if (array_key_exists('validationStatus',$attendeeData)) {
+                    unset($attendeeData['validationStatus']);
+                }
+
+                if (array_key_exists('validatedAt',$attendeeData)) {
+                    unset($attendeeData['validatedAt']);
+                }
+
+                if (array_key_exists('created_at',$attendeeData)) {
+                    unset($attendeeData['created_at']);
+                }
+
+                if (array_key_exists('updated_at',$attendeeData)) {
+                    unset($attendeeData['updated_at']);
+                }
+
+                if (array_key_exists('validatedBy',$attendeeData)) {
+                    unset($attendeeData['validatedBy']);
+                }
+                if (array_key_exists('validationComments',$attendeeData)) {
+                    unset($attendeeData['validationComments']);
+                }
                 if (array_key_exists('presenceTimestamp',$attendeeData)) {
                     unset($attendeeData['presenceTimestamp']);
                 }
@@ -352,6 +377,11 @@ class MeetingController extends Controller
                 if (array_key_exists('presenceLocation',$attendeeData)) {
                     $attendeeData['presence_location'] = $attendeeData['presenceLocation'];
                     unset($attendeeData['presenceLocation']);
+                }
+                
+                // Supprimer l'objet representative complet qui ne doit pas être stocké
+                if (array_key_exists('representative', $attendeeData)) {
+                    unset($attendeeData['representative']);
                 }
 
                 if (array_key_exists('isExpected',$attendeeData)) {
@@ -819,8 +849,7 @@ class MeetingController extends Controller
             'minutes' => 'nullable|array',
             'minutes.content' => 'nullable|string',
             'minutes.status' => 'nullable|string|in:draft,published,pending_validation,validated',
-            'minutes.difficulties' => 'nullable|string',
-            'minutes.recommendations' => 'nullable|string',
+
             'minutes.people_to_enroll_count' => 'nullable|integer',
             'minutes.people_enrolled_count' => 'nullable|integer',
             'minutes.cmu_cards_available_count' => 'nullable|integer',
@@ -911,8 +940,7 @@ class MeetingController extends Controller
                     $minutes = $meeting->minutes()->create([
                         'content' => $minutesData['content'] ?? null,
                         'status' => $minutesData['status'] ?? 'draft',
-                        'difficulties' => $minutesData['difficulties'] ?? null,
-                        'recommendations' => $minutesData['recommendations'] ?? null,
+
                         'people_to_enroll_count' => $minutesData['people_to_enroll_count'] ?? null,
                         'people_enrolled_count' => $minutesData['people_enrolled_count'] ?? null,
                         'cmu_cards_available_count' => $minutesData['cmu_cards_available_count'] ?? null,
@@ -926,8 +954,7 @@ class MeetingController extends Controller
                     $minutes->update([
                         'content' => $minutesData['content'] ?? $minutes->content,
                         'status' => $minutesData['status'] ?? $minutes->status,
-                        'difficulties' => $minutesData['difficulties'] ?? $minutes->difficulties,
-                        'recommendations' => $minutesData['recommendations'] ?? $minutes->recommendations,
+
                         'people_to_enroll_count' => $minutesData['people_to_enroll_count'] ?? $minutes->people_to_enroll_count,
                         'people_enrolled_count' => $minutesData['people_enrolled_count'] ?? $minutes->people_enrolled_count,
                         'cmu_cards_available_count' => $minutesData['cmu_cards_available_count'] ?? $minutes->cmu_cards_available_count,

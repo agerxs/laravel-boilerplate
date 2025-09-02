@@ -328,7 +328,7 @@ interface Locality {
   name: string; 
   representatives?: Representative[];
 }
-interface LocalCommittee { id: number; name: string; }
+interface LocalCommittee { id: number; name: string; locality_id?: number; }
 
 interface Representative {
   id: number;
@@ -406,8 +406,23 @@ const openModal = (representative: Representative | null = null, created: boolea
   loadRoleOptions();
 
   if (created && !representative) {
-    // Mode création - pas de représentant existant
-    form.local_committee_id = props.localCommittees[0]?.id;
+    // Mode création - présélectionner le comité local de l'utilisateur connecté
+    const user = (page.props as any).auth?.user;
+    if (user?.locality_id) {
+      // Trouver le comité local correspondant à la localité de l'utilisateur
+      const userCommittee = props.localCommittees.find(committee => 
+        committee.locality_id === user.locality_id
+      );
+      if (userCommittee) {
+        form.local_committee_id = userCommittee.id;
+      } else {
+        // Fallback sur le premier comité disponible
+        form.local_committee_id = props.localCommittees[0]?.id;
+      }
+    } else {
+      // Fallback sur le premier comité disponible
+      form.local_committee_id = props.localCommittees[0]?.id;
+    }
   } else if (representative) {
     // Mode édition - représentant existant
     form.id = representative.id;
