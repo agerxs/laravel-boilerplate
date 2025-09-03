@@ -58,6 +58,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                \App\Http\Middleware\FilamentAccessMiddleware::class,
             ])
             ->navigationItems([
                 NavigationItem::make('Accueil du site')

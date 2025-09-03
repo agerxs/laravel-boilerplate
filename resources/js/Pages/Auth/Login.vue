@@ -12,6 +12,8 @@ defineProps<{
     canResetPassword?: boolean;
     status?: string;
     actionUrl?: string;
+    appVersion?: string;
+    appName?: string;
 }>();
 
 const form = useForm({
@@ -178,7 +180,18 @@ const loginAsAdminSimple = () => {
             </div>
         </div>
 
-       
+        <!-- Affichage de la version -->
+        <div class="mt-8 text-center">
+            <div class="text-xs text-gray-500">
+                <div class="font-medium">{{ appName || 'COLOC-CMU' }}</div>
+                <div class="mt-1">
+                    Version: <span class="font-mono bg-gray-100 px-2 py-1 rounded">{{ appVersion || '1.0.0' }}</span>
+                </div>
+                <div class="mt-1 text-gray-400">
+                    Build: {{ new Date().toLocaleDateString('fr-FR') }}
+                </div>
+            </div>
+        </div>
 
     </GuestLayout>
 </template>
