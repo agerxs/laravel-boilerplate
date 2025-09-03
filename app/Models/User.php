@@ -95,7 +95,9 @@ class User extends Authenticatable
      */
     public function isSuperAdmin(): bool
     {
-        return $this->is_super_admin || $this->hasRole('super_admin');
+        $result = $this->is_super_admin || $this->hasRole('super_admin');
+        \Log::info("User::isSuperAdmin() - Email: {$this->email}, is_super_admin: " . ($this->is_super_admin ? 'true' : 'false') . ", hasRole(super_admin): " . ($this->hasRole('super_admin') ? 'true' : 'false') . ", result: " . ($result ? 'true' : 'false'));
+        return $result;
     }
 
     /**
@@ -103,7 +105,11 @@ class User extends Authenticatable
      */
     public function isAdmin(): bool
     {
-        return $this->hasRole('admin') && !$this->isSuperAdmin();
+        $hasAdminRole = $this->hasRole('admin');
+        $isSuperAdmin = $this->isSuperAdmin();
+        $result = $hasAdminRole && !$isSuperAdmin;
+        \Log::info("User::isAdmin() - Email: {$this->email}, hasRole(admin): " . ($hasAdminRole ? 'true' : 'false') . ", isSuperAdmin(): " . ($isSuperAdmin ? 'true' : 'false') . ", result: " . ($result ? 'true' : 'false'));
+        return $result;
     }
 
     /**
@@ -119,7 +125,11 @@ class User extends Authenticatable
      */
     public function canViewDashboard(): bool
     {
-        return $this->isSuperAdmin() || $this->isAdmin();
+        $isSuperAdmin = $this->isSuperAdmin();
+        $isAdmin = $this->isAdmin();
+        $result = $isSuperAdmin || $isAdmin;
+        \Log::info("User::canViewDashboard() - Email: {$this->email}, isSuperAdmin(): " . ($isSuperAdmin ? 'true' : 'false') . ", isAdmin(): " . ($isAdmin ? 'true' : 'false') . ", result: " . ($result ? 'true' : 'false'));
+        return $result;
     }
 
     public function submittedPaymentLists(): HasMany

@@ -73,7 +73,22 @@ class AdminPanelProvider extends PanelProvider
         /** @var \App\Models\User $user */
         $user = Auth::user();
         
+        \Log::info("AdminPanelProvider::canAccess() - Début du contrôle");
+        
+        if (!$user) {
+            \Log::info("AdminPanelProvider::canAccess() - Aucun utilisateur connecté");
+            return false;
+        }
+        
+        \Log::info("AdminPanelProvider::canAccess() - Utilisateur: {$user->email}");
+        
+        $isSuperAdmin = $user->is_super_admin;
+        $hasAdminRole = $user->hasRole('admin');
+        $result = $isSuperAdmin || $hasAdminRole;
+        
+        \Log::info("AdminPanelProvider::canAccess() - is_super_admin: " . ($isSuperAdmin ? 'true' : 'false') . ", hasRole(admin): " . ($hasAdminRole ? 'true' : 'false') . ", result: " . ($result ? 'true' : 'false'));
+        
         // Autoriser l'accès si l'utilisateur est super admin ou a le rôle admin
-        return $user && ($user->is_super_admin || $user->hasRole('admin'));
+        return $result;
     }
 }
